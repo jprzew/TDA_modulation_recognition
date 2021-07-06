@@ -1,0 +1,16 @@
+pandas
+numpy 
+numpy_indexed
+enum
+random
+faker
+faker_enum
+matplotlib
+seaborn 
+sklearn
+scipy
+pycodestyle
+flake8
+pycodestyle_magic
+
+
