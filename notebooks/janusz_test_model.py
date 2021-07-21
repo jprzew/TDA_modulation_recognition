@@ -97,4 +97,18 @@ tm.test_models(data=df, features=['H0_mean', 'H0_var', 'H1_mean_norm'])
 tm.test_models(data=df, features=['H0_mean', 'H0_var',
                                   'H1_mean_norm', 'H0_mean_norm'])
 
+# %% [markdown]
+# **Taking many features**
+
+# %%
+features = ['no_H0', 'no_H1', 'H0_mean', 'H1_mean', 'H0_var',
+       'H1_var', 'no_H0_3D', 'no_H1_3D', 'H0_mean_3D', 'H1_mean_3D',
+       'H0_var_3D', 'H1_var_3D', 'no_H0_4D', 'no_H1_4D', 'H0_mean_4D', 'H1_mean_4D',
+        'H0_var_4D', 'H1_var_4D']
+
+models = tm.test_models(data=df, features=features, seed=42)
+
+# %%
+df
+
 # %%
