@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np
+import pandex    # Necessary for the mr dataframe accessor
+from ripser import rips
 
 
 @pd.api.extensions.register_dataframe_accessor('feat')
@@ -17,6 +20,36 @@ class SignalFeatures:
                 self.df[feature_name] = f(self)
 
         return self.df[feature_name]
+
+    # point cloud
+    def point_cloud(self):
+        samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
+        samples.mr.add_point_cloud(window=1)
+        return samples['point_cloud']
+
+    def cloud_4D(self):
+        samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
+        samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_4D')
+        return samples['cloud_4D']
+
+    def cloud_3D(self):
+        samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
+        samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_3D')
+        samples['cloud_3D'] = \
+            samples.cloud_3D.apply(lambda x:
+                                   np.column_stack([x, range(x.shape[0])]))
+
+        return samples['cloud_3D']
+
+    # persistence diagrams
+    def diagram(self):
+        return self.df.feat['point_cloud'].map(rips.fit_transform)
+
+    def diagram_3D(self):
+        return self.df.feat['cloud_3D'].map(rips.fit_transform)
+
+    def diagram_4D(self):
+        return self.df.feat['cloud_4D'].map(rips.fit_transform)
 
     # 2-dimensional features
     def H0(self):
