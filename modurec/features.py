@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
 import pandex    # Necessary for the mr dataframe accessor
-from ripser import rips
-
+from ripser import Rips
 
 @pd.api.extensions.register_dataframe_accessor('feat')
 class SignalFeatures:
 
     def __init__(self, df):
         self.df = df
+        self.rips = Rips()
 
     def __getitem__(self, feature_name):
 
@@ -33,23 +33,32 @@ class SignalFeatures:
         return samples['cloud_4D']
 
     def cloud_3D(self):
+        def __standardize(x):
+            range0 = np.max(x[:, 0]) - np.min(x[:, 0])
+            range1 = np.max(x[:, 1]) - np.min(x[:, 1])
+            range2 = np.max(x[:, 2]) - np.min(x[:, 2])
+            # import pdb; pdb.set_trace()
+            x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2 
+            return x
+
         samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
-        samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_3D')
+        samples.mr.add_point_cloud(window=1, point_cloud_col='cloud_3D')
         samples['cloud_3D'] = \
             samples.cloud_3D.apply(lambda x:
                                    np.column_stack([x, range(x.shape[0])]))
+        samples['cloud_3D'] = samples.cloud_3D.apply(__standardize)
 
         return samples['cloud_3D']
 
     # persistence diagrams
     def diagram(self):
-        return self.df.feat['point_cloud'].map(rips.fit_transform)
+        return self.df.feat['point_cloud'].map(self.rips.fit_transform)
 
     def diagram_3D(self):
-        return self.df.feat['cloud_3D'].map(rips.fit_transform)
+        return self.df.feat['cloud_3D'].map(self.rips.fit_transform)
 
     def diagram_4D(self):
-        return self.df.feat['cloud_4D'].map(rips.fit_transform)
+        return self.df.feat['cloud_4D'].map(self.rips.fit_transform)
 
     # 2-dimensional features
     def H0(self):
@@ -119,11 +128,11 @@ class SignalFeatures:
 
     # 3-dimensional features
     def H0_3D(self):
-        return pd.DataFrame(self.df['diagram_3D'].tolist(),
+        return pd.DataFrame(self.df.feat['diagram_3D'].tolist(),
                             index=self.df.index)[0]
 
     def H1_3D(self):
-        return pd.DataFrame(self.df['diagram_3D'].tolist(),
+        return pd.DataFrame(self.df.feat['diagram_3D'].tolist(),
                             index=self.df.index)[1]
 
     def H0_life_time_3D(self):
