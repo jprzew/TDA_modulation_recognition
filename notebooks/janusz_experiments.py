@@ -14,9 +14,6 @@
 # ---
 
 # %%
-# TODO: Tidy it up
-
-# %%
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,6 +22,9 @@ import modurec as mr
 import numpy as np
 
 from modurec import signal_reader
+from ripser import Rips
+
+from mpl_toolkits import mplot3d
 
 
 # %%
@@ -38,12 +38,32 @@ from modurec import signal_reader
 # %autoreload 2
 
 # %%
-df = signal_reader.get_signal_df_from_numpy()
+df = pd.read_pickle('../ml_statistics/stats_train.pkl')
 
 # %%
-df
+df.cloud_3D.iloc[0]
 
 # %%
-df.mr.add_statistics(inplace=True)
+rips = Rips()
+
+# %%
+cloud = df.cloud_3D.iloc[0]
+x, y, z = cloud[:, 0], cloud[:, 1], cloud[:, 2]
+
+
+# %%
+# Creating figure
+fig = plt.figure(figsize = (10, 7))
+ax = plt.axes(projection ="3d")
+ 
+# Creating plot
+ax.scatter3D(x, y, z, color = "green")
+plt.title("simple 3D scatter plot")
+ 
+# show plot
+plt.show()
+
+# %%
+rips.fit_transform(cloud)
 
 # %%

@@ -98,20 +98,21 @@ df['new10'] = df.H1_life_time.apply(lambda x:
 print(df.new10.to_string())
 
 # %%
-# h_vector = ['no_H0', 'no_H1', 'H0_mean', 'H1_mean', 'H0_var',
-#        'H1_var', 'no_H0_3D', 'no_H1_3D', 'H0_mean_3D', 'H1_mean_3D',
-#        'H0_var_3D', 'H1_var_3D']
+h_vector = ['no_H0', 'no_H1', 'H0_mean', 'H1_mean', 'H0_var',
+       'H1_var', 'no_H0_3D', 'no_H1_3D', 'H0_mean_3D', 'H1_mean_3D',
+       'H0_var_3D', 'H1_var_3D', 'no_H0_4D', 'no_H1_4D', 'H0_mean_4D', 'H1_mean_4D',
+        'H0_var_4D', 'H1_var_4D']
 
 # h_vector = ['no_H0', 'no_H1', 'H0_mean', 'H1_mean', 'H0_var',
 #             'H1_var', 'no_H0_4D', 'no_H1_4D', 'H0_mean_4D', 'H1_mean_4D',
 #             'H0_var_4D', 'H1_var_4D', 'new1', 'new3', 'new2', 'new4',
 #            'new5', 'new6', 'new7', 'new8', 'new9', 'new10']
 
-h_vector = ['no_H0', 'no_H1', 'H0_mean', 'H1_mean', 'H0_var',
-       'H1_var', 'no_H0_3D', 'no_H1_3D', 'H0_mean_3D', 'H1_mean_3D',
-       'H0_var_3D', 'H1_var_3D', 'no_H0_4D', 'no_H1_4D', 'H0_mean_4D', 'H1_mean_4D',
-        'H0_var_4D', 'H1_var_4D', 'new1', 'new3', 'new2', 'new4',
-        'new5', 'new6', 'new7', 'new8', 'new9', 'new10']
+# h_vector = ['no_H0', 'no_H1', 'H0_mean', 'H1_mean', 'H0_var',
+#        'H1_var', 'no_H0_3D', 'no_H1_3D', 'H0_mean_3D', 'H1_mean_3D',
+#        'H0_var_3D', 'H1_var_3D', 'no_H0_4D', 'no_H1_4D', 'H0_mean_4D', 'H1_mean_4D',
+#         'H0_var_4D', 'H1_var_4D', 'new1', 'new3', 'new2', 'new4',
+#         'new5', 'new6', 'new7', 'new8', 'new9', 'new10']
 
 
 # %%
