@@ -1,3 +1,12 @@
+"""Features remover
+
+Use this script to remove features from selected data files. 
+
+    * Files to modify are defined in data_files variable
+    * Files to modify are assumed to be located according to data_path variable
+    * Features to be removed are in to_remove list
+"""
+
 import path
 import pandas as pd
 import modurec as mr

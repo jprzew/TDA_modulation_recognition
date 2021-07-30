@@ -1,3 +1,12 @@
+"""Features calculator
+
+Use this script calculate features defined in SignalFeatures class. 
+REMARK: the script calculates the features that are not yet calculated. 
+
+    * Files to modify are defined in data_files variable
+    * Files to modify are assumed to be located according to data_path variable
+"""
+
 import path
 import pandas as pd
 import modurec as mr
