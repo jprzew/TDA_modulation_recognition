@@ -37,9 +37,9 @@ from sklearn import model_selection
 # %% [markdown]
 # **Downloading the data**. The dataset with diagrams and some features can be downloaded from Xeon, by typing the following commands:
 #
-# *scp jprzew@153.19.6.218:~/TDA/learn_github/ml_statistics/stats_train.pkl .*
+# *scp jprzew@153.19.6.218:~/TDA/TDA_modulation_recognition/data/stats_train.pkl .*
 #
-# *scp jprzew@153.19.6.218:~/TDA/learn_github/ml_statistics/stats_test.pkl .*
+# *scp jprzew@153.19.6.218:~/TDA/TDA_modulation_recognition/data/stats_test.pkl .*
 #
 
 # %% [markdown]
