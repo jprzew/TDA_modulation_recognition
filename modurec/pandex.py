@@ -24,8 +24,8 @@ from sklearn.linear_model import Ridge
 
 # from . import constants as C
 # from .config import PkgConfig
-from utility import rolling_window
-from spocheck import spot_check
+from .utility import rolling_window
+from .spocheck import spot_check
 
 
 # #############################################################################

@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
-import pandex    # Necessary for the mr dataframe accessor
+from modurec import pandex    # Necessary for the mr dataframe accessor
 from ripser import Rips
+
 
 @pd.api.extensions.register_dataframe_accessor('feat')
 class SignalFeatures:
@@ -38,7 +39,7 @@ class SignalFeatures:
             range1 = np.max(x[:, 1]) - np.min(x[:, 1])
             range2 = np.max(x[:, 2]) - np.min(x[:, 2])
             # import pdb; pdb.set_trace()
-            x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2 
+            x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
             return x
 
         samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
@@ -164,3 +165,99 @@ class SignalFeatures:
 
     def H1_mean_norm(self):
         return self.df.feat['H1_mean'] / self.df.feat['no_H1']
+
+    def kmp_features(self):
+
+        def __features(D):
+            mean_y = np.array([y for _, y in D if y != float('inf')]).mean()
+
+            return (sum([x * (y - x) for x, y in D if y != float('inf')]),
+                    sum([(mean_y - y) * (y - x) for x, y in D
+                         if y != float('inf')]),
+                    sum([x**2 * (y - x) for x, y in D if y != float('inf')]),
+                    sum([(mean_y - y)**2 * (y - x)**4 for x, y in D
+                         if y != float('inf')]),
+                    max([y - x for x, y in D if y != float('inf')]))
+
+        D = self.df.feat['H0']
+
+        return D.map(__features)
+
+    def kmp_f1(self):
+        return self.df.feat['kmp_features'].map(lambda x: x[0])
+
+    def kmp_f2(self):
+        return self.df.feat['kmp_features'].map(lambda x: x[1])
+
+    def kmp_f3(self):
+        return self.df.feat['kmp_features'].map(lambda x: x[2])
+
+    def kmp_f4(self):
+        return self.df.feat['kmp_features'].map(lambda x: x[3])
+
+    def kmp_f5(self):
+        return self.df.feat['kmp_features'].map(lambda x: x[4])
+
+    def kmp_features_H1(self):
+
+        def __features(D):
+            mean_y = np.array([y for _, y in D if y != float('inf')]).mean()
+
+            return (sum([x * (y - x) for x, y in D if y != float('inf')]),
+                    sum([(mean_y - y) * (y - x) for x, y in D
+                         if y != float('inf')]),
+                    sum([x**2 * (y - x) for x, y in D if y != float('inf')]),
+                    sum([(mean_y - y)**2 * (y - x)**4 for x, y in D
+                         if y != float('inf')]),
+                    max([y - x for x, y in D if y != float('inf')]))
+
+        D = self.df.feat['H1']
+
+        return D.map(__features)
+
+    def kmp_f1_H1(self):
+        return self.df.feat['kmp_features_H1'].map(lambda x: x[0])
+
+    def kmp_f2_H1(self):
+        return self.df.feat['kmp_features_H1'].map(lambda x: x[1])
+
+    def kmp_f3_H1(self):
+        return self.df.feat['kmp_features_H1'].map(lambda x: x[2])
+
+    def kmp_f4_H1(self):
+        return self.df.feat['kmp_features_H1'].map(lambda x: x[3])
+
+    def kmp_f5_H1(self):
+        return self.df.feat['kmp_features_H1'].map(lambda x: x[4])
+
+    def kmp_features_H1_4D(self):
+
+        def __features(D):
+            mean_y = np.array([y for _, y in D if y != float('inf')]).mean()
+
+            return (sum([x * (y - x) for x, y in D if y != float('inf')]),
+                    sum([(mean_y - y) * (y - x) for x, y in D
+                         if y != float('inf')]),
+                    sum([x**2 * (y - x) for x, y in D if y != float('inf')]),
+                    sum([(mean_y - y)**2 * (y - x)**4 for x, y in D
+                         if y != float('inf')]),
+                    max([y - x for x, y in D if y != float('inf')]))
+
+        D = self.df.feat['H1_4D']
+
+        return D.map(__features)
+
+    def kmp_f1_H1_4D(self):
+        return self.df.feat['kmp_features_H1_4D'].map(lambda x: x[0])
+
+    def kmp_f2_H1_4D(self):
+        return self.df.feat['kmp_features_H1_4D'].map(lambda x: x[1])
+
+    def kmp_f3_H1_4D(self):
+        return self.df.feat['kmp_features_H1_4D'].map(lambda x: x[2])
+
+    def kmp_f4_H1_4D(self):
+        return self.df.feat['kmp_features_H1_4D'].map(lambda x: x[3])
+
+    def kmp_f5_H1_4D(self):
+        return self.df.feat['kmp_features_H1_4D'].map(lambda x: x[4])
