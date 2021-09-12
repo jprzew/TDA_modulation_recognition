@@ -22,6 +22,36 @@
 # %autoreload 2
 
 # %%
+import path
+import modurec as mr
+from modurec import features
+import pandas as pd
+import numpy as np
+import modurec.test_models as tm
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn import model_selection
+import matplotlib.pyplot as plt
+
+# %%
+df = pd.read_pickle('../data/temp.pkl')
+
+# %%
+df.mr.plot_clouds(data_col='point_cloud_sr')
+
+# %%
+df.mr.plot_clouds()
+
+# %%
+df.point_cloud_sr.iloc[0]
+
+# %%
+df.point_cloud.iloc[0]
+
+# %% [markdown]
+# # Deprecated?
+
+# %%
 # !ipython --version
 
 # %%
