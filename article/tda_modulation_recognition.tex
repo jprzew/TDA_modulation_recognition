@@ -1,0 +1,295 @@
+\documentclass[12pt]{article}
+
+%---------------------------------------------------------------------
+% AMS packages 
+%---------------------------------------------------------------------
+
+% Packiet loaded automatically by amsart:
+%  1. amsmath, 2. amsthm, 3. amsfonts.
+
+\usepackage{amssymb}
+\usepackage{amsmath} 
+\usepackage[T1]{fontenc}
+\usepackage[latin2]{inputenc}
+% *** 'amsfonts': 
+% boldface of the symbol of the real line: 'R'
+\usepackage{amsfonts}
+
+% *** 'amsthm': 
+% 1. makes easy to modify the macro: \newtheorem{}{} since contains
+% \theoremstyle{}
+% 2. contains macro: \begin{proof} ... \end{proof}
+\usepackage{amsthm} 
+
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+% Theorem style 'plain' are for: Theorem, Lemma, Corollary, 
+% Proposition, Conjecture, Criterion, Algorithm  
+\theoremstyle{plain} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{corollary}[theorem]{Corollary} 
+\newtheorem{conclusion}[theorem]{Corollary} 
+\newtheorem{claim}[theorem]{Claim} 
+\newtheorem{question}[theorem]{Question} 
+\newtheorem{fact}[theorem]{Fact} 
+\newtheorem{proposition}[theorem]{Proposition} 
+\newtheorem{axiom}{Axiom} 
+\newtheorem{problem}[theorem]{Problem}
+% Theorem style 'definition' are for: Definition, Condition, Problem, 
+% Example 
+
+\theoremstyle{definition} 
+\newtheorem{definition}[theorem]{Definition} 
+\newtheorem{example}[theorem]{Example} 
+\newtheorem{exercise}{Exercise} 
+\newtheorem*{solution}{Solution} 
+
+% Theorem style 'remark' are for: Remark, Note, Notation, Claim, 
+% Summary, Acknowledgement, Case, Conclusion 
+
+\theoremstyle{remark} 
+\newtheorem{remark}{Remark} 
+\newtheorem*{notation}{Notation} 
+\newtheorem*{acknowledgment}{Acknowledgment} 
+
+%%%%%%%%%%%%%%%%%  The previous one %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{observation}[theorem]{Observation}
+%\newtheorem{conclusion}[theorem]{Conclusion}
+%\newtheorem{question}[theorem]{Question}
+
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definiton}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{fact}[theorem]{Fact}
+%\newtheorem{conjecture}[theorem]{Conjecture}
+%\newtheorem{example}[theorem]{Example}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{remark}[theorem]{Remark}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%A
+\newcommand{\afc}{AFC}
+\newcommand{\afcbar}{\overline{AFC}}
+\newcommand{\arr}{\rightarrow}
+\newcommand{\Arr}{\Rightarrow}
+
+%B
+\newcommand{\baire}{\omega^{\omega}}
+\newcommand{\Bor}{\mbox{${\cal B}or$}}
+%Previous seems to be much finer than next.
+%\newcommand{\Bor}{{\it Bor}}
+\newcommand{\borelucrz}{Borel-UCR_0}
+
+%C
+\newcommand{\ca}{2^{\omega}}
+\newcommand{\cantor}{\ca}
+\newcommand{\Card}[1]{\Vert #1 \Vert}
+
+%D
+\newcommand{\dom}{{\rm dom}}
+\newcommand{\dummy}{{\tt Blah blah blah}}
+
+%E
+\newcommand{\Even}{\hbox{\rm \tiny Even}}
+
+%F
+\newcommand{\finsub}{[\omega]^{<\omega}}
+\newcommand{\forces}{\mathrel{\|}\joinrel\mathrel{-}}
+
+%G
+\newcommand{\Graph}{\hbox{\it Graph}}
+
+%H
+\newcommand{\homeomorphic}{\approx}
+
+%I
+\newcommand{\incr}{\omega^{\uparrow \omega }}
+\newcommand{\infsub}{[\omega]^{\omega}}
+
+%L
+\newcommand{\la}{\langle}
+
+%M
+\newcommand{\meager}{{\cal MGR}}
+\newcommand{\minideal}{${\cal F}_{\hbox{\rm \scriptsize min}}(\neg
+	D)\;$}
+
+%N
+\newcommand{\neglig}{{\cal N}}
+\newcommand{\nnatural}{\mathbb{N}}
+
+%O
+\newcommand{\Odd}{\hbox{\rm \tiny Odd}}
+
+%P
+\newcommand{\Part}{{\it Part}}
+\newcommand{\Perf}{{\it Perf}}
+%\newcommand{\proof}{\flushleft{ \sc Proof. } \\ }
+\newcommand{\Proof}[1]{\bigbreak\noindent{\bf Proof #1}\enspace}
+
+%Q
+%%%\newcommand{\qed}{{\hfill\vrule height6pt width6pt depth1pt\medskip}}
+%\newcommand{\qed}{\sharp}
+\newcommand{\QED}{\hspace{0.1in} \Box \vspace{0.1in}}
+
+%R
+\newcommand{\ra}{\rangle}
+\newcommand{\ran}{{\rm ran}}
+\newcommand{\rational}{\mathbb{Q}}
+\newcommand{\real}{\mathbb{R}}
+
+%S
+\newcommand{\seq}{\subseteq}
+%%%\newcommand{\square}{\hbox{\ \ \ \ \ \vrule\vbox{\hrule\phantom{o}\hrule}\vrule}}
+% a small restriction:
+\newcommand{\srestriction}{{\hbox{${\scriptstyle\,|\grave{}\,}$}}}
+
+%U
+\newcommand{\up}{\uparrow}
+\newcommand{\ucrz}{UCR_0}
+
+%%%%%%%%%%%%%%%%%%%%%% Calligraphic font commands %%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\cA}{{\cal A}}
+\newcommand{\cB}{{\cal B}}
+\newcommand{\cC}{{\cal C}}
+\newcommand{\cD}{{\cal D}}
+\newcommand{\cE}{{\cal E}}
+\newcommand{\cF}{{\cal F}}
+\newcommand{\cG}{{\cal G}}
+\newcommand{\cH}{{\cal H}}
+\newcommand{\cI}{{\cal I}}
+\newcommand{\cJ}{{\cal J}}
+\newcommand{\cK}{{\cal K}}
+\newcommand{\cL}{{\cal L}}
+\newcommand{\cM}{{\cal M}}
+\newcommand{\cN}{{\cal N}}
+\newcommand{\cO}{{\cal O}}
+\newcommand{\cP}{{\cal P}}
+\newcommand{\cQ}{{\cal Q}}
+\newcommand{\cR}{{\cal R}}
+\newcommand{\cS}{{\cal S}}
+\newcommand{\cT}{{\cal T}}
+\newcommand{\cU}{{\cal U}}
+\newcommand{\cV}{{\cal V}}
+\newcommand{\cW}{{\cal W}}
+\newcommand{\cX}{{\cal X}}
+\newcommand{\cY}{{\cal Y}}
+\newcommand{\cZ}{{\cal Z}}
+
+\def\lac{\mathpzc{Lac}}
+
+\newcommand{\cont}{{\mathfrak{c}}}
+%%%%%%%%%%%%%%%%%%%%%% Some Greek fonts %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\oo}{\omega}
+\newcommand{\bb}{\beta}
+\newcommand{\dd}{\delta}
+\newcommand{\ee}{\varepsilon}
+\newcommand{\kk}{\kappa}
+%%%\newcommand{\th}{\theta}
+
+\renewcommand\abstractname{Abstract}
+
+\pagestyle{myheadings}
+
+
+
+% Types message, asks the user to type in a command, then
+% defines \answer to be the input instead of executing it.
+%%% comment out if not needed (next 13 lines)
+%\typein[\answer]{Do you want to include comments? (y/n)}
+%
+%\newcommand{\annotation}[1]
+%  {
+%  \if\answer y {{\tt #1}}
+%  \fi
+%  }
+%
+%\if\answer y
+%\typeout{I shall INCLUDE comments.}
+%\else
+%\typeout{Comments will be NOT shown.}
+%\fi
+
+% To see corrections comment next line and uncomment the second one
+\newcommand{\correction}[2]{#1}
+% \newcommand{\correction}[2]{#2}
+
+\begin{document}
+	
+	\begin{center}{\bf \Large
+			Modulation Recognition Using Topological Data Analysis
+		}
+	\end{center}
+	\smallskip
+	\begin{center}
+		By
+	\end{center}
+	\smallskip
+	\begin{center} Pawe\l{} Klinga, Maria Marchwicka, Janusz Przewocki, Anna W\k{a}sik
+	\end{center}
+	
+	\begin{abstract}
+		In this paper we apply topological methods to the problem of modulation recognition. We use tools from the growing field of topological data analysis, namely persistent homology followed by machine learning algorithms to distinguish between a large number of significant modulation types.
+		\let\thefootnote\relax\footnote{2020 Mathematics Subject Classification: Primary: 55N31. Secondary: 62R40.
+		}
+		\let\thefootnote\relax\footnote{Key words and phrases: modulation recognition, homology group, persistence diagram, topological data analysis, constellation diagram}
+	\end{abstract}
+	
+	
+	\section{Introduction}
+	
+	This paper addresses the problem of modulation classification. Since transmitters are capable of generating signal using arbitraty modulation, it is not certain that the receiver will know the modulation format by default. Therefore modulation recognition is a valid problem and has been tackled by scientists from multiple fields for a number of decades. In this work we use tools from the so called topological data analysis (TDA), which is a novelty approach for this subject.
+	
+	(...)
+	
+	The paper is organized as follows. In the next chapter we lay the history and give a more detailed description of the problem of modulation recognition. Since we work on real data rather than synthetic, we also give a summary of the dataset used in the research.
+	
+	In chapter 3 we introduce topological methods. We start with basics of homology theory. We try to lay a detailed yet understandable mathematical foundation, hence readers with interest in theoretical basics are strongly encouraged not to skip this part. In the next section we proceed to topological summaries which is a more specific area of homology theory with applications in data analysis. We present summaries such as barcodes, persistence landscapes and, most importantly, persistence diagrams which are the tools we used the most for our classification.
+	
+	In chapter 4 we describe our process. We detail the way the data goes from raw real world data, through persistence diagrams and ultimately through machine learning algorithms. Finally, in chapter 5 we present our results and discuss how they compare to other methods.
+	
+	\section{Modulation recognition}
+	
+	(modulations...)\\
+	(IQ format...)
+	
+	\subsection{Dataset description}
+	
+	We base our results on the dataset provided in \cite{ORC} by the authors. The set consists of both real (over-the-air, OTA) and synthetic signals (with added effects). Combined, there is two million signal examples of 24 modulation types. The signals are stored in the I/Q format.
+	
+	The synthetic data set consists of several simulated wireless channels. The authors of \cite{ORC} use an audio source, followed by an analog modulator as well as I.I.D. symbol generator followed by a digital modulator. Then the signals are subjected to synthetic channel impairments, all of which with a certain degree of randomness. For instance, signal shaping is distributed uniformly as $\alpha \sim U(0.1, 0.4)$, interpolation depends on uniform as well as normal distributions etc. Full model is shown in \cite{ORC}, Fig. 2.
+	
+	Furtherly, the synthetic dataset consists of two parts which the authors describe as \textit{normal} classes and \textit{difficult} classes. The normal case consist of 11 signal classes: OOK, 4ASK, BPSK, QPSK, 8PSK, 16QAM, AM-SSB-SC, AM-DSB-SC, FM, GMSK, OQPSK, which are supposedly relatively easy to categorize. The difficult case consists of all 24 classes: OOK, 4ASK, 8ASK, BPSK, QPSK, 8PSK, 16PSK, 32PSK, 16APSK, 32APSK, 64APSK, 128APSK, 16QAM, 32QAM, 64QAM, 128QAM, 256QAM, AM-SSB-WC, AM-SSB-SC, AM-DSB-WC, AM-DSB-SC, FM, GMSK, OQPSK. The simultaneous presence of, for instace,  64APSK and 128APSK, or 128QAM and 256QAM makes these classes much harder to distinguish.
+	
+	The authors of \cite{ORC} also provide an OTA part of the dataset in which they transmit and receive signals using a universal software radio peripheral (USRP) B210 software defined radio (SDR). Those signals do not feature any synthetic channel impairments.
+		
+	For the detailed description of the dataset, see \cite{ORC}, ch. III.
+	
+	\section{Persistent homology}
+	
+	\subsection{Basics of homology theory}
+	
+	\subsection{Topological summaries}
+	
+	\section{Description of the applied methods}
+	
+	\section{Main results}
+	
+	\begin{thebibliography}{10}
+		
+		\bibitem{BZCAM}
+		R. Borkowski, D. Zibar, A. Caballero, V. Arlunno, I.T. Monroy \emph{Stokes Space-Based Optical Modulation Format Recognition for Digital Coherent Receivers}, IEEE Photonics Technology Letters {\bf 25} (2013), no. 21, 2129-2132.
+		
+		\bibitem{ORC}
+		T.J. O'Shea, T. Roy, T.C. Clancy \emph{Over the Air Deep Learning Based Radio Signal Classification}, IEEE Journal of Selected Topics in Signal Processing {\bf 12} (2018), no. 1, 168-179.
+		
+	\end{thebibliography}
+	
+	
+	
+\end{document}
