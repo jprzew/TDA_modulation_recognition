@@ -243,7 +243,7 @@
 	
 	\section{Introduction}
 	
-	This paper addresses the problem of modulation classification. Since transmitters are capable of generating signal using arbitraty modulation, it is not certain that the receiver will know the modulation format by default. Therefore modulation recognition is a valid problem and has been tackled by scientists from multiple fields for a number of decades. In this work we use tools from the so called topological data analysis (TDA), which is a novelty approach for this subject.
+	This paper addresses the problem of modulation classification. Since transmitters are capable of generating signal using arbitraty modulation, it is not certain that the receiver will know the modulation format by default. Additionally, the lack of knowledge of multiple data parameters, such as carrier frequency or phase offsets makes it even more difficult. Therefore modulation recognition is a valid problem and has been tackled by scientists from multiple fields for a number of decades. In this work we use tools from the so called topological data analysis (TDA), which is a novelty approach for this subject.
 	
 	(...)
 	
@@ -255,8 +255,18 @@
 	
 	\section{Modulation recognition}
 	
-	(modulations...)\\
-	(IQ format...)
+	Our task is to distinguish between a variety of digital modulation formats where changing the phase or amplitude of a constant frequency signal (carrier wave) is executed.
+	
+	(TODO: constellation diagrams...)
+	
+	The modulation formats include those that affect phase and those that affect amplitude. The first group, where PSK stands for phase-shift keying, features several variants:
+	\begin{itemize}
+		\item BPSK: binary phase-shift keying, the simplest form of shift keying. Only two phases are allowed, separated from each other by 180$^\circ$, hence the constellation diagram consists of two points, traditionally placed on the opposite halves of the x-axis.
+		\item QPSK: quadrature phase-shift keying. It uses four possible phases and therefore four points on the constellation diagram.
+	\end{itemize}
+	Full collection of classes is listed in the next section.
+	
+	(TODO: IQ format...)
 	
 	\subsection{Dataset description}
 	
@@ -284,6 +294,9 @@
 		
 		\bibitem{BZCAM}
 		R. Borkowski, D. Zibar, A. Caballero, V. Arlunno, I.T. Monroy \emph{Stokes Space-Based Optical Modulation Format Recognition for Digital Coherent Receivers}, IEEE Photonics Technology Letters {\bf 25} (2013), no. 21, 2129-2132.
+		
+		\bibitem{Dobre}
+		O.A. Dobre, A. Abdi, Y. Bar-Ness, W. Su \emph{Survey of Automatic Modulation Classification Techniques: Classical Approaches and New Trends}, IET Communications {\bf 1} (2007), no. 2, 137-156.
 		
 		\bibitem{ORC}
 		T.J. O'Shea, T. Roy, T.C. Clancy \emph{Over the Air Deep Learning Based Radio Signal Classification}, IEEE Journal of Selected Topics in Signal Processing {\bf 12} (2018), no. 1, 168-179.
