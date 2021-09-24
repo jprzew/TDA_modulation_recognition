@@ -1,4 +1,8 @@
 # TODO: correct imports in this package
+# TODO: better implementation of __str__ (defalult arguments)
+# TODO: Remove from features dim = None, etc.
+# TODO: Abstract classes / methods
+
 from inspect import getfullargspec
 import pandas as pd
 import numpy as np
@@ -127,7 +131,7 @@ class FeaturesFactory:
 
     class diagram(Feature):
 
-        dim = None
+        dim: int
 
         def __init__(self, dim=2):
             self.dim = dim
@@ -138,8 +142,8 @@ class FeaturesFactory:
 
     class H(Feature):
 
-        n = None
-        dim = None
+        n: int
+        dim: int
 
         def __init__(self, n, dim=2):
             self.dim = dim
