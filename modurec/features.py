@@ -14,11 +14,6 @@ class FeaturesFactory:
         self.features = []
         self.rips = Rips()
 
-
-    def __getitem__(self, name):
-        return partial(getattr(TestClass, name),
-                       accessor=self)
-
     def create_feature(self, name, **kwargs):
 
         creator = getattr(FeaturesFactory, name)
