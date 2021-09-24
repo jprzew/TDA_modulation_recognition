@@ -1,58 +1,10 @@
+# TODO: correct imports in this package
 from inspect import getfullargspec
-
 import pandas as pd
 import numpy as np
 from modurec import pandex    # Necessary for the mr dataframe accessor
 from ripser import Rips
 from functools import partial
-
-df = pd.DataFrame({'A': [1, 2, 3]})
-
-
-@pd.api.extensions.register_dataframe_accessor('test')
-class TestClass:
-
-    def __init__(self, df):
-        self.df = df
-        self.features = []
-
-    def __getitem__(self, name):
-        return partial(getattr(TestClass, name),
-                       accessor=self)
-
-    class Feature:
-
-        def __new__(cls, *args, **kwargs):
-            instance = super(TestClass.Feature, cls).__new__(cls)
-            kwargs['accessor'].features.append(instance)
-            instance.accessor = kwargs['accessor']
-
-            return instance
-
-    class A(Feature):
-        a = None
-
-        def __init__(self, a, *args, **kwargs):
-            self.a = a
-
-        def compute(self):
-            return self.A
-
-    class B(Feature):
-
-        b = None
-
-        def __init__(self, a, b=7, accessor=None):
-            self.b = b
-
-            # super().__init__(a)
-            # df['B'] = self.compute()
-            # self.B = df.B
-
-        def compute(self):
-            return 2*self.A
-
-        # return TestClass.FeatureCreator(getattr(TestClass, name))
 
 @pd.api.extensions.register_dataframe_accessor('test2')
 class TestClass2:
@@ -111,29 +63,7 @@ class TestClass2:
         def values(self):
             return self.df[str(self)]
 
-    class A(Feature):
-
-        def __init__(self, a):
-            self.a = a
-
-        def compute(self):
-            return self.df['A']
-
-    class B(Feature):
-
-        a = None
-        b = None
-
-        def __init__(self, a, b=7):
-            self.a = a
-            self.b = b
-
-        def compute(self):
-            A = self.creator.create_feature('A', a=self.a)
-
-            return 2*A.values()
-
-
+    # TODO: change to signalI signalQ
     class signal_sample(Feature):
 
         # def __init__(self):
