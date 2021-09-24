@@ -6,8 +6,8 @@ from modurec import pandex    # Necessary for the mr dataframe accessor
 from ripser import Rips
 from functools import partial
 
-@pd.api.extensions.register_dataframe_accessor('test2')
-class TestClass2:
+@pd.api.extensions.register_dataframe_accessor('ff')
+class FeaturesFactory:
 
     def __init__(self, df):
         self.df = df
@@ -21,7 +21,7 @@ class TestClass2:
 
     def create_feature(self, name, **kwargs):
 
-        creator = getattr(TestClass2, name)
+        creator = getattr(FeaturesFactory, name)
         instance = creator(**kwargs)
 
         self.features.append(instance)
@@ -479,16 +479,16 @@ class SignalFeatures:
 
 if __name__ == '__main__':
     df = pd.read_pickle('../data/testpickle.pkl')
-    homology0 = df.test2.create_feature('H', n=0, dim=2)
-    homology1 = df.test2.create_feature('H', n=1, dim=2)
-    life_time_0 = df.test2.create_feature('life_time', n=0, dim=2)
-    life_time_1 = df.test2.create_feature('life_time', n=1, dim=2)
-    no_0 = df.test2.create_feature('no', n=0, dim=2)
-    no_1 = df.test2.create_feature('no', n=1, dim=2)
-    mean_0 = df.test2.create_feature('mean', n=0, dim=2)
-    mean_1 = df.test2.create_feature('mean', n=1, dim=2)
-    var_0 = df.test2.create_feature('var', n=0, dim=2)
-    var_1 = df.test2.create_feature('var', n=1, dim=2)
+    homology0 = df.ff.create_feature('H', n=0, dim=2)
+    homology1 = df.ff.create_feature('H', n=1, dim=2)
+    life_time_0 = df.ff.create_feature('life_time', n=0, dim=2)
+    life_time_1 = df.ff.create_feature('life_time', n=1, dim=2)
+    no_0 = df.ff.create_feature('no', n=0, dim=2)
+    no_1 = df.ff.create_feature('no', n=1, dim=2)
+    mean_0 = df.ff.create_feature('mean', n=0, dim=2)
+    mean_1 = df.ff.create_feature('mean', n=1, dim=2)
+    var_0 = df.ff.create_feature('var', n=0, dim=2)
+    var_1 = df.ff.create_feature('var', n=1, dim=2)
 
     assert(df['H_n=0_dim=2'].equals(df['H0']))
     assert(df['H_n=1_dim=2'].equals(df['H1']))
