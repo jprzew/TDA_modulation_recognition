@@ -6,7 +6,7 @@
 from inspect import getfullargspec
 import pandas as pd
 import numpy as np
-from modurec import pandex    # Necessary for the mr dataframe accessor
+from . import pandex  # Necessary for mr and np accessors
 from ripser import Rips
 from functools import partial
 
