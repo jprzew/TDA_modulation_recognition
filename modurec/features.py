@@ -2,13 +2,14 @@
 # TODO: better implementation of __str__ (defalult arguments)
 # TODO: Remove from features dim = None, etc.
 # TODO: Abstract classes / methods
-
+from functools import partial
 from inspect import getfullargspec
+
 import pandas as pd
 import numpy as np
-from . import pandex  # Necessary for mr and np accessors
 from ripser import Rips
-from functools import partial
+
+from . import pandex  # Necessary for mr and np accessors
 
 @pd.api.extensions.register_dataframe_accessor('ff')
 class FeaturesFactory:

@@ -17,7 +17,9 @@ from sklearn.cluster import KMeans
 
 from .utility import rolling_window
 
-# TODO: refactor the code - unnecessary functions in SignalDataFrame -  and remove these imports
+# TODO: refactor the code:
+#  remove unnecessary functions in SignalDataFrame...
+#  and remove these imports
 from scipy import signal
 
 # #############################################################################
