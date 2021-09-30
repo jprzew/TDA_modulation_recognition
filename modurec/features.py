@@ -1,6 +1,4 @@
-# TODO: correct imports in this package
 # TODO: better implementation of __str__ (defalult arguments)
-# TODO: Remove from features dim = None, etc.
 # TODO: Abstract classes / methods
 from functools import partial
 from inspect import getfullargspec
@@ -30,7 +28,7 @@ class FeaturesFactory:
 
         column_name = str(instance)
         if column_name not in self.df.columns:
-            df[str(instance)] = instance.compute()
+            self.df[str(instance)] = instance.compute()
 
         return instance
 
@@ -132,8 +130,6 @@ class FeaturesFactory:
 
     class diagram(Feature):
 
-        dim: int
-
         def __init__(self, dim=2):
             self.dim = dim
 
@@ -142,9 +138,6 @@ class FeaturesFactory:
             return point_cloud.values().map(self.creator.rips.fit_transform)
 
     class H(Feature):
-
-        n: int
-        dim: int
 
         def __init__(self, n, dim=2):
             self.dim = dim
@@ -158,9 +151,6 @@ class FeaturesFactory:
 
     class life_time(Feature):
 
-        n = None
-        dim = None
-
         def __init__(self, n, dim=2):
             self.dim = dim
             self.n = n
@@ -172,9 +162,6 @@ class FeaturesFactory:
             return homology.values().np.diff(axis=1)
 
     class no(Feature):
-
-        n = None
-        dim = None
 
         def __init__(self, n, dim=2):
             self.dim = dim
@@ -188,9 +175,6 @@ class FeaturesFactory:
 
     class mean(Feature):
 
-        n = None
-        dim = None
-
         def __init__(self, n, dim=2):
             self.dim = dim
             self.n = n
@@ -203,9 +187,6 @@ class FeaturesFactory:
 
     class var(Feature):
 
-        n = None
-        dim = None
-
         def __init__(self, n, dim=2):
             self.dim = dim
             self.n = n
@@ -216,6 +197,35 @@ class FeaturesFactory:
                                                     dim=self.dim)
             return life_time.values().np.var()
 
+
+    class kmp_features(Feature):
+        """Features from Chatter Classification in Turning using
+           Machine Learning and Topological Data Analysis"""
+
+        def __init__(self, k, n, dim=2):
+            self.dim = dim # point cloud dimension
+            self.n = n # homology dimension
+            self.k = k # number of kmp-feature
+
+        def compute(self):
+
+            def __features(D):
+                mean_y = np.array([y for _, y in D if y != float('inf')]).mean()
+
+                return (sum([x * (y - x) for x, y in D if y != float('inf')]),
+                        sum([(mean_y - y) * (y - x) for x, y in D
+                             if y != float('inf')]),
+                        sum([x ** 2 * (y - x) for x, y in D if y != float('inf')]),
+                        sum([(mean_y - y) ** 2 * (y - x) ** 4 for x, y in D
+                             if y != float('inf')]),
+                        max([y - x for x, y in D if y != float('inf')]))
+
+            homology = self.creator.create_feature('H',
+                                                   n=self.n,
+                                                   dim=self.dim)
+
+            return homology.values().map(lambda x:
+                                         __features(x)[self.k -1])
 
 
 @pd.api.extensions.register_dataframe_accessor('feat')
@@ -476,30 +486,6 @@ class SignalFeatures:
     def kmp_f5_H1_4D(self):
         return self.df.feat['kmp_features_H1_4D'].map(lambda x: x[4])
 
-
-if __name__ == '__main__':
-    df = pd.read_pickle('../data/testpickle.pkl')
-    homology0 = df.ff.create_feature('H', n=0, dim=2)
-    homology1 = df.ff.create_feature('H', n=1, dim=2)
-    life_time_0 = df.ff.create_feature('life_time', n=0, dim=2)
-    life_time_1 = df.ff.create_feature('life_time', n=1, dim=2)
-    no_0 = df.ff.create_feature('no', n=0, dim=2)
-    no_1 = df.ff.create_feature('no', n=1, dim=2)
-    mean_0 = df.ff.create_feature('mean', n=0, dim=2)
-    mean_1 = df.ff.create_feature('mean', n=1, dim=2)
-    var_0 = df.ff.create_feature('var', n=0, dim=2)
-    var_1 = df.ff.create_feature('var', n=1, dim=2)
-
-    assert(df['H_n=0_dim=2'].equals(df['H0']))
-    assert(df['H_n=1_dim=2'].equals(df['H1']))
-    assert(df['life_time_n=0_dim=2'].equals(df['H0_life_time']))
-    assert(df['life_time_n=1_dim=2'].equals(df['H1_life_time']))
-    assert(df['no_n=1_dim=2'].equals(df['no_H1']))
-    assert(df['no_n=0_dim=2'].equals(df['no_H0']))
-    assert(df['mean_n=1_dim=2'].equals(df['H1_mean']))
-    assert(df['mean_n=0_dim=2'].equals(df['H0_mean']))
-    assert(df['var_n=1_dim=2'].equals(df['H1_var']))
-    assert(df['var_n=0_dim=2'].equals(df['H0_var']))
 
 
 

@@ -71,10 +71,10 @@ with warnings.catch_warnings():
         #      return 0
 
         def mean(self):
-            return self.series.map(lambda x: np.mean(ma.masked_invalid(x)))
+            return self.series.map(lambda x: np.mean(np.ma.masked_invalid(x)))
 
         def var(self):
-            return self.series.map(lambda x: np.var(ma.masked_invalid(x)))
+            return self.series.map(lambda x: np.var(np.ma.masked_invalid(x)))
 
         def diff(self, axis=-1):
             return self.series.map(lambda x: np.diff(x, axis=axis).reshape(-1))
