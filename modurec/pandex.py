@@ -24,8 +24,8 @@ from sklearn.linear_model import Ridge
 
 # from . import constants as C
 # from .config import PkgConfig
-from utility import rolling_window
-from spocheck import spot_check
+from .utility import rolling_window
+from .spocheck import spot_check
 
 
 # #############################################################################
@@ -240,8 +240,6 @@ with warnings.catch_warnings():
 
             df = pd.DataFrame({'power_spectrum': power_spectrum,
                                'threshold': low_values})
-
-            # import pdb; pdb.set_trace()
 
             df[sr_col] = df.apply(lambda x:
                                   np.argmax(np.log(x['power_spectrum'][1]) <

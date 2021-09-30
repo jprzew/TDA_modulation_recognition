@@ -17,6 +17,7 @@ from features import SignalFeatures
 
 data_path = '../data'
 data_files = ['stats_train.pkl', 'stats_test.pkl']
+# data_files = ['temp.pkl']
 
 for filename in data_files:
     df = pd.read_pickle(os.path.join(data_path, filename))
