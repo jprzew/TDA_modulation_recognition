@@ -1,7 +1,6 @@
-# TODO: better implementation of __str__ (defalult arguments)
 # TODO: Abstract classes / methods
-from functools import partial
-from inspect import getfullargspec
+# from inspect import getfullargspec
+import inspect
 
 import pandas as pd
 import numpy as np
@@ -39,22 +38,28 @@ class FeaturesFactory:
     class Feature:
 
         def __str__(self):
-            keys = getfullargspec(self.__init__).args[1:]
-            values = [self.__dict__[key] for key in keys]
+            keys = inspect.getfullargspec(self.__init__).args[1:]
+            params = inspect.signature(self.__init__).parameters
 
-            # values = [value for key, value in self.__dict__.items()
-            #           if key in keys]
+            keys = [key for key in params
+                    if params[key].kind not in {params[key].VAR_KEYWORD,
+                                                params[key].VAR_POSITIONAL} and
+                    params[key].default != getattr(self, key)
+                    ]
+
+            # keys = [key for key in keys
+            #         if params[key].default != getattr(self, key)]
+
+            # Excluding parameters with default value
+            # keys = [key for key in keys
+            #         if params[key].default != getattr(self, key)]
+            values = [self.__dict__[key] for key in keys]
 
             string = self.__class__.__name__
 
             if keys:
                 string += '_' + '={}_'.join(keys) + '={}'
                 string = string.format(*values)
-
-            #
-            # string = '={}_'.join(keys)
-            # string = self.__class__.__name__ + '_' + string
-            # string += '={}'
 
             return string
 
@@ -203,9 +208,9 @@ class FeaturesFactory:
            Machine Learning and Topological Data Analysis"""
 
         def __init__(self, k, n, dim=2):
-            self.dim = dim # point cloud dimension
-            self.n = n # homology dimension
-            self.k = k # number of kmp-feature
+            self.dim = dim  # point cloud dimension
+            self.n = n  # homology dimension
+            self.k = k  # number of kmp-feature
 
         def compute(self):
 
