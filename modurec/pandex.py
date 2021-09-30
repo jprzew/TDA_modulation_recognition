@@ -241,8 +241,6 @@ with warnings.catch_warnings():
             df = pd.DataFrame({'power_spectrum': power_spectrum,
                                'threshold': low_values})
 
-            # import pdb; pdb.set_trace()
-
             df[sr_col] = df.apply(lambda x:
                                   np.argmax(np.log(x['power_spectrum'][1]) <
                                             x['threshold']), axis=1)
