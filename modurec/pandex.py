@@ -1,3 +1,5 @@
+# TODO: Some functions (maybe unnecessary have 'plot_sample' default
+#   consider removing functions or correcting the notebooks
 import sys
 import warnings
 import re
@@ -115,8 +117,8 @@ with warnings.catch_warnings():
             self.df = df
 
         def add_point_cloud(self,
-                            data_col='signal_sample',
-                            data_colQ='signal_sampleQ',
+                            data_col='signalI',
+                            data_colQ='signalQ',
                             point_cloud_col='point_cloud',
                             window=2):
 
@@ -137,7 +139,7 @@ with warnings.catch_warnings():
 # TODO: Refactor this function (window size is not used!)
 # TODO: Use new version of features.py in the function below
         def add_statistics(self,
-                           data_col='signal_sample',
+                           data_col,
                            inplace=False,
                            window=2):
             rips = Rips()
@@ -216,8 +218,8 @@ with warnings.catch_warnings():
                 return df
 
         def estimate_symbol_rate(self,
-                                 data_I='signal_sample',
-                                 data_Q='signal_sampleQ',
+                                 data_I='signalI',
+                                 data_Q='signalQ',
                                  sr_col='symbol_rate'):
 
             signal = self.df[data_I] + 1j * self.df[data_Q]
@@ -250,8 +252,8 @@ with warnings.catch_warnings():
 
             self.df[sr_col] = df[sr_col]
 
-        def add_power_spectr(self, data_I='signal_sample',
-                             data_Q='signal_sampleQ',
+        def add_power_spectr(self, data_I='signalI',
+                             data_Q='signalQ',
                              ps_col='power_spectr'):
 
             signal = self.df[data_I] + 1j * self.df[data_Q]
@@ -428,8 +430,8 @@ with warnings.catch_warnings():
                 axes[ind].set_title(row[title_col])
 
         def plot_IQ(self,
-                    data_I='signal_sample',
-                    data_Q='signal_sampleQ',
+                    data_I='signal_sampleI',
+                    data_Q='signalQ',
                     title_col='modulation_type',
                     max_rows=24,
                     modulation_id=None):

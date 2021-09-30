@@ -1,4 +1,5 @@
 # TODO: Abstract classes / methods
+# TODO: Implement new version of symbol-rate features
 # from inspect import getfullargspec
 import inspect
 
@@ -67,21 +68,21 @@ class FeaturesFactory:
             return self.df[str(self)]
 
     # TODO: change to signalI signalQ
-    class signal_sample(Feature):
+    class signalI(Feature):
 
         # def __init__(self):
         #     pass
 
         def compute(self):
-            return self.df['signal_sample']
+            return self.df['signalI']
 
-    class signal_sampleQ(Feature):
+    class signalQ(Feature):
 
         # def __init__(self):
         #     pass
 
         def compute(self):
-            return self.df['signal_sampleQ']
+            return self.df['signalQ']
 
     class point_cloud(Feature):
 
@@ -117,11 +118,11 @@ class FeaturesFactory:
                 samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_4D')
                 return samples['cloud_4D']
 
-            signal_sample = self.creator.create_feature('signal_sample')
-            signal_sampleQ = self.creator.create_feature('signal_sampleQ')
+            signalI = self.creator.create_feature('signalI')
+            signalQ = self.creator.create_feature('signalQ')
 
-            samples = pd.concat([signal_sample.values(),
-                                 signal_sampleQ.values()],
+            samples = pd.concat([signalI.values(),
+                                 signalQ.values()],
                                 axis=1)
 
             if self.dim == 2:
@@ -255,8 +256,8 @@ class SignalFeatures:
     # WARNING: This implementation returns 1 if there is a division by zero problem!!!
     # TODO: Deal with the above problem
     def symbol_rate(self,
-                    data_I='signal_sample',
-                    data_Q='signal_sampleQ',
+                    data_I='signalI',
+                    data_Q='signalQ',
                     sr_col='symbol_rate'):
 
         signal = self.df[data_I] + 1j * self.df[data_Q]
@@ -296,8 +297,8 @@ class SignalFeatures:
 
     # point cloud
     def point_cloud_sr(self,
-                       data_col='signal_sample',
-                       data_colQ='signal_sampleQ',
+                       data_col='signalI',
+                       data_colQ='signalQ',
                        sr_col='symbol_rate',
                        window=2):
 
@@ -323,12 +324,12 @@ class SignalFeatures:
         return result
 
     def point_cloud(self):
-        samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
+        samples = self.df[['signalI', 'signalQ']].copy()
         samples.mr.add_point_cloud(window=1)
         return samples['point_cloud']
 
     def cloud_4D(self):
-        samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
+        samples = self.df[['signalI', 'signalQ']].copy()
         samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_4D')
         return samples['cloud_4D']
 
@@ -341,7 +342,7 @@ class SignalFeatures:
             x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
             return x
 
-        samples = self.df[['signal_sample', 'signal_sampleQ']].copy()
+        samples = self.df[['signalI', 'signalQ']].copy()
         samples.mr.add_point_cloud(window=1, point_cloud_col='cloud_3D')
         samples['cloud_3D'] = \
             samples.cloud_3D.apply(lambda x:
