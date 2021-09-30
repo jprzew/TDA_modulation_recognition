@@ -1,32 +1,26 @@
-#!/usr/bin/env python3
-
-import numpy as np
-import numpy.ma as ma
-import pandas as pd
-import os
 import sys
 import warnings
 import re
 import math
+import os
+
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.signal import hilbert
 from scipy.stats import trim_mean
 from scipy.signal import welch
 from scipy.signal.windows import hann
-from scipy import signal
 from ripser import Rips
-import functools
 from sklearn.cluster import KMeans
 
-
-from sklearn.linear_model import Ridge
-
-# from . import constants as C
-# from .config import PkgConfig
 from .utility import rolling_window
-from .spocheck import spot_check
 
+# TODO: refactor the code:
+#  remove unnecessary functions in SignalDataFrame...
+#  and remove these imports
+from scipy import signal
 
 # #############################################################################
 #                          Package configuration
@@ -77,10 +71,10 @@ with warnings.catch_warnings():
         #      return 0
 
         def mean(self):
-            return self.series.map(lambda x: np.mean(ma.masked_invalid(x)))
+            return self.series.map(lambda x: np.mean(np.ma.masked_invalid(x)))
 
         def var(self):
-            return self.series.map(lambda x: np.var(ma.masked_invalid(x)))
+            return self.series.map(lambda x: np.var(np.ma.masked_invalid(x)))
 
         def diff(self, axis=-1):
             return self.series.map(lambda x: np.diff(x, axis=axis).reshape(-1))
@@ -141,6 +135,7 @@ with warnings.catch_warnings():
             self.df[point_cloud_col] = data
 
 # TODO: Refactor this function (window size is not used!)
+# TODO: Use new version of features.py in the function below
         def add_statistics(self,
                            data_col='signal_sample',
                            inplace=False,

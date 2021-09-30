@@ -3,16 +3,14 @@ numpy
 matplotlib
 pandas
 seaborn 
-sklearn
+scikit-learn
 scipy
 pycodestyle
 flake8
 pycodestyle_magic
 tqdm
-pickle
 functools
 warnings
-math
 ripser
 h5py
 mpl_toolkits.mplot3d
