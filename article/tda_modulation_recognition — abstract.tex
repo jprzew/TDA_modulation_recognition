@@ -1,0 +1,247 @@
+\documentclass[12pt]{article}
+
+%---------------------------------------------------------------------
+% AMS packages 
+%---------------------------------------------------------------------
+
+% Packiet loaded automatically by amsart:
+%  1. amsmath, 2. amsthm, 3. amsfonts.
+
+\usepackage{amssymb}
+\usepackage{amsmath} 
+\usepackage[T1]{fontenc}
+\usepackage[latin2]{inputenc}
+% *** 'amsfonts': 
+% boldface of the symbol of the real line: 'R'
+\usepackage{amsfonts}
+
+% *** 'amsthm': 
+% 1. makes easy to modify the macro: \newtheorem{}{} since contains
+% \theoremstyle{}
+% 2. contains macro: \begin{proof} ... \end{proof}
+\usepackage{amsthm} 
+
+
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+% Theorem style 'plain' are for: Theorem, Lemma, Corollary, 
+% Proposition, Conjecture, Criterion, Algorithm  
+\theoremstyle{plain} 
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{corollary}[theorem]{Corollary} 
+\newtheorem{conclusion}[theorem]{Corollary} 
+\newtheorem{claim}[theorem]{Claim} 
+\newtheorem{question}[theorem]{Question} 
+\newtheorem{fact}[theorem]{Fact} 
+\newtheorem{proposition}[theorem]{Proposition} 
+\newtheorem{axiom}{Axiom} 
+\newtheorem{problem}[theorem]{Problem}
+% Theorem style 'definition' are for: Definition, Condition, Problem, 
+% Example 
+
+\theoremstyle{definition} 
+\newtheorem{definition}[theorem]{Definition} 
+\newtheorem{example}[theorem]{Example} 
+\newtheorem{exercise}{Exercise} 
+\newtheorem*{solution}{Solution} 
+
+% Theorem style 'remark' are for: Remark, Note, Notation, Claim, 
+% Summary, Acknowledgement, Case, Conclusion 
+
+\theoremstyle{remark} 
+\newtheorem{remark}{Remark} 
+\newtheorem*{notation}{Notation} 
+\newtheorem*{acknowledgment}{Acknowledgment} 
+
+%%%%%%%%%%%%%%%%%  The previous one %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{observation}[theorem]{Observation}
+%\newtheorem{conclusion}[theorem]{Conclusion}
+%\newtheorem{question}[theorem]{Question}
+
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definiton}
+%\newtheorem{claim}[theorem]{Claim}
+%\newtheorem{fact}[theorem]{Fact}
+%\newtheorem{conjecture}[theorem]{Conjecture}
+%\newtheorem{example}[theorem]{Example}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{remark}[theorem]{Remark}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%A
+\newcommand{\afc}{AFC}
+\newcommand{\afcbar}{\overline{AFC}}
+\newcommand{\arr}{\rightarrow}
+\newcommand{\Arr}{\Rightarrow}
+
+%B
+\newcommand{\baire}{\omega^{\omega}}
+\newcommand{\Bor}{\mbox{${\cal B}or$}}
+%Previous seems to be much finer than next.
+%\newcommand{\Bor}{{\it Bor}}
+\newcommand{\borelucrz}{Borel-UCR_0}
+
+%C
+\newcommand{\ca}{2^{\omega}}
+\newcommand{\cantor}{\ca}
+\newcommand{\Card}[1]{\Vert #1 \Vert}
+
+%D
+\newcommand{\dom}{{\rm dom}}
+\newcommand{\dummy}{{\tt Blah blah blah}}
+
+%E
+\newcommand{\Even}{\hbox{\rm \tiny Even}}
+
+%F
+\newcommand{\finsub}{[\omega]^{<\omega}}
+\newcommand{\forces}{\mathrel{\|}\joinrel\mathrel{-}}
+
+%G
+\newcommand{\Graph}{\hbox{\it Graph}}
+
+%H
+\newcommand{\homeomorphic}{\approx}
+
+%I
+\newcommand{\incr}{\omega^{\uparrow \omega }}
+\newcommand{\infsub}{[\omega]^{\omega}}
+
+%L
+\newcommand{\la}{\langle}
+
+%M
+\newcommand{\meager}{{\cal MGR}}
+\newcommand{\minideal}{${\cal F}_{\hbox{\rm \scriptsize min}}(\neg
+	D)\;$}
+
+%N
+\newcommand{\neglig}{{\cal N}}
+\newcommand{\nnatural}{\mathbb{N}}
+
+%O
+\newcommand{\Odd}{\hbox{\rm \tiny Odd}}
+
+%P
+\newcommand{\Part}{{\it Part}}
+\newcommand{\Perf}{{\it Perf}}
+%\newcommand{\proof}{\flushleft{ \sc Proof. } \\ }
+\newcommand{\Proof}[1]{\bigbreak\noindent{\bf Proof #1}\enspace}
+
+%Q
+%%%\newcommand{\qed}{{\hfill\vrule height6pt width6pt depth1pt\medskip}}
+%\newcommand{\qed}{\sharp}
+\newcommand{\QED}{\hspace{0.1in} \Box \vspace{0.1in}}
+
+%R
+\newcommand{\ra}{\rangle}
+\newcommand{\ran}{{\rm ran}}
+\newcommand{\rational}{\mathbb{Q}}
+\newcommand{\real}{\mathbb{R}}
+
+%S
+\newcommand{\seq}{\subseteq}
+%%%\newcommand{\square}{\hbox{\ \ \ \ \ \vrule\vbox{\hrule\phantom{o}\hrule}\vrule}}
+% a small restriction:
+\newcommand{\srestriction}{{\hbox{${\scriptstyle\,|\grave{}\,}$}}}
+
+%U
+\newcommand{\up}{\uparrow}
+\newcommand{\ucrz}{UCR_0}
+
+%%%%%%%%%%%%%%%%%%%%%% Calligraphic font commands %%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\cA}{{\cal A}}
+\newcommand{\cB}{{\cal B}}
+\newcommand{\cC}{{\cal C}}
+\newcommand{\cD}{{\cal D}}
+\newcommand{\cE}{{\cal E}}
+\newcommand{\cF}{{\cal F}}
+\newcommand{\cG}{{\cal G}}
+\newcommand{\cH}{{\cal H}}
+\newcommand{\cI}{{\cal I}}
+\newcommand{\cJ}{{\cal J}}
+\newcommand{\cK}{{\cal K}}
+\newcommand{\cL}{{\cal L}}
+\newcommand{\cM}{{\cal M}}
+\newcommand{\cN}{{\cal N}}
+\newcommand{\cO}{{\cal O}}
+\newcommand{\cP}{{\cal P}}
+\newcommand{\cQ}{{\cal Q}}
+\newcommand{\cR}{{\cal R}}
+\newcommand{\cS}{{\cal S}}
+\newcommand{\cT}{{\cal T}}
+\newcommand{\cU}{{\cal U}}
+\newcommand{\cV}{{\cal V}}
+\newcommand{\cW}{{\cal W}}
+\newcommand{\cX}{{\cal X}}
+\newcommand{\cY}{{\cal Y}}
+\newcommand{\cZ}{{\cal Z}}
+
+\def\lac{\mathpzc{Lac}}
+
+\newcommand{\cont}{{\mathfrak{c}}}
+%%%%%%%%%%%%%%%%%%%%%% Some Greek fonts %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\oo}{\omega}
+\newcommand{\bb}{\beta}
+\newcommand{\dd}{\delta}
+\newcommand{\ee}{\varepsilon}
+\newcommand{\kk}{\kappa}
+%%%\newcommand{\th}{\theta}
+
+\renewcommand\abstractname{Abstract}
+
+\pagestyle{myheadings}
+
+
+
+% Types message, asks the user to type in a command, then
+% defines \answer to be the input instead of executing it.
+%%% comment out if not needed (next 13 lines)
+%\typein[\answer]{Do you want to include comments? (y/n)}
+%
+%\newcommand{\annotation}[1]
+%  {
+%  \if\answer y {{\tt #1}}
+%  \fi
+%  }
+%
+%\if\answer y
+%\typeout{I shall INCLUDE comments.}
+%\else
+%\typeout{Comments will be NOT shown.}
+%\fi
+
+% To see corrections comment next line and uncomment the second one
+\newcommand{\correction}[2]{#1}
+% \newcommand{\correction}[2]{#2}
+
+\begin{document}
+	
+	\begin{center}{\bf \Large
+			Modulation Recognition Using Topological Data Analysis
+		}
+	\end{center}
+	\smallskip
+	\begin{center}
+		By
+	\end{center}
+	\smallskip
+	\begin{center} Janusz Przewocki \\ joint work with Pawe\l{} Klinga, Maria Marchwicka, Anna W\k{a}sik
+	\end{center}
+	
+	\begin{abstract}
+		In this talk we present our results of applying topological methods to the classical problem of modulation recognition. We use tools from the growing field of topological data analysis, namely persistent homology followed by machine learning algorithms to distinguish between a large number of significant modulation types.
+		
+		The basic idea of topological data analysis is to ``recognize the shape of data'', for instance to calculate the number of cycles and connected components. Sampled signals depending on modulation type have a specific geometric representation. Therefore it seemed a natural idea to apply topological tools.
+		
+		For the training and evaluation we used Deepsig Dataset RADIOML 2018.01A which was used for \textit{Over-the-air deep learning based radio signal classification} published in 2017 in IEEE Journal of Selected Topics in Signal Processing.
+	
+	\end{abstract}
+	
+	
+	
+\end{document}
