@@ -1,4 +1,6 @@
-from signal_reader import select_sample_from_train
+"""This script reads signals from SigDataset and writes them into .csv files
+WARNING: function select_sample_from_train might be deprecated"""
+from modurec.signal_reader import select_sample_from_train
 
 
 seed = 42

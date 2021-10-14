@@ -1,3 +1,6 @@
+""""This script calculates implementd statistics for signals (including persistence diagrams)
+WARNING: this script is deprecated due to mr.add_statistics being deprecated """
+# TODO: Correct function mr.add_statistics
 import path
 import pandas as pd
 import modurec as mr

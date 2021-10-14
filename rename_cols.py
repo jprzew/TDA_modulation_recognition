@@ -12,6 +12,11 @@ new_names = {'cloud_3D': 'point_cloud_dim=3',
              'signal_sampleQ': 'signalQ'}
 
 for file in files:
-    df = pd.read_pickle(file)
-    df.rename(new_names, axis='columns', inplace=True)
-    df.to_pickle(file)
+    try:
+        df = pd.read_pickle(file)
+        df.rename(new_names, axis='columns', inplace=True)
+        df.to_pickle(file)
+        print('Renamed file: ', file)
+    except FileNotFoundError:
+        pass
+        
