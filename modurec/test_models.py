@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 If you use my code or material in your own project, please reference the source, including:
 
@@ -62,7 +60,7 @@ class FeatureSelector(TransformerMixin):
     def transform(self, X, y=None):
         columns = []
         for feature in self.features:
-            columns.append(list(X.feat[feature]))
+            columns.append(list(X[str(feature)]))
 
         matrix = np.array(columns)
         return np.transpose(matrix)
