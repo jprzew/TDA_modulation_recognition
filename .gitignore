@@ -3,6 +3,9 @@
 *pkl
 *csv
 *png
+*pdf
+*aux
+*log
 __pycache__/
 .ipynb_checkpoints
 .idea
