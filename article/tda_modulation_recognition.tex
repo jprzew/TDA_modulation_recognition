@@ -257,16 +257,32 @@
 	
 	Our task is to distinguish between a variety of digital modulation formats where changing the phase or amplitude of a constant frequency signal (carrier wave) is executed.
 	
-	(TODO: constellation diagrams...)
+	(TODO: IQ format)
+	
+	Regardless of the digital modulation type, the process is usually depicted on a \textit{constellation diagram} which is a collection of points on the plane, where each point is related to a \textit{symbol}, i.e. a binary sequence that corresponds to the type of change that affects the wave. Below we shall briefly discuss some of the modulation types and how their respective constellation diagrams should differ.
 	
 	The modulation formats include those that affect phase and those that affect amplitude. The first group, where PSK stands for phase-shift keying, features several variants:
 	\begin{itemize}
 		\item BPSK: binary phase-shift keying, the simplest form of shift keying. Only two phases are allowed, separated from each other by 180$^\circ$, hence the constellation diagram consists of two points, traditionally placed on the opposite halves of the x-axis.
 		\item QPSK: quadrature phase-shift keying. It uses four possible phases and therefore four points on the constellation diagram.
 	\end{itemize}
+We can easily imagine further doubling of the number of phases and that is how he obtain 8PSK, 16PSK and 32PSK. The points always lie on a circle and are uniformly distributed (see fig. (...)). Notice that each doubling of the number of phases results in a more \textit{dense} constellation diagram, where points depicting different phases lie nearby. Therefore higher \textit{ranks} of PSK result in a more difficult task to differentiate between them.
+
+Secondly, we have modulation types where the amplitude (or amplitude and phase) of the wave is affected. These mostly include the APSK (amplitude and phase-shift keying) and QAM (quadrature amplitude modulation) classes, such as:
+\begin{itemize}
+	\item 64QAM: 64 constellation points arranged in a squared grid with equal horizontal and vertical spacing. Each point corresponds to a 6-digit binary sequence representing a certain combination of phase and amplitude modulation.
+	\item 128QAM: Similar to the previous type, however, since 128 is not an even power of 2, rather than the diagram being a square it is missing its corners. It is a typical representation of QAM modulations with an odd power of 2 as the number of points.
+	\item 256QAM: Similarly to 64QAM, a square grid, this time with higher density of points in each direction.
+	\item 128APSK: The constellation diagram is a modification of PSK circle diagrams: in this case it is a collection of homocentric circles with varying radii.
+\end{itemize}
+Compare figures (...) of the constellation diagrams. With raw data, affected by channel impairments and some randomness, it is easy to see that certain pairs of diagrams tend to blur and their original modulation is not easy to decode.
+
+
+(other classes: OOK, AM-SSB-SC, FM, etc...)
+
 	Full collection of classes is listed in the next section.
 	
-	(TODO: IQ format...)
+
 	
 	\subsection{Dataset description}
 	

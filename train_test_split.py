@@ -1,3 +1,5 @@
+"""WARNING: This script is deprecated
+It seems to read data from numpy and create from it train/test datasets """
 import signal_reader
 import pickle
 import os

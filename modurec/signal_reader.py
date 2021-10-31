@@ -181,8 +181,6 @@ def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modul
         allowed_indices = np.setdiff1d(np.array(range(n)),
                                        __read_test_indices())
 
-        # import pdb; pdb.set_trace()
-
         return (data['X'], modulations[allowed_indices], snrs[allowed_indices],
                 allowed_indices)
 

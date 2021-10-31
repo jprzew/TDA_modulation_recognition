@@ -5,6 +5,7 @@ REMARK: the script calculates the features that are not yet calculated.
 
     * Files to modify are defined in data_files variable
     * Files to modify are assumed to be located according to data_path variable
+WARNING: This script is deprecated since SignalFeatures class is deprecated
 """
 
 import path
@@ -17,6 +18,7 @@ from features import SignalFeatures
 
 data_path = '../data'
 data_files = ['stats_train.pkl', 'stats_test.pkl']
+# data_files = ['temp.pkl']
 
 for filename in data_files:
     df = pd.read_pickle(os.path.join(data_path, filename))
