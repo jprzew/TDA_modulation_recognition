@@ -39,11 +39,13 @@ from sklearn.decomposition import PCA
 from sklearn import svm
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
+
 # -
 
 # Instantiate datasets
 data_torus = torus(n=100, c=2, a=1)
 data_sphere = sphere(n=100, r=2)
+num_steps = 500 
 
 # Instantiate Vietoris-Rips solver
 rips = Rips(maxdim = 2)
@@ -83,20 +85,21 @@ fig.tight_layout()
 
 landscapes_torus = []
 landscapes_sphere = []
-nr_torus = 100
-nr_sphere = nr_torus
+num_torus = 100
+num_sphere = 100
 
-for i in range(nr_torus):
+for i in range(num_torus):
     # Resample data
-    _data_torus = torus(n=100, c=2, a=1)
-    _data_sphere = sphere(n=100, r=2)
+    _data_torus = torus(n=num_torus, c=2, a=1)
+    _data_sphere = sphere(n=num_sphere, r=2)
 
     # Compute persistence diagrams
     dgm_torus = rips.fit_transform(_data_torus)
 
     # Instantiate persistence landscape transformer
     torus_landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1, start=0,
-                                                               stop=2.0, num_steps=500,
+                                                               stop=2.0, 
+                                                               num_steps=num_steps,
                                                                flatten=False)
 
     # Compute flattened persistence landscape
@@ -108,8 +111,11 @@ for i in range(nr_torus):
     dgm_sphere = rips.fit_transform(_data_sphere)
 
     # Instantiate persistence landscape transformer
-    sphere_landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1, start=0, stop=2.0,
-                                                                num_steps=500, flatten=False)
+    sphere_landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1, 
+                                                                start=0, 
+                                                                stop=2.0,
+                                                                num_steps=num_steps,
+                                                                flatten=False)
 
     # Compute flattened persistence landscape
     sphere_flat = sphere_landscaper.fit_transform(dgm_sphere)
@@ -129,8 +135,8 @@ landscapes_torus[0].shape
 
 # +
 # Instantiate zero-padded arrays
-padded_torus = np.zeros((nr_torus, maximal_length, 500))
-padded_sphere = np.zeros((nr_sphere, maximal_length, 500))
+padded_torus = np.zeros((num_torus, maximal_length, num_steps))
+padded_sphere = np.zeros((num_sphere, maximal_length, num_steps))
 
 for i, landscape in enumerate(landscapes_torus):
     padded_torus[i, 0:landscape.shape[0], :] = landscape
@@ -143,21 +149,12 @@ landscapes_torus[0].shape
 
 len(landscapes_torus[0])
 
-# +
-
-# padded_torus = landscapes_torus
-# padded_sphere = landscapes_sphere
-# -
-
 print('Torus:', len(padded_torus))
 print('Sphere:', len(padded_sphere))
 
 X = np.concatenate((padded_torus, padded_sphere), axis=0)
-y = np.concatenate([np.zeros(nr_torus),np.ones(nr_sphere)])
-
-# X = X.reshape(X.shape[0], , 28, 1))
-# X = tf.expand_dims(X, axis=-1)
 X = np.expand_dims(X, axis=-1)
+y = np.concatenate([np.zeros(num_torus),np.ones(num_sphere)])
 
 X.shape
 
@@ -203,13 +200,13 @@ X_train.shape
 # +
 
 model = models.Sequential()
-model.add(layers.Conv2D(1, (2, 2), activation='relu',
-                        input_shape=(maximal_length, 500, 1)))
+model.add(layers.Conv2D(128, (2, 2), activation='relu',
+                        input_shape=(maximal_length, num_steps, 1)))
 model.add(layers.MaxPooling2D((2, 2)))
-# model.add(layers.Conv2D(4, (3, 3), activation='relu'))
-# model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(4, (3, 3), activation='relu'))
-model.add(layers.MaxPooling2D((10, 10), padding="same"))
+model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
 model.add(layers.Dense(64, activation='relu'))
 model.add(layers.Dense(2,activation="softmax"))
