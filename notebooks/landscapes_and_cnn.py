@@ -155,9 +155,11 @@ print('Sphere:', len(padded_sphere))
 X = np.concatenate((padded_torus, padded_sphere), axis=0)
 y = np.concatenate([np.zeros(nr_torus),np.ones(nr_sphere)])
 
-X.shape
+# X = X.reshape(X.shape[0], , 28, 1))
+# X = tf.expand_dims(X, axis=-1)
+X = np.expand_dims(X, axis=-1)
 
-y.shape
+X.shape
 
 # +
 
@@ -173,6 +175,7 @@ np.set_printoptions(threshold=np.inf)
 plt.figure()
 
 for i, (t, s) in enumerate(zip(padded_torus, padded_sphere)):
+    break
     print(i)
     img = Image.fromarray(t, 'L')
     hsize = 2 * img.size[0]
@@ -191,21 +194,25 @@ for i, (t, s) in enumerate(zip(padded_torus, padded_sphere)):
     plt.show()
     plt.clf()
     print(img.size)
-    if i > 5:
-        break
+  
+# -
 
+
+X_train.shape
 
 # +
 
 model = models.Sequential()
-model.add(layers.Conv2D(1, (3, 3), activation='relu', input_shape=(6000, 1000, 1)))
-# model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(1, (2, 2), activation='relu',
+                        input_shape=(maximal_length, 500, 1)))
+model.add(layers.MaxPooling2D((2, 2)))
 # model.add(layers.Conv2D(4, (3, 3), activation='relu'))
 # model.add(layers.MaxPooling2D((2, 2)))
-# model.add(layers.Conv2D(4, (3, 3), activation='relu'))
+model.add(layers.Conv2D(4, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((10, 10), padding="same"))
 model.add(layers.Flatten())
 model.add(layers.Dense(64, activation='relu'))
-model.add(layers.Dense(2))
+model.add(layers.Dense(2,activation="softmax"))
 
 # -
 
@@ -218,5 +225,7 @@ model.compile(optimizer='adam',
 
 history = model.fit(X_train, y_train, epochs=10, 
                     validation_data=(X_valid, y_valid))
+
+
 
 
