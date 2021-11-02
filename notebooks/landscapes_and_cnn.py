@@ -32,7 +32,7 @@ from ripser import Rips
 from tadasets import torus, sphere
 import persim
 import persim.landscapes
-from persim.landscapes import PersLandscapeExact
+from persim.landscapes import PersLandscapeExact, plot_landscape_simple
 
 # Import Scikit-Learn tools
 from sklearn.decomposition import PCA
@@ -43,12 +43,15 @@ from sklearn.model_selection import train_test_split
 # -
 
 # Instantiate datasets
-data_torus = torus(n=100, c=2, a=1)
-data_sphere = sphere(n=100, r=2)
-num_steps = 500 
+num_torus = 200
+num_sphere = 200
+num_steps = 500
+num_points = 100
+data_torus = torus(n=num_points, c=2, a=1)
+data_sphere = sphere(n=num_points, r=2)
 
 # Instantiate Vietoris-Rips solver
-rips = Rips(maxdim = 2)
+rips = Rips(maxdim=2)
 
 # Compute persistence diagrams
 dgms_torus = rips.fit_transform(data_torus)
@@ -71,12 +74,11 @@ fig.tight_layout()
 fig, axs = plt.subplots(1, 2, dpi=300)
 fig.set_size_inches(10, 5)
 
-persim.landscapes.plot_landscape_simple(PersLandscapeExact(dgms_torus, 
-                                                           hom_deg=1),
-                             title="Degree 1 Persistence Landscape of Torus", ax=axs[0])
+plot_landscape_simple(PersLandscapeExact(dgms_torus, hom_deg=1),
+                      title="Degree 1 Persistence Landscape of Torus", ax=axs[0])
 
-persim.landscapes.plot_landscape_simple(PersLandscapeExact(dgms_sphere, hom_deg=1),
-                            title="Degree 1 Persistence Landscape of Sphere", ax=axs[1])
+plot_landscape_simple(PersLandscapeExact(dgms_sphere, hom_deg=1),
+                      title="Degree 1 Persistence Landscape of Sphere", ax=axs[1])
 
 fig.tight_layout()
 
@@ -85,19 +87,19 @@ fig.tight_layout()
 
 landscapes_torus = []
 landscapes_sphere = []
-num_torus = 100
-num_sphere = 100
+
 
 for i in range(num_torus):
     # Resample data
-    _data_torus = torus(n=num_torus, c=2, a=1)
-    _data_sphere = sphere(n=num_sphere, r=2)
+    _data_torus = torus(n=num_points, c=2, a=1)
+    _data_sphere = sphere(n=num_points, r=2)
 
     # Compute persistence diagrams
     dgm_torus = rips.fit_transform(_data_torus)
 
     # Instantiate persistence landscape transformer
-    torus_landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1, start=0,
+    torus_landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1,
+                                                               start=0,
                                                                stop=2.0, 
                                                                num_steps=num_steps,
                                                                flatten=False)
@@ -158,12 +160,8 @@ y = np.concatenate([np.zeros(num_torus),np.ones(num_sphere)])
 
 X.shape
 
-# +
-
-
 X_tv, X_test, y_tv, y_test = train_test_split(X, y, test_size=0.1)
-X_train, X_valid, y_train, y_valid = train_test_split(X_tv, y_tv, test_size=0.2)
-# -
+X_train, X_valid, y_train, y_valid = train_test_split(X_tv, y_tv, test_size=0.5)
 
 np.set_printoptions(threshold=np.inf)
 
@@ -200,15 +198,15 @@ X_train.shape
 # +
 
 model = models.Sequential()
-model.add(layers.Conv2D(128, (2, 2), activation='relu',
+model.add(layers.Conv2D(128, (3, 3), activation='relu',
                         input_shape=(maximal_length, num_steps, 1)))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Conv2D(64, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
-model.add(layers.Conv2D(4, (3, 3), activation='relu'))
+model.add(layers.Conv2D(16, (2, 2), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
-model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(256, activation='relu'))
 model.add(layers.Dense(2,activation="softmax"))
 
 # -
@@ -223,6 +221,6 @@ model.compile(optimizer='adam',
 history = model.fit(X_train, y_train, epochs=10, 
                     validation_data=(X_valid, y_valid))
 
-
+y_valid
 
 
