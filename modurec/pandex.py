@@ -1,4 +1,3 @@
-# TODO: Some notebooks use a deprecated version of pandex. Correct it or remove them
 import warnings
 import re
 import math
@@ -54,26 +53,6 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
             def rw(a): return rolling_window(a, window=window, **kargs)
             return self.series.map(rw)
 
-    # ##########################################################################
-    #                        Series 'mr' extensions
-    # ##########################################################################
-    # @pd.api.extensions.register_series_accessor('mr')
-    # class SignalSeries:
-    #
-    #     def __init__(self, series):
-    #         self.series = series
-    #
-    #     def to_numpy_fromstring(self):
-    #         ser = (self.series.map(lambda x: re.sub(r'[\[\]\n]', r'', x))
-    #                           .map(lambda x: np.fromstring(x, sep=' ')))
-    #         return ser
-    #
-    #     def to_numpy(self):
-    #         ser = (self.series.map(lambda x: re.sub(r'\]\n \[', r'], [', x))
-    #                           .map(lambda x: re.sub(r'(\d+)\s+', r'\1, ', x))
-    #                           .map(lambda x: re.sub(r'(\d+\.)\s+', r'\1, ', x))
-    #                           .map(lambda x: np.array(eval(x))))
-    #         return ser
 
     # ##########################################################################
     #                        DataFrame 'mr' extensions

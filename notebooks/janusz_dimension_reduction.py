@@ -25,8 +25,7 @@
 
 # %%
 import path
-import modurec as mr  # TODO: remove mr from almost all notebooks
-from modurec import features  # TODO: remove from almost all notebooks
+import modurec
 import pandas as pd
 import numpy as np
 import modurec.test_models as tm

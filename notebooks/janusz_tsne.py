@@ -25,8 +25,7 @@
 
 # %%
 import path
-import modurec as mr
-from modurec import features
+import modurec
 import pandas as pd
 import numpy as np
 import modurec.test_models as tm
