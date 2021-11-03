@@ -20,7 +20,7 @@
 % \theoremstyle{}
 % 2. contains macro: \begin{proof} ... \end{proof}
 \usepackage{amsthm} 
-
+\usepackage{graphicx}
 
 \DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
 
@@ -234,7 +234,7 @@
 	\end{center}
 	
 	\begin{abstract}
-		In this talk we present our results of applying topological methods to the classical problem of modulation recognition. We use tools from the growing field of topological data analysis, namely persistent homology followed by machine learning algorithms to distinguish between a large number of significant modulation types.
+		In this talk we present our results of applying topological methods to the classical problem of modulation recognition. We use tools from the growing field of topological data analysis, namely: persistent homology followed by machine learning algorithms to distinguish between a large number of significant modulation types.
 		
 		The basic idea of topological data analysis is to ``recognize the shape of data'', for instance to calculate the number of cycles and connected components. Sampled signals depending on modulation type have a specific geometric representation. Therefore it seemed a natural idea to apply topological tools.
 		
@@ -242,6 +242,12 @@
 	
 	\end{abstract}
 	
-	
+\vfill
+        
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.45\textwidth]{modulations.png}
+\end{figure}
+        
 	
 \end{document}
