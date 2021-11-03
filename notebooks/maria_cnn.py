@@ -48,29 +48,29 @@ from tensorflow.keras import datasets, layers, models
 # %autoreload 2
 # %matplotlib inline
 
-df = pd.read_pickle('../data/stats_train.pkl')
-df = df.sample(n=100)
+df_all = pd.read_pickle('../data/stats_train.pkl')
+df = df_all.sample(n=2000).copy()
 df.columns
 
 # Instantiate datasets
-num_steps = 100
-num_points = 100
+num_steps = 500
 # Instantiate Vietoris-Rips solver
 rips = Rips(maxdim=2)
+num_classes = df.modulation_id.max() + 1
+
+num_classes
 
 # +
 # Compute multiple persistence landscapes
 landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1,
-                                                     start=0,
+#                                                      start=0,
 #                                                      stop=2.0,
-                                                     num_steps=num_steps,
-                                                     flatten=False)
+                                                     num_steps=num_steps)
 
 df['landscape'] = [landscaper.fit_transform(dgm) for dgm in df.diagram]
 
 # -
 
-type(df.iloc[0].landscape)
 df['land_shape'] = [len(land.shape) for land in df.landscape]
 
 df = df.loc[df.land_shape == 2].copy()
@@ -79,46 +79,39 @@ maximal_length = np.max([a.shape[0] for a in df['landscape']])
 maximal_length
 
 # +
-land = np.expand_dims(df.iloc[0].landscape, axis=-1)
+# Instantiate zero-padded arrays
+padded = np.zeros((df.shape[0], maximal_length, num_steps))
+landscapes = df['landscape'].copy()
+for i, landscape in enumerate(landscapes):
+    padded[i, 0:landscape.shape[0], :] = landscape
 
-land.shape
 
+X = np.expand_dims(padded, axis=-1)
+y = df.modulation_id
 # -
-
-df['padded'] = [tf.image.pad_to_bounding_box(
-               tf. convert_to_tensor(np.expand_dims(land, axis=-1)),
-                                     maximal_length - land.shape[0],
-                                     1000 - land.shape[1],
-                                     maximal_length, 1000)
-                for land in df['landscape']]
 
 # df = df.sample(n=100)
 df.shape
 
-X = df.padded
-y = df.modulation_id
-
-X.iloc[4].shape
+X.shape
 
 X_tv, X_test, y_tv, y_test = train_test_split(X, y, test_size=0.5)
 X_train, X_valid, y_train, y_valid = train_test_split(X_tv, y_tv,
                                                       test_size=0.5)
 
-X_train.shape
-
 # +
 
 model = models.Sequential()
-model.add(layers.Conv2D(4, (3, 3), activation='relu',
+model.add(layers.Conv2D(16, (3, 3), activation='relu',
                         input_shape=(maximal_length, num_steps, 1)))
 model.add(layers.MaxPooling2D((2, 2)))
-# model.add(layers.Conv2D(4, (3, 3), activation='relu'))
-# model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(16, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
 # model.add(layers.Conv2D(16, (2, 2), activation='relu'))
 # model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
-model.add(layers.Dense(4, activation='relu'))
-model.add(layers.Dense(2, activation="softmax"))
+model.add(layers.Dense(128, activation='relu'))
+model.add(layers.Dense(num_classes, activation="softmax"))
 
 # -
 
@@ -129,7 +122,7 @@ model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
-history = model.fit(X_train, y_train, epochs=2, 
+history = model.fit(X_train, y_train, epochs=10, 
                     validation_data=(X_valid, y_valid))
 
 y_valid
