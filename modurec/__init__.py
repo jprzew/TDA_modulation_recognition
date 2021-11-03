@@ -16,6 +16,7 @@
 
 # from . import constants as C
 from . import pandex
+from . import features
 # from .config import PkgConfig
 # from .utility import rolling_window
 from .spocheck import spot_check
