@@ -25,8 +25,8 @@
 
 # %%
 import path
-import modurec as mr
-from modurec import features
+import modurec as mr  # TODO: remove mr from almost all notebooks
+from modurec import features  # TODO: remove from almost all notebooks
 import pandas as pd
 import numpy as np
 import modurec.test_models as tm
@@ -75,6 +75,38 @@ numeric_cols = ['no_H1',
                 'H0_mean_sr']
 
 # %%
+mean_lifetimes = [df.ff.create_feature('mean', n=0, dim=2),
+                  df.ff.create_feature('mean', n=1, dim=2),
+                  df.ff.create_feature('mean', n=0, dim=3),
+                  df.ff.create_feature('mean', n=1, dim=3),
+                  df.ff.create_feature('mean', n=0, dim=4),
+                  df.ff.create_feature('mean', n=1, dim=4),
+                  df.ff.create_feature('mean', n=0, dim=4, step='symbol_rate'),
+                  df.ff.create_feature('mean', n=1, dim=4, step='symbol_rate')]
+
+counting_features = [df.ff.create_feature('no', n=0, dim=2),
+                     df.ff.create_feature('no', n=1, dim=2),
+                     df.ff.create_feature('no', n=0, dim=3),
+                     df.ff.create_feature('no', n=1, dim=3),
+                     df.ff.create_feature('no', n=0, dim=4),
+                     df.ff.create_feature('no', n=1, dim=4),
+                     df.ff.create_feature('no', n=0, dim=4, step='symbol_rate'),
+                     df.ff.create_feature('no', n=1, dim=4, step='symbol_rate')]
+
+variance_features = [df.ff.create_feature('var', n=0, dim=2),
+                     df.ff.create_feature('var', n=1, dim=2),
+                     df.ff.create_feature('var', n=0, dim=3),
+                     df.ff.create_feature('var', n=1, dim=3),
+                     df.ff.create_feature('var', n=0, dim=4),
+                     df.ff.create_feature('var', n=1, dim=4),
+                     df.ff.create_feature('var', n=0, dim=4, step='symbol_rate'),
+                     df.ff.create_feature('var', n=1, dim=4, step='symbol_rate')]
+
+
+feat = mean_lifetimes + counting_features + variance_features
+
+# %%
+numeric_cols = list(map(str, feat))
 # x - explanatory data
 # y - response variable
 x = df.loc[:, numeric_cols].values 

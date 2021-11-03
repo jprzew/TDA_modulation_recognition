@@ -85,7 +85,7 @@ counting_features = [df.ff.create_feature('no', n=0, dim=2),
 
 
 feat = mean_lifetimes + var_lifetimes + counting_features
-            
+
 
 # %% [markdown]
 # **Testing the models**
