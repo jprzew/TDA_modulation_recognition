@@ -53,7 +53,7 @@ df = df.sample(n=100)
 df.columns
 
 # Instantiate datasets
-num_steps = 1000
+num_steps = 100
 num_points = 100
 # Instantiate Vietoris-Rips solver
 rips = Rips(maxdim=2)
@@ -62,7 +62,7 @@ rips = Rips(maxdim=2)
 # Compute multiple persistence landscapes
 landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1,
                                                      start=0,
-                                                     # stop=1.0,
+#                                                      stop=2.0,
                                                      num_steps=num_steps,
                                                      flatten=False)
 
@@ -71,17 +71,24 @@ df['landscape'] = [landscaper.fit_transform(dgm) for dgm in df.diagram]
 # -
 
 type(df.iloc[0].landscape)
+df['land_shape'] = [len(land.shape) for land in df.landscape]
+
+df = df.loc[df.land_shape == 2].copy()
 
 maximal_length = np.max([a.shape[0] for a in df['landscape']])
 maximal_length
 
+# +
 land = np.expand_dims(df.iloc[0].landscape, axis=-1)
+
 land.shape
+
+# -
 
 df['padded'] = [tf.image.pad_to_bounding_box(
                tf. convert_to_tensor(np.expand_dims(land, axis=-1)),
                                      maximal_length - land.shape[0],
-                                     0,
+                                     1000 - land.shape[1],
                                      maximal_length, 1000)
                 for land in df['landscape']]
 
@@ -93,7 +100,7 @@ y = df.modulation_id
 
 X.iloc[4].shape
 
-X_tv, X_test, y_tv, y_test = train_test_split(X, y, test_size=0.1)
+X_tv, X_test, y_tv, y_test = train_test_split(X, y, test_size=0.5)
 X_train, X_valid, y_train, y_valid = train_test_split(X_tv, y_tv,
                                                       test_size=0.5)
 
@@ -102,15 +109,15 @@ X_train.shape
 # +
 
 model = models.Sequential()
-model.add(layers.Conv2D(128, (3, 3), activation='relu',
+model.add(layers.Conv2D(4, (3, 3), activation='relu',
                         input_shape=(maximal_length, num_steps, 1)))
 model.add(layers.MaxPooling2D((2, 2)))
-model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-model.add(layers.MaxPooling2D((2, 2)))
-model.add(layers.Conv2D(16, (2, 2), activation='relu'))
-model.add(layers.MaxPooling2D((2, 2)))
+# model.add(layers.Conv2D(4, (3, 3), activation='relu'))
+# model.add(layers.MaxPooling2D((2, 2)))
+# model.add(layers.Conv2D(16, (2, 2), activation='relu'))
+# model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
-model.add(layers.Dense(256, activation='relu'))
+model.add(layers.Dense(4, activation='relu'))
 model.add(layers.Dense(2, activation="softmax"))
 
 # -
