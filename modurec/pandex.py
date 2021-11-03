@@ -140,11 +140,6 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
 
             self.df[sr_col] = df[sr_col].astype(int)
 
-        # TODO: remove this unused function
-        def add_fourier(self, data_col, fft_col):
-
-            self.df[fft_col] = self.df[data_col].apply(np.fft.fft)
-
         @staticmethod
         def __get_axes(size, ncols=3, hspace=0.4, wspace=0.4,
                        projection=None, figsize=None):
