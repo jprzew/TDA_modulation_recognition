@@ -19,26 +19,13 @@ from .utility import rolling_window
 # #############################################################################
 
 inf = np.inf
-# config = PkgConfig()
-
-# try:
-#
-#     from ._config import personalize
-#     config = personalize(config)
-#
-# except ImportError:
-#
-#     msg = "personal_config.py does not exist.\n"
-#     msg += "Please create a file to personalize your settings."
-#     # warnings.warn(msg)
-#
 
 # #############################################################################
 #
 #                     DataFrame and Series extensions
 #
 # #############################################################################
-with warnings.catch_warnings():
+with warnings.catch_warnings():   # catch_warnings is useful when autoreload is applied
 
     warnings.simplefilter(action='ignore', category=UserWarning)
 
@@ -54,17 +41,13 @@ with warnings.catch_warnings():
         def __init__(self, series):
             self.series = series
 
-        # @property
-        # def shape(self):
-        #      return 0
-
         def mean(self):
             return self.series.map(lambda x: np.mean(np.ma.masked_invalid(x)))
 
         def var(self):
             return self.series.map(lambda x: np.var(np.ma.masked_invalid(x)))
 
-        def diff(self, axis=-1):
+        def diff(self, axis=-1):  # Needed to calculate homology life-time
             return self.series.map(lambda x: np.diff(x, axis=axis).reshape(-1))
 
         def rolling_window(self, window=2, **kargs):
@@ -74,23 +57,23 @@ with warnings.catch_warnings():
     # ##########################################################################
     #                        Series 'mr' extensions
     # ##########################################################################
-    @pd.api.extensions.register_series_accessor('mr')
-    class SignalSeries:
-
-        def __init__(self, series):
-            self.series = series
-
-        def to_numpy_fromstring(self):
-            ser = (self.series.map(lambda x: re.sub(r'[\[\]\n]', r'', x))
-                              .map(lambda x: np.fromstring(x, sep=' ')))
-            return ser
-
-        def to_numpy(self):
-            ser = (self.series.map(lambda x: re.sub(r'\]\n \[', r'], [', x))
-                              .map(lambda x: re.sub(r'(\d+)\s+', r'\1, ', x))
-                              .map(lambda x: re.sub(r'(\d+\.)\s+', r'\1, ', x))
-                              .map(lambda x: np.array(eval(x))))
-            return ser
+    # @pd.api.extensions.register_series_accessor('mr')
+    # class SignalSeries:
+    #
+    #     def __init__(self, series):
+    #         self.series = series
+    #
+    #     def to_numpy_fromstring(self):
+    #         ser = (self.series.map(lambda x: re.sub(r'[\[\]\n]', r'', x))
+    #                           .map(lambda x: np.fromstring(x, sep=' ')))
+    #         return ser
+    #
+    #     def to_numpy(self):
+    #         ser = (self.series.map(lambda x: re.sub(r'\]\n \[', r'], [', x))
+    #                           .map(lambda x: re.sub(r'(\d+)\s+', r'\1, ', x))
+    #                           .map(lambda x: re.sub(r'(\d+\.)\s+', r'\1, ', x))
+    #                           .map(lambda x: np.array(eval(x))))
+    #         return ser
 
     # ##########################################################################
     #                        DataFrame 'mr' extensions
@@ -108,10 +91,12 @@ with warnings.catch_warnings():
                             point_cloud_col='point_cloud',
                             window=2, step=1):
 
-            def __to_real(x):
+            def __to_real(x):  # converts complex-valued array to real-valued
                 array = np.vstack((np.real(x), np.imag(x))).T
                 return array.ravel()
 
+            # needed for converting point-clouds in C^n...
+            # ...into clouds in R^(2*n)
             def __complex_cloud_to_real(cloud):
                 return np.apply_along_axis(lambda x:
                                            __to_real(x), axis=1, arr=cloud)
@@ -176,6 +161,7 @@ with warnings.catch_warnings():
 
             self.df[sr_col] = df[sr_col].astype(int)
 
+        # TODO: remove this unused function
         def add_fourier(self, data_col, fft_col):
 
             self.df[fft_col] = self.df[data_col].apply(np.fft.fft)
@@ -196,10 +182,10 @@ with warnings.catch_warnings():
                 fig.delaxes(axes[i])
             return axes[:size]
 
-        def __get_view_for_plots(self, modulation_id, max_rows=24):
+        def __get_view_for_plots(self, modulation_type, max_rows=24):
             df = self.df
-            if modulation_id is not None:
-                df = df.loc[df.modulation_id == modulation_id]
+            if modulation_type is not None:
+                df = df.loc[df.modulation_type == modulation_type]
             # df = df.reset_index()
             if df.shape[0] > max_rows:
                 # printWARNING:
@@ -209,12 +195,12 @@ with warnings.catch_warnings():
         def plot_samples(self,
                          data_col='signal_sample',
                          title_col='modulation_type',
-                         modulation_id=None,
+                         modulation_type=None,
                          max_rows=24,
                          min_sample=float('-inf'),
                          max_sample=float('inf')):
 
-            df = self.__get_view_for_plots(modulation_id, max_rows=max_rows)
+            df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
             size = df.shape[0]
             axes = self.__get_axes(size=size, ncols=2, figsize=(20, size))
 
@@ -229,11 +215,11 @@ with warnings.catch_warnings():
         def plot_persistence_diagrams(self,
                                       data_col='diagram',
                                       title_col='modulation_type',
-                                      modulation_id=None,
+                                      modulation_type=None,
                                       max_rows=24):
 
             rips = Rips()
-            df = self.__get_view_for_plots(modulation_id, max_rows=max_rows)
+            df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
             axes = self.__get_axes(size=df.shape[0])
 
             for ind, (_, row) in enumerate(df.iterrows()):
@@ -274,11 +260,13 @@ with warnings.catch_warnings():
                         data_col='point_cloud',
                         title_col='modulation_type',
                         projection=None,
-                        modulation_id=None,
-                        max_rows=24):
+                        modulation_type=None,
+                        max_rows=24,
+                        ncols=3):
 
-            df = self.__get_view_for_plots(modulation_id, max_rows=max_rows)
-            axes = self.__get_axes(size=df.shape[0], projection=projection)
+            df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
+            axes = self.__get_axes(size=df.shape[0], projection=projection,
+                                   ncols=ncols)
 
             for ind, (_, row) in enumerate(df.iterrows()):
                 if projection is None:
