@@ -48,17 +48,22 @@ from tensorflow.keras import datasets, layers, models
 # %autoreload 2
 # %matplotlib inline
 
-df_all = pd.read_pickle('../data/stats_train.pkl')
-df = df_all.sample(n=2000).copy()
-df.columns
+# +
+# df = pd.read_pickle('../data/stats_train.pkl')
+
+df = pd.read_pickle('../data/stats_train.pkl')
+df = df.filter(['modulation_type', 'diagram'])
+# df = df.sample(n=2000).copy()
+df = df.loc[df.modulation_type.isin(['16PSK', '8PSK', '32PSK', 'BPSK'])].copy()
+# df = df.loc[df.modulation_type.isin(['32PSK', 'QPSK', 'BPSK'])].copy()
+# -
+
+df.modulation_type.unique()
 
 # Instantiate datasets
-num_steps = 500
+num_steps = 258
 # Instantiate Vietoris-Rips solver
 rips = Rips(maxdim=2)
-num_classes = df.modulation_id.max() + 1
-
-num_classes
 
 # +
 # Compute multiple persistence landscapes
@@ -87,31 +92,53 @@ for i, landscape in enumerate(landscapes):
 
 
 X = np.expand_dims(padded, axis=-1)
-y = df.modulation_id
+y = df.modulation_type.to_numpy()
 # -
 
+from sklearn.preprocessing import LabelBinarizer
+encoder = LabelBinarizer()
+y = encoder.fit_transform(y)
+
+
 # df = df.sample(n=100)
-df.shape
+# test_proportion of 3 means 1/3 so 33% test and 67% train
+def shuffle(matrix, target, test_proportion=10):
+    ratio = int(matrix.shape[0]/test_proportion)  # should be int
+    X_train = matrix[ratio:, :]
+    X_test = matrix[:ratio, :]
+    Y_train = target[ratio:, :]
+    Y_test = target[:ratio, :]
+    return X_train, X_test, Y_train, Y_test
+
 
 X.shape
 
-X_tv, X_test, y_tv, y_test = train_test_split(X, y, test_size=0.5)
-X_train, X_valid, y_train, y_valid = train_test_split(X_tv, y_tv,
-                                                      test_size=0.5)
+# +
+
+
+# X_train, X_test, Y_train, Y_test = shuffle(X, Y, 3)
+X_tv, X_test, y_tv, y_test = shuffle(X, y)
+X_train, X_valid, y_train, y_valid = shuffle(X_tv, y_tv)
+# -
+
+X_train.shape
+
+X_valid.shape
 
 # +
 
 model = models.Sequential()
-model.add(layers.Conv2D(16, (3, 3), activation='relu',
+model.add(layers.Conv2D(64, (3, 3), activation='relu',
                         input_shape=(maximal_length, num_steps, 1)))
-model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Dropout(0.2))
+model.add(layers.MaxPooling2D((4, 4)))
 model.add(layers.Conv2D(16, (3, 3), activation='relu'))
 model.add(layers.MaxPooling2D((2, 2)))
-# model.add(layers.Conv2D(16, (2, 2), activation='relu'))
-# model.add(layers.MaxPooling2D((2, 2)))
+model.add(layers.Conv2D(16, (2, 2), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
 model.add(layers.Flatten())
 model.add(layers.Dense(128, activation='relu'))
-model.add(layers.Dense(num_classes, activation="softmax"))
+model.add(layers.Dense(y.shape[1], activation="softmax"))
 
 # -
 
@@ -119,10 +146,12 @@ model.summary()
 
 
 model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              loss='categorical_crossentropy',
+#               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
 history = model.fit(X_train, y_train, epochs=10, 
+                    batch_size=20,
                     validation_data=(X_valid, y_valid))
 
 y_valid
