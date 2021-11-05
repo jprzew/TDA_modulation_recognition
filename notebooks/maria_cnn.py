@@ -52,8 +52,17 @@ from tensorflow.keras import datasets, layers, models
 # df = pd.read_pickle('../data/stats_train.pkl')
 
 df = pd.read_pickle('../data/stats_train.pkl')
+
+# -
+
+df.columns
+
+# +
 df = df.filter(['modulation_type', 'diagram'])
-# df = df.sample(n=2000).copy()
+df = df.rename({'diagram': 'diagram'}, axis='columns')
+
+df = df.sample(frac=1)
+df = df.sample(n=2000).copy()
 df = df.loc[df.modulation_type.isin(['16PSK', '8PSK', '32PSK', 'BPSK'])].copy()
 # df = df.loc[df.modulation_type.isin(['32PSK', 'QPSK', 'BPSK'])].copy()
 # -
@@ -61,7 +70,7 @@ df = df.loc[df.modulation_type.isin(['16PSK', '8PSK', '32PSK', 'BPSK'])].copy()
 df.modulation_type.unique()
 
 # Instantiate datasets
-num_steps = 258
+num_steps = 256
 # Instantiate Vietoris-Rips solver
 rips = Rips(maxdim=2)
 
@@ -75,6 +84,8 @@ landscaper = persim.landscapes.PersistenceLandscaper(hom_deg=1,
 df['landscape'] = [landscaper.fit_transform(dgm) for dgm in df.diagram]
 
 # -
+
+df.shape
 
 df['land_shape'] = [len(land.shape) for land in df.landscape]
 
@@ -95,9 +106,12 @@ X = np.expand_dims(padded, axis=-1)
 y = df.modulation_type.to_numpy()
 # -
 
-from sklearn.preprocessing import LabelBinarizer
+from sklearn.preprocessing import LabelBinarizer, LabelEncoder
 encoder = LabelBinarizer()
+# encoder = LabelEncoder()
 y = encoder.fit_transform(y)
+
+y
 
 
 # df = df.sample(n=100)
@@ -106,8 +120,8 @@ def shuffle(matrix, target, test_proportion=10):
     ratio = int(matrix.shape[0]/test_proportion)  # should be int
     X_train = matrix[ratio:, :]
     X_test = matrix[:ratio, :]
-    Y_train = target[ratio:, :]
-    Y_test = target[:ratio, :]
+    Y_train = target[ratio:]
+    Y_test = target[:ratio]
     return X_train, X_test, Y_train, Y_test
 
 
@@ -142,6 +156,8 @@ model.add(layers.Dense(y.shape[1], activation="softmax"))
 
 # -
 
+y_valid
+
 model.summary()
 
 
@@ -150,10 +166,20 @@ model.compile(optimizer='adam',
 #               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
-history = model.fit(X_train, y_train, epochs=10, 
+history = model.fit(X_train, y_train, epochs=6, 
                     batch_size=20,
                     validation_data=(X_valid, y_valid))
 
-y_valid
+y_pred = model.predict(X_test)
+
+y_p = np.argmax(y_pred, axis=1)
+y_p
+
+y_t = np.argmax(y_test, axis=1)
+y_t
+
+cm = tf.math.confusion_matrix(labels=y_t, predictions=y_p).numpy()
+
+cm
 
 
