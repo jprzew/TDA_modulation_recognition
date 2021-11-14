@@ -59,6 +59,11 @@ indices_dict = '../hdf5_data'
 test_indices_file = os.path.join(indices_dict, test_indices_file_name)
 train_indices_file = os.path.join(indices_dict, train_indices_file_name)
 
+signal_samples_fileI_name = 'signalsI.csv'
+signal_samples_fileQ_name = 'signalsQ.csv'
+modulations_id_file_name = 'modulations.csv'
+snrs_file_name = 'snrs.csv'
+
 
 def split_and_save_indices_rml18(proportion=0.3,
                                  data_file=hdf5_file,
@@ -80,10 +85,10 @@ def split_and_save_indices_rml18(proportion=0.3,
 def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modulation)
                              data_file=hdf5_file,
                              total_random=True,
-                             output_signals_fileI='signalsI.csv',
-                             output_signals_fileQ='signalsQ.csv',
-                             output_modulations_file='modulations.csv',
-                             output_snr_file='snrs.csv',
+                             output_signals_fileI=signal_samples_fileI_name,
+                             output_signals_fileQ=signal_samples_fileQ_name,
+                             output_modulations_file=modulations_id_file_name,
+                             output_snr_file=snrs_file_name,
                              output_path='../numpy_data',
                              random=False,
                              seed=None,
@@ -99,7 +104,6 @@ def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modul
     if total_random:
         indices_taken = rnd.sample(range(train_ind.shape[0]), number_of_signals)
         indices_taken.sort()
-        print(indices_taken)
     else:
         modulations = modulations[train_ind]
         snrs = snrs[train_ind]
@@ -126,10 +130,10 @@ def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modul
                delimiter=',')
 
 
-def get_np_arrays_from_files(signal_samples_fileI='signalsI.csv',
-                             signal_samples_fileQ='signalsQ.csv',
-                             id_file='modulations.csv',
-                             snr_file='snrs.csv',
+def get_np_arrays_from_files(signal_samples_fileI=signal_samples_fileI_name,
+                             signal_samples_fileQ=signal_samples_fileQ_name,
+                             id_file=modulations_id_file_name,
+                             snr_file=snrs_file_name,
                              data_path='../numpy_data'):
 
     samples_pathI = os.path.join(data_path, signal_samples_fileI)
@@ -153,13 +157,13 @@ def get_signal_df_from_numpy(max_sample_len=None):
             'modulation_id': modulation_id,
             'modulation_type': [index_to_class[idx] for idx in modulation_id],
             'SNR': snr,
-            'signal_sample': [s[:max_sample_len] for s in signal_sampleI],
-            'signal_sampleQ': [s[:max_sample_len] for s in signal_sampleQ]})
+            'signalI': [s[:max_sample_len] for s in signal_sampleI],
+            'signalQ': [s[:max_sample_len] for s in signal_sampleQ]})
     return df
 
 
 
-
+# for RML2016 data
 def read_df_from_dictionary(file_path=dictionary_pickle_file_path):
 
     with open(file_path, 'rb') as f:
@@ -184,18 +188,6 @@ def read_df_from_dictionary(file_path=dictionary_pickle_file_path):
                                      'imagine_part'])
     return df
 
-
-
-
-
-
-def __select_indices(indices, random, number_of_signals):
-
-    if random:
-        return rnd.sample(list(indices), number_of_signals)
-    else:
-        take_these = list(range(number_of_signals))
-        return list(indices[take_these])
 
 
 def read_data_from_h5py(input_file=hdf5_file, indices=None):
@@ -237,73 +229,10 @@ def __create_index_list(modulations, snrs, snr_max, snr_min, random, number_of_s
     return sorted(indices_taken)
 
 
+def __select_indices(indices, random, number_of_signals):
 
-# ------------------------------------------------
-# This is a deprecated verison of "extract radioml"
-# ------------------------------------------------
-# def extract_2018_radioml_data(number_of_signals,
-#                               input_file='GOLD_XYZ_OSC.0001_1024.hdf5',
-#                               input_path='',
-#                               output_signals_file='signals.csv',
-#                               output_modulations_file='modulations.csv',
-#                               output_snr_file='snrs.csv',
-#                               output_path='../numpy_data',
-#                               real_part=True,
-#                               random=False,
-#                               snr_min=float('-inf'),
-#                               snr_max=float('inf'),
-#                               signals_per_parameter=4096,
-#                               seed=False):
-
-#     if seed: rnd.seed(seed)
-
-#     if not random:
-#         subset_indices = list(range(number_of_signals))
-#     else:
-#         subset_indices = rnd.sample(list(range(signals_per_parameter)),
-#                                     number_of_signals)
-
-
-#     real_or_imag = 0 if real_part else 1
-
-#     data = h5py.File(os.path.join(input_path, input_file), 'r')
-#     dataX = data['X']
-#     dataY = data['Y']
-#     dataZ = data['Z']
-
-#     index_of_modulations = np.apply_along_axis(lambda x: x.argmax(),
-#                                                1,
-#                                                dataY[:, :])
-#     snrs = dataZ[:].flatten()
-
-#     pairs = [(mod, snr) for mod in np.unique(index_of_modulations)
-#              for snr in np.unique(snrs)
-#              if (snr <= snr_max and snr >= snr_min)]
-
-#     indices_taken = []
-
-#     for mod, snr in pairs:
-#         indices = np.logical_and(index_of_modulations == mod,
-#                                  snrs == snr)
-#         indices = indices.nonzero()[0]
-#         indices = indices[subset_indices]
-#         indices_taken.extend(list(indices))
-
-#     # modulations = np.array([index_to_class[ind]
-#     #                         for ind in index_of_modulations[indices_taken]])
-#     modulations = np.array([ind for ind in index_of_modulations[indices_taken]])
-
-#     signals = dataX[indices_taken][:, :, real_or_imag]
-
-#     np.savetxt(os.path.join(output_path, output_signals_file), signals, delimiter=',')
-#     # np.savetxt(output_path + output_modulations_file,
-#     #            modulations,
-#     #            delimiter=',',
-#     #            fmt='%s')
-#     np.savetxt(os.path.join(output_path, output_modulations_file),
-#                modulations,
-#                delimiter=',',
-#                fmt='%d')
-#     np.savetxt(os.path.join(output_path, output_snr_file),
-#                snrs[indices_taken],
-#                delimiter=',')
+    if random:
+        return rnd.sample(list(indices), number_of_signals)
+    else:
+        take_these = list(range(number_of_signals))
+        return list(indices[take_these])
