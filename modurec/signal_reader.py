@@ -49,6 +49,83 @@ class_to_id_2016 = {'QPSK': 0,
 
 dictionary_pickle_file_path = r'../data/RML2016.10a_dict.pkl'
 
+hdf5_input_file_name = 'GOLD_XYZ_OSC.0001_1024.hdf5'
+hdf5_input_dict = '../hdf5_data'
+hdf5_file = os.path.join(hdf5_input_dict, hdf5_input_file_name)
+
+test_indices_file_name = 'test_indices.csv'
+test_indices_dict = '../hdf5_data'
+test_indices_file = os.path.join(test_indices_dict, test_indices_file_name)
+
+
+def split_and_save_indices_rml18(proportion=0.3,
+                                 input_file=hdf5_file,
+                                 index_file=test_indices_file,
+                                 seed=42):
+
+    rnd.seed(seed)
+    with h5py.File(input_file, 'r') as f:
+        num_of_samples = f['Z'][:].shape[0]
+
+    indices = rnd.sample(range(num_of_samples), int(num_of_samples * proportion))
+    np.savetxt(index_file, np.array(indices), delimiter=',', fmt='%d')
+
+def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modulation)
+                             input_file=hdf5_file,
+                             output_signals_fileI='signalsI.csv',
+                             output_signals_fileQ='signalsQ.csv',
+                             output_modulations_file='modulations.csv',
+                             output_snr_file='snrs.csv',
+                             output_path='../numpy_data',
+                             random=False,
+                             snr_min=float('-inf'),
+                             snr_max=float('inf'),
+                             signals_per_parameter=4096,
+                             seed=None,
+                             indices_csv=test_indices_file):
+
+
+    rnd.seed(seed)
+
+    dataX, modulations, snrs = __read_data_from_h5py(input_file)
+    n = snrs.shape[0]
+
+    forbidden_indices = np.genfromtxt(indices_csv, delimiter=',')
+
+    allowed_indices = np.setdiff1d(np.array(range(n)), forbidden_indices)
+
+    modulations = modulations[allowed_indices]
+    snrs = snrs[allowed_indices]
+
+    indices_taken = __create_index_list(modulations, snrs, snr_max, snr_min, random, number_of_signals)
+    allowed_indices_taken = allowed_indices[indices_taken]
+
+    signalsI = dataX[allowed_indices_taken][:, :, 0]
+    signalsQ = dataX[allowed_indices_taken][:, :, 1]
+
+    np.savetxt(os.path.join(output_path, output_signals_fileI), signalsI,
+               delimiter=',')
+    np.savetxt(os.path.join(output_path, output_signals_fileQ), signalsQ,
+               delimiter=',')
+
+    np.savetxt(os.path.join(output_path, output_modulations_file),
+               modulations[indices_taken],
+               delimiter=',',
+               fmt='%d')
+    np.savetxt(os.path.join(output_path, output_snr_file),
+               snrs[indices_taken],
+               delimiter=',')
+
+    return
+
+
+
+
+
+
+
+
+
 
 def read_df_from_dictionary(file_path=dictionary_pickle_file_path):
 
@@ -116,112 +193,48 @@ def get_signal_df_from_numpy(modulation_id=None,
     return df
 
 
-def split_data_rml18(proportion=0.3,
-                     input_file='GOLD_XYZ_OSC.0001_1024.hdf5',
-                     input_path='',
-                     index_file='test_indices.csv',
-                     seed=42):
 
-    def __get_data_size():
-        data = h5py.File(os.path.join(input_path, input_file), 'r')
-        return data['Z'][:].shape[0]
+def __select_indices(indices, random, number_of_signals):
 
-    if seed:
-        rnd.seed(seed)
-
-    n = __get_data_size()
-    indices = list(range(n))
-    indices = rnd.sample(indices, int(n*proportion))
-
-    np.savetxt(os.path.join(input_path, index_file),
-               np.array(indices),
-               delimiter=',',
-               fmt='%d')
+    if random:
+        return rnd.sample(list(indices), number_of_signals)
+    else:
+        take_these = list(range(number_of_signals))
+        return list(indices[take_these])
 
 
-def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modulation)
-                             input_file='GOLD_XYZ_OSC.0001_1024.hdf5',
-                             input_path='',
-                             output_signals_fileI='signalsI.csv',
-                             output_signals_fileQ='signalsQ.csv',
-                             output_modulations_file='modulations.csv',
-                             output_snr_file='snrs.csv',
-                             output_path='../numpy_data',
-                             random=False,
-                             snr_min=float('-inf'),
-                             snr_max=float('inf'),
-                             signals_per_parameter=4096,
-                             seed=False,
-                             indices_csv='test_indices.csv'):
+def __read_data_from_h5py(input_file):
 
-    def __select_indices(indices):
-        if random:
-            return rnd.sample(list(indices), number_of_signals)
-        else:
-            take_these = list(range(number_of_signals))
-            return list(indices[take_these])
+    data = h5py.File(input_file, 'r')
 
-    def __read_test_indices():
-        return np.genfromtxt(os.path.join(input_path, indices_csv),
-                             delimiter=',')
+    # data['Y'] contains indicators of modulations as 0-1 vectors
+    # the line below converts it to a numerical vector
+    modulations = np.apply_along_axis(lambda x: x.argmax(),
+                                      1,
+                                      data['Y'][:, :])
+    # dataZ[:] has its second dimension of length one
+    # thus it is in fact one-dimenional; therefore .flatten is needed
+    snrs = data['Z'][:].flatten()
+    return data['X'], modulations, snrs
 
-    def __read_data():
-        data = h5py.File(os.path.join(input_path, input_file), 'r')
 
-        # data['Y'] contains indicators of modulations as 0-1 vectors
-        # the line below converts it to a numerical vector
-        modulations = np.apply_along_axis(lambda x: x.argmax(),
-                                          1,
-                                          data['Y'][:, :])
-        # dataZ[:] has its second dimension of length one
-        # thus it is in fact one-dimenional; therefore .flatten is needed
-        snrs = data['Z'][:].flatten()
 
-        n = data['Z'][:].shape[0]
-        allowed_indices = np.setdiff1d(np.array(range(n)),
-                                       __read_test_indices())
+def __create_index_list(modulations, snrs, snr_max, snr_min, random, number_of_signals):
 
-        return (data['X'], modulations[allowed_indices], snrs[allowed_indices],
-                allowed_indices)
+    cases = [(mod, snr) for mod in np.unique(modulations)
+             for snr in np.unique(snrs)
+             if (snr <= snr_max and snr >= snr_min)]
 
-    def __create_index_list(modulations, snrs):
+    indices_taken = []
+    for mod, snr in cases:
+        indices = np.logical_and(modulations == mod,
+                                 snrs == snr)
+        indices = indices.nonzero()[0]
+        indices_taken.extend(__select_indices(indices, random, number_of_signals))
 
-        cases = [(mod, snr) for mod in np.unique(modulations)
-                 for snr in np.unique(snrs)
-                 if (snr <= snr_max and snr >= snr_min)]
+    return sorted(indices_taken)
 
-        indices_taken = []
-        for mod, snr in cases:
-            indices = np.logical_and(modulations == mod,
-                                     snrs == snr)
-            indices = indices.nonzero()[0]
-            indices_taken.extend(__select_indices(indices))
 
-        return sorted(indices_taken)
-
-    if seed:
-        rnd.seed(seed)
-
-    dataX, modulations, snrs, allowed_indices = __read_data()
-
-    indices_taken = __create_index_list(modulations, snrs)
-    allowed_indices_taken = allowed_indices[indices_taken]
-
-    signalsI = dataX[allowed_indices_taken][:, :, 0]
-    signalsQ = dataX[allowed_indices_taken][:, :, 1]
-
-    np.savetxt(os.path.join(output_path, output_signals_fileI), signalsI,
-               delimiter=',')
-    np.savetxt(os.path.join(output_path, output_signals_fileQ), signalsQ,
-               delimiter=',')
-
-    np.savetxt(os.path.join(output_path, output_modulations_file),
-               modulations[indices_taken],
-               delimiter=',',
-               fmt='%d')
-    np.savetxt(os.path.join(output_path, output_snr_file),
-               snrs[indices_taken],
-               delimiter=',')
 
 # ------------------------------------------------
 # This is a deprecated verison of "extract radioml"
