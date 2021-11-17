@@ -7,6 +7,13 @@ from ripser import Rips
 
 from . import pandex  # Necessary for mr and np accessors
 
+def trim_diagrams(diagrams, eps):
+    trimmed_diagrams = []
+    for diagram in diagrams:
+        lifetimes = diagram[:, 1] - diagram[:, 0]
+        trimmed_diagrams.append(diagram[lifetimes > eps])
+
+    return trimmed_diagrams
 
 @pd.api.extensions.register_dataframe_accessor('ff')
 class FeaturesFactory:
@@ -142,14 +149,21 @@ class FeaturesFactory:
 
     class diagram(Feature):
 
-        def __init__(self, dim=2, step=1):
+        def __init__(self, dim=2, step=1, eps=0):
             self.step = step
             self.dim = dim
+            self.eps = eps
 
         def compute(self):
-            point_cloud = self.creator.create_feature('point_cloud', dim=self.dim,
-                                                      step=self.step)
-            return point_cloud.values().map(self.creator.rips.fit_transform)
+            if self.eps == 0:
+                point_cloud = self.creator.create_feature('point_cloud', dim=self.dim,
+                                                          step=self.step)
+                return point_cloud.values().map(self.creator.rips.fit_transform)
+            else:
+                full_diagram = self.creator.create_feature('diagram', dim=self.dim,
+                                                           step=self.step, eps=0)
+                return full_diagram.values().map(lambda x:
+                                                 trim_diagrams(x, self.eps))
 
     class H(Feature):
 
