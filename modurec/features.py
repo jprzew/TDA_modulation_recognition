@@ -167,82 +167,94 @@ class FeaturesFactory:
 
     class H(Feature):
 
-        def __init__(self, n, dim=2, step=1):
+        def __init__(self, n, dim=2, step=1, eps=0):
             self.dim = dim
             self.n = n
             self.step = step
+            self.eps = eps
 
         def compute(self):
-            diagram = self.creator.create_feature('diagram', dim=self.dim, step=self.step)
+            diagram = self.creator.create_feature('diagram', dim=self.dim, step=self.step,
+                                                  eps=self.eps)
 
             return pd.DataFrame(diagram.values().tolist(),
                                     index=self.df.index)[self.n]
 
     class life_time(Feature):
 
-        def __init__(self, n, dim=2, step=1):
+        def __init__(self, n, dim=2, step=1, eps=0):
             self.dim = dim
             self.n = n
             self.step = step
+            self.eps = eps
 
         def compute(self):
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
-                                                   step=self.step)
+                                                   step=self.step,
+                                                   eps=self.eps)
             return homology.values().np.diff(axis=1)
 
     class no(Feature):
 
-        def __init__(self, n, dim=2, step=1):
+        def __init__(self, n, dim=2, step=1, eps=0):
             self.dim = dim
             self.n = n
             self.step = step
+            self.eps = eps
 
         def compute(self):
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
-                                                   step=self.step)
+                                                   step=self.step,
+                                                   eps=self.eps)
+
             return homology.values().map(lambda x: x.shape[0])
 
     class mean(Feature):
 
-        def __init__(self, n, dim=2, step=1):
+        def __init__(self, n, dim=2, step=1, eps=0):
             self.dim = dim
             self.n = n
             self.step = step
+            self.eps = eps
 
         def compute(self):
             life_time = self.creator.create_feature('life_time',
                                                     n=self.n,
                                                     dim=self.dim,
-                                                    step=self.step)
+                                                    step=self.step,
+                                                    eps=self.eps)
             return life_time.values().np.mean()
 
     class var(Feature):
 
-        def __init__(self, n, dim=2, step=1):
+        def __init__(self, n, dim=2, step=1, eps=0):
             self.dim = dim
             self.n = n
             self.step = step
+            self.eps = eps
 
         def compute(self):
             life_time = self.creator.create_feature('life_time',
                                                     n=self.n,
                                                     dim=self.dim,
-                                                    step=self.step)
+                                                    step=self.step,
+                                                    eps=self.eps)
             return life_time.values().np.var()
 
     class kmp_features(Feature):
         """Features from Chatter Classification in Turning using
            Machine Learning and Topological Data Analysis"""
 
-        def __init__(self, k, n, dim=2, step=1):
+        def __init__(self, k, n, dim=2, step=1, eps=0):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.k = k  # number of kmp-feature
             self.step = step
+            self.eps = eps
 
         def compute(self):
 
@@ -260,7 +272,8 @@ class FeaturesFactory:
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
-                                                   step=self.step)
+                                                   step=self.step,
+                                                   eps=self.eps)
 
             return homology.values().map(lambda x:
                                          __features(x)[self.k - 1])
