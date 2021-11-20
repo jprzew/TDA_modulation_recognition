@@ -6,6 +6,7 @@ import pandas as pd
 import h5py
 import pickle
 import random as rnd
+import vaex
 
 # Class labelings 2018
 class_to_index = {  'OOK': 0,
@@ -82,6 +83,8 @@ def split_and_save_indices_rml18(proportion=0.3,
     np.savetxt(test_indices_file, test_ind, delimiter=',', fmt='%i')
     np.savetxt(train_indices_file, train_ind, delimiter=',', fmt='%i')
 
+
+
 def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modulation)
                              data_file=hdf5_file,
                              total_random=True,
@@ -94,17 +97,34 @@ def select_sample_from_train(number_of_signals,  # per class / pairs (snr, modul
                              seed=None,
                              snr_min=float('-inf'),
                              snr_max=float('inf'),
-                             train_indices_file=train_indices_file):
+                             train_indices_file=train_indices_file,
+                             test_indices_file=test_indices_file):
 
     rnd.seed(seed)
-
     train_ind = np.loadtxt(train_indices_file, delimiter=',', dtype=int)
-    dataX, modulations, snrs = read_data_from_h5py(data_file)
+    test_ind = np.loadtxt(test_indices_file, delimiter=',', dtype=int)
+    number_of_all_signals = train_ind.shape[0] + test_ind.shape[0]
 
     if total_random:
+        if number_of_signals > train_ind.shape[0]:
+            number_of_signals = train_ind.shape[0]
+            print("All train data chosen")
         indices_taken = rnd.sample(range(train_ind.shape[0]), number_of_signals)
         indices_taken.sort()
+        indices_np = np.zeros(number_of_all_signals)
+        indices_np[indices_taken] = 1
+        df = vaex.open(data_file)
+        assert len(df) == number_of_all_signals
+        df['index'] = indices_np
+        df = df[df.index == 1]
+        df.rename('Y', 'modulation_one_hot')
+        df.rename('Z', 'SNR')
+        df.rename('X', 'point_cloud')
+        return df
+
+
     else:
+        dataX, modulations, snrs = read_data_from_h5py(data_file)
         modulations = modulations[train_ind]
         snrs = snrs[train_ind]
         indices_taken = __create_index_list(modulations, snrs, snr_max, snr_min, random, number_of_signals)
@@ -144,8 +164,8 @@ def get_np_arrays_from_files(signal_samples_fileI=signal_samples_fileI_name,
     modulation_id = np.genfromtxt(id_path, delimiter=',')
     signal_sampleI = np.genfromtxt(samples_pathI, delimiter=',')
     signal_sampleQ = np.genfromtxt(samples_pathQ, delimiter=',')
-    target_snr = np.genfromtxt(snr_path, delimiter=',')
-    return modulation_id, signal_sampleI, signal_sampleQ, target_snr
+    snrs = np.genfromtxt(snr_path, delimiter=',')
+    return modulation_id, signal_sampleI, signal_sampleQ, snrs
 
 
 
@@ -190,11 +210,12 @@ def read_df_from_dictionary(file_path=dictionary_pickle_file_path):
 
 
 
-def read_data_from_h5py(input_file=hdf5_file, indices=None):
+def read_data_from_h5py(input_file=hdf5_file):
+    # , indices=None):
 
     data = h5py.File(input_file, 'r')
 
-    # data['Y'] contains indicators of modulations as 0-1 vectors
+    # data['Y'] contains indicators of modulations as 0-1 vectors (one-hot)
     # the line below converts it to a numerical vector
     modulations = np.apply_along_axis(lambda x: x.argmax(),
                                       1,
@@ -205,10 +226,10 @@ def read_data_from_h5py(input_file=hdf5_file, indices=None):
     snrs = data['Z'][:].flatten()
 
     dataX = data['X']
-    if indices is not None:
-        # dataX = dataX[indices]
-        snrs = snrs[indices]
-        modulations = modulations[indices]
+    # if indices is not None:
+    #     # dataX = dataX[indices]
+    #     snrs = snrs[indices]
+    #     modulations = modulations[indices]
     return dataX, modulations, snrs
 
 
