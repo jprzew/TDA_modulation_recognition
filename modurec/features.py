@@ -4,6 +4,7 @@ from abc import abstractmethod
 import pandas as pd
 import numpy as np
 from ripser import Rips
+from math import sqrt
 
 from . import pandex  # Necessary for mr and np accessors
 
@@ -14,6 +15,19 @@ def trim_diagrams(diagrams, eps):
         trimmed_diagrams.append(diagram[lifetimes > eps])
 
     return trimmed_diagrams
+
+def wasserstein_amplitude(diagram, p):
+    lifetimes = diagram[:, 1] - diagram[:, 0]
+    lifetimes = lifetimes[lifetimes < float('inf')]
+
+    return np.linalg.norm(lifetimes, p) / sqrt(2)
+
+def persistent_entropy(diagram):
+    lifetimes = diagram[:, 1] - diagram[:, 0]
+    lifetimes = lifetimes[lifetimes < float('inf')]
+    L = sum(lifetimes)
+
+    return sum((lifetimes / L) * np.log(lifetimes / L))
 
 @pd.api.extensions.register_dataframe_accessor('ff')
 class FeaturesFactory:
@@ -277,3 +291,36 @@ class FeaturesFactory:
 
             return homology.values().map(lambda x:
                                          __features(x)[self.k - 1])
+
+    class wasser_ampl(Feature):
+        def __init__(self, p, n, dim=2, step=1, eps=0):
+            self.dim = dim  # point cloud dimension
+            self.n = n  # homology dimension
+            self.p = p  # p-parameter of the Lp-norm
+            self.step = step
+            self.eps = eps
+
+        def compute(self):
+            homology = self.creator.create_feature('H',
+                                                   n=self.n,
+                                                   dim=self.dim,
+                                                   step=self.step,
+                                                   eps=self.eps)
+
+            return homology.values().map(lambda x: wasserstein_amplitude(x, self.p))
+
+    class entropy(Feature):
+        def __init__(self, n, dim=2, step=1, eps=0):
+            self.dim = dim  # point cloud dimension
+            self.n = n  # homology dimension
+            self.step = step
+            self.eps = eps
+
+        def compute(self):
+            homology = self.creator.create_feature('H',
+                                                   n=self.n,
+                                                   dim=self.dim,
+                                                   step=self.step,
+                                                   eps=self.eps)
+
+            return homology.values().map(persistent_entropy)
