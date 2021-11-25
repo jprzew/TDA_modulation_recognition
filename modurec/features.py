@@ -3,9 +3,15 @@ from abc import abstractmethod
 
 import pandas as pd
 import numpy as np
+import h5py
 from ripser import Rips
 
 from . import pandex  # Necessary for mr and np accessors
+
+to_compute = [{'dim': 2, 'step': 1, 'eps': 0},
+              {'dim': 3, 'step': 1, 'eps': 0},
+              {'dim': 4, 'step': 1, 'eps': 0}]
+
 
 def trim_diagrams(diagrams, eps):
     trimmed_diagrams = []
@@ -277,3 +283,36 @@ class FeaturesFactory:
 
             return homology.values().map(lambda x:
                                          __features(x)[self.k - 1])
+
+def hdf_data_to_df(point_cloud, modulation_one_hot, SNR):
+
+    df = pd.DataFrame({'point_cloud': [cloud for cloud in point_cloud],
+                       'modulation_one_hot': [modulation for modulation
+                                              in modulation_one_hot],
+                       'SNR': SNR})
+    return df
+
+# TODO: Diagrams should not require signalI, etc. Correct this.
+def calculate_diagrams_hdf5(hdf5_file, parameters=to_compute):
+
+    data = h5py.File(hdf5_file, 'r')
+    modulation_one_hot = data['modulation_one_hot']
+    SNR = data['SNR']
+    point_cloud = data['point_cloud']
+
+    no_entries = point_cloud.shape[0]
+
+    for i in range(no_entries):
+        df = hdf_data_to_df(point_cloud[[i], :, :],
+                            modulation_one_hot[[i], :],
+                            SNR[[i]])
+
+        df['signalI'] = df.point_cloud.map(lambda x: x[:, 0])
+        df['signalQ'] = df.point_cloud.map(lambda x: x[:, 1])
+
+        feat = [df.ff.create_feature('diagram', **params) for
+                params in parameters]
+
+
+        # here we should write into HDF5
+
