@@ -3,6 +3,7 @@ from abc import abstractmethod
 
 import pandas as pd
 import numpy as np
+import h5py
 from ripser import Rips
 
 from . import pandex  # Necessary for mr and np accessors
@@ -277,3 +278,5 @@ class FeaturesFactory:
 
             return homology.values().map(lambda x:
                                          __features(x)[self.k - 1])
+
+
