@@ -265,52 +265,12 @@ def __select_indices(indices, random, number_of_signals):
         return list(indices[take_these])
 
 
-def select_from_hdf5(input_file, output_file, indices):
-    data = h5py.File(input_file, 'r')
-    modulation_one_hot = data['Y'][:, :]
-
-    # dataZ[:] has its second dimension of length one
-    # thus it is in fact one-dimenional; therefore .flatten is needed
-    SNR = data['Z'][:].flatten()
-    point_cloud = data['X']
-
-    _, no_samples, no_components  = point_cloud.shape
-    _, no_modulations = modulation_one_hot.shape
-
-    with h5py.File(output_file, 'w') as f:
-        new_point_cloud = f.create_dataset('point_cloud',
-                                           (len(indices), no_samples, no_components))  
-        new_modulation_one_hot = f.create_dataset('modulation_one_hot',
-                                                  (len(indices), no_modulations))
-        new_SNR = f.create_dataset('SNR', (len(indices),))
-
-
-        for i, index in enumerate(indices):
-            new_point_cloud[i, :, :] = point_cloud[index, :, :]
-            new_modulation_one_hot[i, :] = modulation_one_hot[index, :]
-            new_SNR[i] = SNR[index]
-
-
 def sample_indices(indices_file, number, seed=42):
 
      indices = np.loadtxt(indices_file, delimiter=',', dtype=int)
 
      np.random.seed(seed)
      return np.random.choice(indices, size=number)
-
-def select_modulations_from_train(number, output_file):
-    
-    indices = sample_indices(train_indices_file, number)
-    select_from_hdf5(hdf5_file, output_file, indices)
-
-
-def hdf_data_to_df(point_cloud, modulation_one_hot, SNR):
-
-    df = pd.DataFrame({'point_cloud': [cloud for cloud in point_cloud],
-                       'modulation_one_hot': [modulation for modulation
-                                              in modulation_one_hot],
-                       'SNR': SNR})
-    return df
 
 
 # TODO: Diagrams should not require signalI, etc. Correct this.
@@ -331,13 +291,8 @@ def compute_diagrams(point_cloud):
     # here we should write into HDF5
 
 
-def add_row_to_hdf5(hdf5_file,
-                    cloud,
-                    modulation,
-                    snr,
-                    index,
-                    diagrams,
-                    row):
+def add_row_to_hdf5(hdf5_file, cloud, modulation, snr,
+                    index, diagrams, row):
 
     point_cloud = hdf5_file['point_cloud']
     modulation_one_hot = hdf5_file['modulation_one_hot']
@@ -353,11 +308,9 @@ def add_row_to_hdf5(hdf5_file,
     diagram0[str(row)] = diagrams['diagram'][0]
     diagram1[str(row)] = diagrams['diagram'][1]
 
-def create_structure_hdf5(hdf5_file,
-                          length,
-                          no_samples,
-                          no_components,
-                          no_modulations):
+
+def create_structure_hdf5(hdf5_file, length,
+                          no_samples, no_components, no_modulations):
 
         hdf5_file.create_dataset('point_cloud',
                                  (length, no_samples, no_components))  
@@ -368,7 +321,6 @@ def create_structure_hdf5(hdf5_file,
         hdf5_file.create_group('/diagram', (length,))
         hdf5_file.create_group('/diagram/0', (length,))
         hdf5_file.create_group('/diagram/1', (length,))
-
 
 
 def select_train_hdf5(number, output_file, parameters=to_compute,
@@ -404,7 +356,7 @@ def select_train_hdf5(number, output_file, parameters=to_compute,
                             diagrams=diagrams,
                             row=row)
 
-
+# TODO: Remove this temporary function
 def view_structure(output_file):
     data = h5py.File(output_file, 'r')
     modulation_one_hot = data['modulation_one_hot']
