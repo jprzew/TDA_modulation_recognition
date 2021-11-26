@@ -49,10 +49,12 @@ class_to_id_2016 = {'QPSK': 0,
                     'CPFSK': 9,
                     'BPSK': 10}
 
-to_compute = [{'dim': 2, 'step': 1, 'eps': 0},
-              {'dim': 3, 'step': 1, 'eps': 0},
-              {'dim': 4, 'step': 1, 'eps': 0}]
+# to_compute = [{'dim': 2, 'step': 1, 'eps': 0},
+#               {'dim': 3, 'step': 1, 'eps': 0},
+#               {'dim': 4, 'step': 1, 'eps': 0}]
 
+# Temporary dictionary: only one diagram will be computed
+to_compute = [{'dim': 2, 'step': 1, 'eps': 0}]
 
 dictionary_pickle_file_path = r'../data/RML2016.10a_dict.pkl'
 
@@ -311,6 +313,7 @@ def hdf_data_to_df(point_cloud, modulation_one_hot, SNR):
     return df
 
 
+# TODO: Diagrams should not require signalI, etc. Correct this.
 def compute_diagrams(point_cloud): 
 
     df = pd.DataFrame({'point_cloud': [point_cloud]})
@@ -320,7 +323,10 @@ def compute_diagrams(point_cloud):
     feat = [df.ff.create_feature('diagram', **params) for
             params in to_compute]
 
-    return list(map(str, feat))
+    diagrams = map(lambda x: x.values().iloc[0], feat)
+
+    return {name: diags for name, diags in
+            zip(map(str, feat), diagrams)}
 
     # here we should write into HDF5
 
@@ -336,11 +342,16 @@ def add_row_to_hdf5(hdf5_file,
     point_cloud = hdf5_file['point_cloud']
     modulation_one_hot = hdf5_file['modulation_one_hot']
     SNR = hdf5_file['SNR']
+    ind = hdf5_file['index']
+    diagram0 = hdf5_file['diagram']['0']
+    diagram1 = hdf5_file['diagram']['1']
 
     point_cloud[row, :, :] = cloud
     modulation_one_hot[row, :] = modulation
     SNR[row] = snr
-
+    ind[row] = index
+    diagram0[str(row)] = diagrams['diagram'][0]
+    diagram1[str(row)] = diagrams['diagram'][1]
 
 def create_structure_hdf5(hdf5_file,
                           length,
@@ -348,14 +359,18 @@ def create_structure_hdf5(hdf5_file,
                           no_components,
                           no_modulations):
 
-        point_cloud = hdf5_file.create_dataset('point_cloud',
-                                               (length, no_samples, no_components))  
-        modulation_one_hot = hdf5_file.create_dataset('modulation_one_hot',
-                                                      (length, no_modulations))
-        SNR = hdf5_file.create_dataset('SNR', (length,))
+        hdf5_file.create_dataset('point_cloud',
+                                 (length, no_samples, no_components))  
+        hdf5_file.create_dataset('modulation_one_hot',
+                                 (length, no_modulations))
+        hdf5_file.create_dataset('SNR', (length,))
+        hdf5_file.create_dataset('index', (length,))
+        hdf5_file.create_group('/diagram', (length,))
+        hdf5_file.create_group('/diagram/0', (length,))
+        hdf5_file.create_group('/diagram/1', (length,))
 
 
-# TODO: Diagrams should not require signalI, etc. Correct this.
+
 def select_train_hdf5(number, output_file, parameters=to_compute,
                       hdf5_file=hdf5_file, seed=42):
 
@@ -395,14 +410,15 @@ def view_structure(output_file):
     modulation_one_hot = data['modulation_one_hot']
     SNR = data['SNR']
     point_cloud = data['point_cloud']
+    diagram0 = data['diagram']['0']
+    diagram1 = data['diagram']['1']
+
 
     no_samples = point_cloud.shape[1]
     no_components = point_cloud.shape[2]
     no_modulations = modulation_one_hot.shape[1]
 
-    print(SNR[:])
-    print(SNR[:].shape)
-    
 
-
-
+    for i in range(point_cloud.shape[0]):
+        print(diagram0[str(i)][...])
+        print(diagram1[str(i)][...])
