@@ -318,9 +318,9 @@ def create_structure_hdf5(hdf5_file, length,
                                  (length, no_modulations))
         hdf5_file.create_dataset('SNR', (length,))
         hdf5_file.create_dataset('index', (length,))
-        hdf5_file.create_group('/diagram', (length,))
-        hdf5_file.create_group('/diagram/0', (length,))
-        hdf5_file.create_group('/diagram/1', (length,))
+        hdf5_file.create_group('/diagram', track_order=True)
+        hdf5_file.create_group('/diagram/0', track_order=True)
+        hdf5_file.create_group('/diagram/1', track_order=True)
 
 
 def select_train_hdf5(number, output_file, parameters=to_compute,
