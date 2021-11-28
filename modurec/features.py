@@ -127,6 +127,12 @@ class FeaturesFactory:
                 samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_4D', step=self.step)
                 return samples['cloud_4D']
 
+
+            def __compute10D(samples):
+                samples.mr.add_point_cloud(window=5, point_cloud_col='cloud_4D', step=self.step)
+                return samples['cloud_4D']
+
+
             signalI = self.creator.create_feature('signalI')
             signalQ = self.creator.create_feature('signalQ')
             if isinstance(self.step, str):
@@ -145,6 +151,8 @@ class FeaturesFactory:
                 return __compute3D(samples)
             elif self.dim == 4:
                 return __compute4D(samples)
+            elif self.dim == 10:
+                return __compute10D(samples)
 
             raise(NotImplemented('Dimension not implemented.'))
 
