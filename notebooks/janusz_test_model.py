@@ -47,7 +47,7 @@ import matplotlib.pyplot as plt
 # **Reading the data**
 
 # %%
-df = pd.read_pickle('../data/stats_train.pkl')
+df = pd.read_pickle('../data/stats_train_plain.pkl')
 
 # %% [markdown]
 # **What is in the data**
@@ -64,35 +64,41 @@ df.columns
 # %%
 epsilon = 0.05
 
-mean_features = [df.ff.create_feature('mean', n=0, dim=2, eps=epsilon),
-                 df.ff.create_feature('mean', n=1, dim=2, eps=epsilon),
-                 df.ff.create_feature('mean', n=0, dim=3, eps=epsilon),
-                 df.ff.create_feature('mean', n=1, dim=3, eps=epsilon),
-                 df.ff.create_feature('mean', n=0, dim=4, eps=epsilon),
-                 df.ff.create_feature('mean', n=1, dim=4, eps=epsilon)]
-                 # df.ff.create_feature('mean', n=0, dim=4, step='symbol_rate'),
-                 # df.ff.create_feature('mean', n=1, dim=4, step='symbol_rate')]
+mean_lifetimes = [df.ff.create_feature('mean', n=0, dim=2),
+                  df.ff.create_feature('mean', n=1, dim=2),
+                  df.ff.create_feature('mean', n=0, dim=3),
+                  df.ff.create_feature('mean', n=1, dim=3),
+                  df.ff.create_feature('mean', n=0, dim=4),
+                  df.ff.create_feature('mean', n=1, dim=4),
+                  df.ff.create_feature('mean', n=0, dim=10),
+                  df.ff.create_feature('mean', n=1, dim=10)]
+                  # df.ff.create_feature('mean', n=0, dim=4, step='symbol_rate'),
+                  # df.ff.create_feature('mean', n=1, dim=4, step='symbol_rate')]
 
-counting_features = [df.ff.create_feature('no', n=0, dim=2, eps=epsilon),
-                     df.ff.create_feature('no', n=1, dim=2, eps=epsilon),
+counting_features = [df.ff.create_feature('no', n=1, dim=2),
+                     df.ff.create_feature('no', n=1, dim=3),
+                     df.ff.create_feature('no', n=1, dim=4),
+                     df.ff.create_feature('no', n=1, dim=10),
+                     df.ff.create_feature('no', n=0, dim=2, eps=epsilon),
                      df.ff.create_feature('no', n=0, dim=3, eps=epsilon),
-                     df.ff.create_feature('no', n=1, dim=3, eps=epsilon),
                      df.ff.create_feature('no', n=0, dim=4, eps=epsilon),
-                     df.ff.create_feature('no', n=1, dim=4, eps=epsilon)]
+                     df.ff.create_feature('no', n=0, dim=10, eps=epsilon)]
                      # df.ff.create_feature('no', n=0, dim=4, step='symbol_rate'),
                      # df.ff.create_feature('no', n=1, dim=4, step='symbol_rate')]
 
-variance_features = [df.ff.create_feature('var', n=0, dim=2, eps=epsilon),
-                     df.ff.create_feature('var', n=1, dim=2, eps=epsilon),
-                     df.ff.create_feature('var', n=0, dim=3, eps=epsilon),
-                     df.ff.create_feature('var', n=1, dim=3, eps=epsilon),
-                     df.ff.create_feature('var', n=0, dim=4, eps=epsilon),
-                     df.ff.create_feature('var', n=1, dim=4, eps=epsilon)]
+variance_features = [df.ff.create_feature('var', n=0, dim=2),
+                     df.ff.create_feature('var', n=1, dim=2),
+                     df.ff.create_feature('var', n=0, dim=3),
+                     df.ff.create_feature('var', n=1, dim=3),
+                     df.ff.create_feature('var', n=0, dim=4),
+                     df.ff.create_feature('var', n=1, dim=4),
+                     df.ff.create_feature('var', n=0, dim=10),
+                     df.ff.create_feature('var', n=1, dim=10)]
                      # df.ff.create_feature('var', n=0, dim=4, step='symbol_rate'),
                      # df.ff.create_feature('var', n=1, dim=4, step='symbol_rate')]
 
 
-feat = mean_features + variance_features + counting_features
+feat = mean_lifetimes + counting_features + variance_features
 
 
 # %% [markdown]
