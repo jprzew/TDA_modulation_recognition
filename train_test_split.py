@@ -6,7 +6,7 @@ import os
 from sklearn.model_selection import train_test_split
 
 seed = 42
-data_path = '../data'
+data_path = './data'
 
 
 df = signal_reader.get_signal_df_from_numpy()
