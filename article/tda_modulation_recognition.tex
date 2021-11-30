@@ -307,6 +307,20 @@ Compare figures (...) of the constellation diagrams. With raw data, affected by 
 	
 	\subsection{Topological summaries}
 	
+	The goal of Topological Data Analysis is to apply homology groups described in the previous section to datasets. The sets in question, however, are in most cases discrete (finite) clouds of points, hence they do not possess topological features such as connectedness or cycles. Therefore the idea is to consider each point along with its neighborhood of a growing radius and monitor the features of the union of such neighborhoods rather than the points themselves (see fig. [...]). For computational purposes, the neighborhoods are then replaced by their simplex counterparts defined below.
+	
+	\begin{definition}
+		Let $A$ be a finite set in a metric space $(X,d)$. The Vietoris-Rips complex of the set $A$ for a fixed $\varepsilon>0$ is the simplicial complex with vertices in $A$ such that the set $\{a_1, \dots, a_n\}\subseteq A$ is a simplex if $d(a_i,a_j)<\varepsilon$ for every $1\leqslant i, j\leqslant n$. We will denote it by $VR_\varepsilon$.
+	\end{definition}
+
+As shown in fig. [...], the points in the dataset are surrounded by their respective balls, and then the centers of such balls are connected by a simplex if and only if the distance is sufficiently small. Following this construction we obtain the Vietoris-Rips complex. Obviously, the appearance of simplices is immediately related to the size of $\varepsilon$: the greater $\varepsilon$ becomes, the less strict the criterion is, and the larger number of simplices appear. The crucial method of TDA is observing the topological changes as $\varepsilon$ increases.
+
+\begin{definition}
+	A filtration is such a nested family of complexes $(VR_\varepsilon)_{\varepsilon>0}$ that for any $\varepsilon_1, \varepsilon_2>0$ if $\varepsilon_1<\varepsilon_2$ then $VR_{\varepsilon_1} \subseteq VR_{\varepsilon_2}$.
+\end{definition}
+
+It is useful to interpret the growing parameter $\varepsilon$ as \textit{time}: as time passes, the complexes in the filtration change and, more precisely, certain topological features appear and disappear or, as is often said in TDA, born and die. Topological summaries are the means of depiction of the time of birth and death of those features. We will shortly describe a few of the typical summaries.
+	
 	\section{Description of the applied methods}
 	
 	\section{Main results}
