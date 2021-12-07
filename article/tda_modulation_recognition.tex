@@ -319,7 +319,19 @@ As shown in fig. [...], the points in the dataset are surrounded by their respec
 	A filtration is such a nested family of complexes $(VR_\varepsilon)_{\varepsilon>0}$ that for any $\varepsilon_1, \varepsilon_2>0$ if $\varepsilon_1<\varepsilon_2$ then $VR_{\varepsilon_1} \subseteq VR_{\varepsilon_2}$.
 \end{definition}
 
-It is useful to interpret the growing parameter $\varepsilon$ as \textit{time}: as time passes, the complexes in the filtration change and, more precisely, certain topological features appear and disappear or, as is often said in TDA, born and die. Topological summaries are the means of depiction of the time of birth and death of those features. We will shortly describe a few of the typical summaries.
+It is useful to interpret the growing parameter $\varepsilon$ as \textit{time}: as time passes, the complexes in the filtration change and, more precisely, certain topological features appear and disappear or, as is often said in TDA, are born and die. Topological summaries are the means of depiction of the time of birth and death of those features. We will shortly describe a few of the typical summaries.
+
+\subsubsection{Barcodes}
+
+Let $b$ be the time of birth of a feature and let $d$ be the time of its death. A barcode is a representation of the distance $d-b$ in the form of horizontal bars. One can find significant topological features by identifying bars of substantial length. A certain drawback of barcodes is the relative small number of features presented on a single image.
+
+\subsubsection{Persistence diagrams}
+
+Persistence diagrams are summaries which we rely on the most in this paper. Similarly to barcodes, they depict births and deaths of features, however, this time presented in the form of points $(b,d)$ on the plane. Since $b<d$ for every $b,d$, all points of the diagram are stored above the diagonal $d=b$. Formally, a persistence diagram is a multiset, i.e. it allows multiple occurrences of points $(b,d)$, meaning that certain features are born at the same time $b$ and die at the same time $d$.
+
+\subsubsection{Persistence landscapes}
+
+While offering an elegant representation of the lifetimes of features, both the space of barcodes and the space of persistence diagrams lack the structure of a Hilbert space. Persistence landscapes are an attempt to remedy that, transforming a diagram into a sequence of functions.
 	
 	\section{Description of the applied methods}
 	
@@ -329,6 +341,9 @@ It is useful to interpret the growing parameter $\varepsilon$ as \textit{time}: 
 		
 		\bibitem{BZCAM}
 		R. Borkowski, D. Zibar, A. Caballero, V. Arlunno, I.T. Monroy \emph{Stokes Space-Based Optical Modulation Format Recognition for Digital Coherent Receivers}, IEEE Photonics Technology Letters {\bf 25} (2013), no. 21, 2129-2132.
+		
+		\bibitem{ChM}
+		F. Chazal, B. Michel, \emph{An introduction to Topological Data Analysis: fundamental and practical aspects for data scientists}, Frontiers in Artificial Intelligence \textbf{4} (2021), 1-28.
 		
 		\bibitem{Dobre}
 		O.A. Dobre, A. Abdi, Y. Bar-Ness, W. Su \emph{Survey of Automatic Modulation Classification Techniques: Classical Approaches and New Trends}, IET Communications {\bf 1} (2007), no. 2, 137-156.
