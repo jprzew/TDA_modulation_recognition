@@ -374,3 +374,84 @@ def view_structure(output_file):
     for i in range(point_cloud.shape[0]):
         print(diagram0[str(i)][...])
         print(diagram1[str(i)][...])
+
+
+def create_index_df(hdf5_file=hdf5_file,
+                    indices_file=train_indices_file):
+    indices = np.loadtxt(indices_file, delimiter=',', dtype=int)
+
+    data = h5py.File(hdf5_file, 'r')
+    modulation_one_hot = data['Y']
+    modulations = np.apply_along_axis(lambda x: x.argmax(),
+                                      1,
+                                      modulation_one_hot[:, :])
+    SNR = data['Z'][:].flatten()
+
+    return pd.DataFrame({'index': indices,
+                         'modulation_id': modulations[indices],
+                         'SNR': SNR[indices]})
+
+def filter_df(df,
+              condition_snr=lambda x: x >= 6,
+              condition_mod_id=lambda x: x in range(24)):
+
+    return df.loc[df.SNR.apply(condition_snr) & 
+                  df.modulation_id.apply(condition_mod_id)]
+
+
+def random_subsample(df, size, seed=42):
+
+     np.random.seed(seed)
+     grouped = df.groupby(['modulation_id', 'SNR'], as_index=False)
+
+     df = grouped.apply(lambda x: x.loc[np.random.choice(x.index,
+                                                         size,
+                                                         False)])
+     return df.sort_index()
+
+
+def create_pickle(indices, output_file, hdf5_file=hdf5_file):
+    data = h5py.File(hdf5_file, 'r')
+    modulation_one_hot = data['Y']
+    SNR = data['Z']
+    point_cloud = data['X']
+
+    # no_samples = point_cloud.shape[1]
+    # no_components = point_cloud.shape[2]
+    # no_modulations = modulation_one_hot.shape[1]
+
+    point_cloud = point_cloud[indices, :, :]
+    modulations = np.apply_along_axis(lambda x: x.argmax(),
+                                      1,
+                                      modulation_one_hot[indices, :])
+    SNR = SNR[indices].flatten()
+
+    df = pd.DataFrame({'point_cloud': list(point_cloud),
+                       'modulation_id': modulations,
+                       'SNR': SNR}, index=indices)
+    df['modulation_type'] = df.modulation_id.apply(lambda x: index_to_class[x])
+
+    #TODO: Erase signalI and signalQ properties!
+    df['signalI'] = df['point_cloud'].apply(lambda x: x[:, 0])
+    df['signalQ'] = df['point_cloud'].apply(lambda x: x[:, 1])
+    
+    df.to_pickle(output_file)
+
+
+def select_train_pkl(size,
+                     output_file,
+                     condition_snr=lambda x: x >= 6,
+                     condition_mod_id=lambda x: x in range(24),
+                     hdf5_file=hdf5_file,
+                     indices_file=train_indices_file,
+                     seed=42):
+
+    df = create_index_df(hdf5_file=hdf5_file, indices_file=train_indices_file)
+    df = filter_df(df, condition_snr=condition_snr,
+                   condition_mod_id=condition_mod_id)
+    df = random_subsample(df, size=size, seed=seed)
+    
+    create_pickle(indices=df['index'],
+                  output_file=output_file,
+                  hdf5_file=hdf5_file)
+    
