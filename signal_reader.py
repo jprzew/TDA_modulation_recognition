@@ -95,6 +95,7 @@ def split_and_save_indices_rml18(proportion=0.3,
 
 
 def sample_indices(indices_file, number, seed=42):
+    """Returns a random sample of indices from indices_file"""
 
     indices = np.loadtxt(indices_file, delimiter=',', dtype=int)
 
@@ -104,6 +105,10 @@ def sample_indices(indices_file, number, seed=42):
 
 # TODO: Diagrams should not require signalI, etc. Correct this.
 def compute_diagrams(point_cloud): 
+    """Computes diagrams defined by to_compute dict
+       Return value: dictionary of the form
+       {'name': diagram}
+    """
 
     df = pd.DataFrame({'point_cloud': [point_cloud]})
     df['signalI'] = df.point_cloud.map(lambda x: x[:, 0])
@@ -120,6 +125,22 @@ def compute_diagrams(point_cloud):
 
 def add_row_to_hdf5(hdf5_file, cloud, modulation, snr,
                     index, diagrams, row):
+    """Function adds row to hdf5_file
+
+    Args:
+        hdf5_file: hdf5-file object (from h5py)
+        cloud: pt. cloud will be written in 'point_cloud' array of the file
+        modulation: modulation id in the one hot form
+            will be written in modulation_one_hot array
+        snr: value of SNR - will be written in SNR array
+        index: index of this particular observation (from the original file)
+            will be writen in index array
+        diagrams: list of diagrams (wrt homology dimension)
+            will be written in 'diagram' group consisting of two
+            subgroups '0' and '1'. Each subgroup is a set of arrays
+            indexed by str(row)
+        row: row number
+    """
 
     point_cloud = hdf5_file['point_cloud']
     modulation_one_hot = hdf5_file['modulation_one_hot']
@@ -138,6 +159,19 @@ def add_row_to_hdf5(hdf5_file, cloud, modulation, snr,
 
 def create_structure_hdf5(hdf5_file, length,
                           no_samples, no_components, no_modulations):
+    """Creates structure of the hdf5-file with diagrams
+
+    Args:
+        hdf5_file: hdf5-file object (from h5py)
+        length: number of observations
+        no_samples: number of samples of each point cloud
+        no_components: number of dimensions of the point cloud
+        no_modulations: number of modulations
+
+    The file will consist of: 'point_cloud', 'modulation_one_hot'
+    'SNR', 'index' - arrays; and /diagram/0 /diagram/1 that are groups
+
+        """
 
     hdf5_file.create_dataset('point_cloud',
                                  (length, no_samples, no_components))
@@ -152,6 +186,10 @@ def create_structure_hdf5(hdf5_file, length,
 
 def select_train_hdf5(number, output_file, parameters=to_compute,
                       hdf5_file=hdf5_file, seed=42):
+    """Selects random sample from indices defined by train_indices_file
+       and computes diagrams defined by parameters argument
+       Result is written to output_file (str)
+    """
 
     data = h5py.File(hdf5_file, 'r')
     modulation_one_hot = data['Y']
@@ -178,7 +216,7 @@ def select_train_hdf5(number, output_file, parameters=to_compute,
             add_row_to_hdf5(hdf5_file=f,
                             cloud=cloud,
                             modulation=modulation_one_hot[index, :],
-                            snr = SNR[index].flatten(),
+                            snr=SNR[index].flatten(),
                             index=index,
                             diagrams=diagrams,
                             row=row)
@@ -186,6 +224,9 @@ def select_train_hdf5(number, output_file, parameters=to_compute,
 
 def create_index_df(hdf5_file=hdf5_file,
                     indices_file=train_indices_file):
+    """Creates dataframe of indices. Helper function to be used
+    when selecting random sample of indices"""
+
     indices = np.loadtxt(indices_file, delimiter=',', dtype=int)
 
     data = h5py.File(hdf5_file, 'r')
@@ -203,12 +244,16 @@ def create_index_df(hdf5_file=hdf5_file,
 def filter_df(df,
               condition_snr=lambda x: x >= 6,
               condition_mod_id=lambda x: x in range(24)):
+    """Filters dataframe wrt. to conditions on SNR and modulation id"""
 
     return df.loc[df.SNR.apply(condition_snr) & 
                   df.modulation_id.apply(condition_mod_id)]
 
 
 def random_subsample(df, size, seed=42):
+    """Creates a random subsample from 'df' with 'size' observations
+    in each subgroup"""
+
 
     np.random.seed(seed)
     grouped = df.groupby(['modulation_id', 'SNR'], as_index=False)
@@ -220,6 +265,14 @@ def random_subsample(df, size, seed=42):
 
 
 def create_pickle(indices, output_file, hdf5_file=hdf5_file):
+    """Creates pickle from selected cases from hdf5-file
+
+    Args:
+        indices: indices of selected cases
+        output_file: output file name
+        hdf5_file: hdf5-file name
+    """
+
     data = h5py.File(hdf5_file, 'r')
     modulation_one_hot = data['Y']
     SNR = data['Z']
@@ -254,6 +307,17 @@ def select_train_pkl(size,
                      hdf5_file=hdf5_file,
                      indices_file=train_indices_file,
                      seed=42):
+    """Selects a subsample from hdf5-file and saves is as a pickle
+
+    Args:
+        size: number of observations in each group defined by SNR and modulation
+        output_file: name of the output pickle
+        condition_snr: condition for SNR
+        condition_mod_id: condition for modulation id
+        hdf5_file: name of the hdf5-file
+        seed: random seed
+    """
+
 
     df = create_index_df(hdf5_file=hdf5_file, indices_file=train_indices_file)
     df = filter_df(df, condition_snr=condition_snr,
