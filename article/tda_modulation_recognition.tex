@@ -20,6 +20,9 @@
 % \theoremstyle{}
 % 2. contains macro: \begin{proof} ... \end{proof}
 \usepackage{amsthm} 
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\graphicspath{ {./images/} }
 
 
 \DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
@@ -282,7 +285,6 @@ Secondly, we have modulation types where the amplitude (or amplitude and phase) 
 \end{itemize}
 Compare figures (...) of the constellation diagrams. With raw data, affected by channel impairments and some randomness, it is easy to see that certain pairs of diagrams tend to blur and their original modulation is not easy to decode.
 
-
 (other classes: OOK, AM-SSB-SC, FM, etc...)
 
 	Full collection of classes is listed in the next section.
@@ -293,9 +295,18 @@ Compare figures (...) of the constellation diagrams. With raw data, affected by 
 	
 	We base our results on the dataset provided in \cite{ORC} by the authors. The set consists of both real (over-the-air, OTA) and synthetic signals (with added effects). Combined, there is two million signal examples of 24 modulation types. The signals are stored in the I/Q format.
 	
-	The synthetic data set consists of several simulated wireless channels. The authors of \cite{ORC} use an audio source, followed by an analog modulator as well as I.I.D. symbol generator followed by a digital modulator. Then the signals are subjected to synthetic channel impairments, all of which with a certain degree of randomness. For instance, signal shaping is distributed uniformly as $\alpha \sim U(0.1, 0.4)$, interpolation depends on uniform as well as normal distributions etc. Full model is shown in \cite{ORC}, Fig. 2.
+	\begin{wrapfigure}{r}{7.5cm}
+	\includegraphics[scale=0.25]{random_variables.png}
+	\end{wrapfigure}
+	The synthetic data set consists of several simulated wireless channels. The authors of \cite{ORC} use an audio source, followed by an analog modulator as well as I.I.D. symbol generator followed by a digital modulator. Then the signals are subjected to synthetic channel impairments, all of which with a certain degree of randomness.
+	For instance, signal shaping is distributed uniformly as $\alpha \sim U(0.1, 0.4)$, interpolation depends on uniform as well as normal distributions etc. Full model is shown below.
+	
+	\includegraphics[scale=0.25]{signal_generation.png}
 	
 	Furtherly, the synthetic dataset consists of two parts which the authors describe as \textit{normal} classes and \textit{difficult} classes. The normal case consist of 11 signal classes: OOK, 4ASK, BPSK, QPSK, 8PSK, 16QAM, AM-SSB-SC, AM-DSB-SC, FM, GMSK, OQPSK, which are supposedly relatively easy to categorize. The difficult case consists of all 24 classes: OOK, 4ASK, 8ASK, BPSK, QPSK, 8PSK, 16PSK, 32PSK, 16APSK, 32APSK, 64APSK, 128APSK, 16QAM, 32QAM, 64QAM, 128QAM, 256QAM, AM-SSB-WC, AM-SSB-SC, AM-DSB-WC, AM-DSB-SC, FM, GMSK, OQPSK. The simultaneous presence of, for instace,  64APSK and 128APSK, or 128QAM and 256QAM makes these classes much harder to distinguish.
+	
+	\includegraphics[scale=0.5]{BPSK.png}
+	\includegraphics[scale=0.5]{QPSK.png}
 	
 	The authors of \cite{ORC} also provide an OTA part of the dataset in which they transmit and receive signals using a universal software radio peripheral (USRP) B210 software defined radio (SDR). Those signals do not feature any synthetic channel impairments.
 		
@@ -334,6 +345,8 @@ Persistence diagrams are summaries which we rely on the most in this paper. Simi
 While offering an elegant representation of the lifetimes of features, both the space of barcodes and the space of persistence diagrams lack the structure of a Hilbert space. Persistence landscapes are an attempt to remedy that, transforming a diagram into a sequence of functions.
 	
 	\section{Description of the applied methods}
+
+	\includegraphics[scale=0.6]{BPSK_diagram.png}	\includegraphics[scale=0.6]{QPSK_diagram.png}
 	
 	\section{Main results}
 	
