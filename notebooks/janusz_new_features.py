@@ -37,9 +37,9 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from bioinfokit.visuz import cluster
-from IPython.display import Image
-import plotly.express as px
+# from bioinfokit.visuz import cluster
+# from IPython.display import Image
+# import plotly.express as px
 
 from sklearn.manifold import TSNE
 
@@ -48,7 +48,7 @@ from sklearn.manifold import TSNE
 
 # %%
 # df = pd.read_pickle('../data/stats_train_plain.pkl')
-df = pd.read_pickle('/media/sf_VM/stats_large.pkl')
+df = pd.read_pickle('../data/stats_large.pkl')
 
 # %% [markdown]
 # **Preparing the data**
@@ -150,7 +150,11 @@ targets = y.unique()
 colors = ['r', 'g', 'b']
 
 
-sns.scatterplot(data=final_df, x='y1', y='y2', hue='modulation_type')
+plot = sns.scatterplot(data=final_df, x='y1', y='y2', hue='modulation_type')
+fig = plot.get_figure()
+fig.savefig('figure.png') 
+
+
 
 # %%
 df.columns
