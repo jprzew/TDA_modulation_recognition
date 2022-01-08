@@ -141,7 +141,7 @@ class FeaturesFactory:
 
         def compute(self):
            
-            def __compute3D(samples):
+            def __compute3D(df):
 
                 def __standardize(x):
                     range0 = np.max(x[:, 0]) - np.min(x[:, 0])
@@ -150,13 +150,12 @@ class FeaturesFactory:
                     x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
                     return x
 
-                samples.mr.add_point_cloud(window=1, point_cloud_col='cloud_3D', step=self.step)
-                samples['cloud_3D'] = \
-                    samples.cloud_3D.apply(lambda x:
-                                           np.column_stack([x, range(x.shape[0])]))
-                samples['cloud_3D'] = samples.cloud_3D.apply(__standardize)
 
-                return samples['cloud_3D']
+                df['point_cloud'] = df.point_cloud.apply(lambda x:
+                                                         np.column_stack([x, range(x.shape[0])]))
+                df['point_cloud'] = df.point_cloud.apply(__standardize)
+
+                return df['point_cloud']
 
 
             df = self.df['point_cloud']
@@ -179,24 +178,9 @@ class FeaturesFactory:
                                                          step=x[step_col]),
                                 axis=1)
             elif self.dim == 3:
-                return df['point_cloud']
+                return __compute3D(df)
             else:
-                raise NotImplementedError
-
-
-            
-            if self.dim == 2:
-                return __compute2D(samples)
-            elif self.dim == 3:
-                return __compute3D(samples)
-            elif self.dim == 4:
-                return __compute4D(samples)
-            elif self.dim == 10:
-                return __compute10D(samples)
-            elif self.dim == 20:
-                return __compute20D(samples)
-
-            raise(NotImplemented('Dimension not implemented.'))
+                raise NotImplemented('Dimension not implemented.')
 
     class diagram(Feature):
 
