@@ -8,6 +8,31 @@ from ripser import Rips
 from math import sqrt
 
 from . import pandex  # Necessary for mr and np accessors
+from .utility import rolling_window
+
+
+def windowed_cloud(point_cloud, window, step):
+
+    samples = point_cloud.shape[0]
+    dim = point_cloud.shape[1]
+    no_windows = samples - step*(window-1)  # number of windows
+
+    # we create indices to rearrange points so that 
+    # points in the same window are neighbours
+    indices = np.array(range(samples))
+    stride = indices.strides[0]
+
+    # the first dimension describes different windows
+    # the second dimension descibes points in windows
+    indices = np.lib.stride_tricks.as_strided(indices,
+                                              shape=(no_windows, window),
+                                              strides=(stride, step * stride))
+    indices = indices.flatten()
+    
+    return np.lib.stride_tricks.as_strided(point_cloud[indices, :],
+                                           shape=(no_windows, dim * window),
+                                           strides=(stride * dim * window, stride))
+
 
 def trim_diagrams(diagrams, eps):
     trimmed_diagrams = []
@@ -115,11 +140,7 @@ class FeaturesFactory:
             self.step = step
 
         def compute(self):
-            def __compute2D(samples):
-                samples.mr.add_point_cloud(window=1, step=self.step)
-
-                return samples['point_cloud']
-
+           
             def __compute3D(samples):
 
                 def __standardize(x):
@@ -137,33 +158,33 @@ class FeaturesFactory:
 
                 return samples['cloud_3D']
 
-            def __compute4D(samples):
-                samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_4D', step=self.step)
-                return samples['cloud_4D']
 
-
-            def __compute10D(samples):
-                samples.mr.add_point_cloud(window=5, point_cloud_col='cloud_4D', step=self.step)
-                return samples['cloud_4D']
-
-
-            def __compute20D(samples):
-                samples.mr.add_point_cloud(window=10, point_cloud_col='cloud_4D', step=self.step)
-                return samples['cloud_4D']
-
-
-            signalI = self.creator.create_feature('signalI')
-            signalQ = self.creator.create_feature('signalQ')
+            df = self.df['point_cloud']
             if isinstance(self.step, str):
-                step_col = self.creator.df[self.step]
+                step_col = self.step
+                df = pd.concat([df, self.df[step_col]], axis=1)
+            elif isinstance(self.step, int):
+                step_col = 'step'
+                df = pd.DataFrame(df)
+                df[step_col] = self.step
             else:
-                step_col = None
+                raise ValueError('Parameter step need to be str or int')
 
-            samples = pd.concat([signalI.values(),
-                                 signalQ.values(),
-                                 step_col],
+     
+            if self.dim == 2:
+                return df['point_cloud']
+            elif self.dim % 2 == 0:
+                return df.apply(lambda x: windowed_cloud(x['point_cloud'],
+                                                         window=self.dim // 2,
+                                                         step=x[step_col]),
                                 axis=1)
+            elif self.dim == 3:
+                return df['point_cloud']
+            else:
+                raise NotImplementedError
 
+
+            
             if self.dim == 2:
                 return __compute2D(samples)
             elif self.dim == 3:
