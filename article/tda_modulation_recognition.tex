@@ -297,16 +297,23 @@ Compare figures (...) of the constellation diagrams. With raw data, affected by 
 	
 	\begin{wrapfigure}{r}{7.5cm}
 	\includegraphics[scale=0.25]{random_variables.png}
+	\caption{Random variables used for channel impairments.}
 	\end{wrapfigure}
 	The synthetic data set consists of several simulated wireless channels. The authors of \cite{ORC} use an audio source, followed by an analog modulator as well as I.I.D. symbol generator followed by a digital modulator. Then the signals are subjected to synthetic channel impairments, all of which with a certain degree of randomness.
-	For instance, signal shaping is distributed uniformly as $\alpha \sim U(0.1, 0.4)$, interpolation depends on uniform as well as normal distributions etc. Full model is shown below.
+	For instance, signal shaping is distributed uniformly as $\alpha \sim U(0.1, 0.4)$, interpolation depends on uniform as well as normal distributions etc. Full model is shown in fig. \ref{sig_gen}.
 	
-	\includegraphics[scale=0.25]{signal_generation.png}
+	\begin{figure}\label{sig_gen}
+		\includegraphics[scale=0.25]{signal_generation.png}
+		\caption{Signal generation model in the bechmark dataset.}
+	\end{figure}
 	
 	Furtherly, the synthetic dataset consists of two parts which the authors describe as \textit{normal} classes and \textit{difficult} classes. The normal case consist of 11 signal classes: OOK, 4ASK, BPSK, QPSK, 8PSK, 16QAM, AM-SSB-SC, AM-DSB-SC, FM, GMSK, OQPSK, which are supposedly relatively easy to categorize. The difficult case consists of all 24 classes: OOK, 4ASK, 8ASK, BPSK, QPSK, 8PSK, 16PSK, 32PSK, 16APSK, 32APSK, 64APSK, 128APSK, 16QAM, 32QAM, 64QAM, 128QAM, 256QAM, AM-SSB-WC, AM-SSB-SC, AM-DSB-WC, AM-DSB-SC, FM, GMSK, OQPSK. The simultaneous presence of, for instace,  64APSK and 128APSK, or 128QAM and 256QAM makes these classes much harder to distinguish.
 	
+	\begin{figure}
 	\includegraphics[scale=0.5]{BPSK.png}
 	\includegraphics[scale=0.5]{QPSK.png}
+	\caption{Examples of signals from the benchmark dataset.}	
+	\end{figure}
 	
 	The authors of \cite{ORC} also provide an OTA part of the dataset in which they transmit and receive signals using a universal software radio peripheral (USRP) B210 software defined radio (SDR). Those signals do not feature any synthetic channel impairments.
 		
@@ -342,13 +349,17 @@ Persistence diagrams are summaries which we rely on the most in this paper. Simi
 
 \subsubsection{Persistence landscapes}
 
-While offering an elegant representation of the lifetimes of features, both the space of barcodes and the space of persistence diagrams lack the structure of a Hilbert space. Persistence landscapes are an attempt to remedy that, transforming a diagram into a sequence of functions.
-	
-	\section{Description of the applied methods}
+While offering an elegant representation of the lifetimes of features, both the space of barcodes and the space of persistence diagrams lack the structure of a Hilbert space. Persistence landscapes are an attempt to remedy that, transforming a diagram into a sequence of functions. From a practical point of view, a landscape is a 45$^\circ$ clockwise rotation of a persistence diagram. However, a rigorous mathematical definition requires certain care. For a birth-death ordered pair $(b,d)$ let $f_{(b,d)}\colon \mathbb{R}\to [0, \infty]$ be the following piecewise linear function:
+
+$$f_{(b,d)} = $$
+
+(...)
+
+\section{Description of the applied methods}
 
 	\includegraphics[scale=0.6]{BPSK_diagram.png}	\includegraphics[scale=0.6]{QPSK_diagram.png}
 	
-	\section{Main results}
+\section{Main results}
 	
 	\begin{thebibliography}{10}
 		
