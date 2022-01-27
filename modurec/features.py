@@ -225,8 +225,8 @@ class FeaturesFactory:
 
         def compute(self):
             if self.fil == 'star':
-                if self.kind != 'abs':
-                    raise NotImplemented('Options fil=star is implemented only with kind=abs')
+                if self.kind not in {'abs', 'phi'}:
+                    raise NotImplemented('Options fil=star is implemented only with kind in (abs, phi)')
 
                 point_cloud = self.creator.create_feature('point_cloud', dim=1,
                                                           step=self.step, kind=self.kind)
