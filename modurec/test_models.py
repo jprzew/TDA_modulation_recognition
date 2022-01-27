@@ -85,7 +85,7 @@ def make_pipeline(model, features):
 
 
 def test_models(data, features,
-                models=['logistic', 'svml', 'lda', 'rf', 'cart'],
+                models=('logistic', 'svml', 'lda', 'rf', 'cart'),
                 test_size=0.2, seed=None):
 
     data_train, data_test = model_selection\
@@ -117,6 +117,22 @@ def test_models(data, features,
 
     return pipelines
 
+
+def get_accuracy(data, features, model,
+                 test_size=0.2, seed=None):
+
+    data_train, data_test = model_selection\
+        .train_test_split(data, test_size=test_size, random_state=seed)
+
+    y_train = data_train['modulation_type']
+    y_test = data_test['modulation_type']
+
+    pipe = make_pipeline(model=model, features=features)
+
+    pipe.fit(data_train, y_train)
+    predictions = pipe.predict(data_test)
+
+    return accuracy_score(y_test, predictions)
 
 
 # def spot_check_cross_validation(X, y, k_fold=10, test_size=0.10,

@@ -1,13 +1,44 @@
 from inspect import signature
 from abc import abstractmethod
+from cmath import phase
 
 import pandas as pd
 import numpy as np
 import h5py
-from ripser import Rips
+from ripser import Rips, ripser
 from math import sqrt
+from scipy import sparse
 
 from . import pandex  # Necessary for mr and np accessors
+from .utility import rolling_window
+
+
+def windowed_cloud(point_cloud, window, step):
+
+    samples = point_cloud.shape[0]
+    try:
+        dim = point_cloud.shape[1]
+    except IndexError:
+        dim = 1
+
+    no_windows = samples - step*(window-1)  # number of windows
+
+    # we create indices to rearrange points so that 
+    # points in the same window are neighbours
+    indices = np.array(range(samples))
+    stride = indices.strides[0]
+
+    # the first dimension describes different windows
+    # the second dimension descibes points in windows
+    indices = np.lib.stride_tricks.as_strided(indices,
+                                              shape=(no_windows, window),
+                                              strides=(stride, step * stride))
+    indices = indices.flatten()
+
+    return np.lib.stride_tricks.as_strided(point_cloud[indices, ...],
+                                           shape=(no_windows, dim * window),
+                                           strides=(stride * dim * window, stride))
+
 
 def trim_diagrams(diagrams, eps):
     trimmed_diagrams = []
@@ -91,200 +122,249 @@ class FeaturesFactory:
         def compute(self):
             pass
 
-
-    class signalI(Feature):
-
-        # def __init__(self):
-        #     pass
-
-        def compute(self):
-            return self.df['signalI']
-
-    class signalQ(Feature):
-
-        # def __init__(self):
-        #     pass
-
-        def compute(self):
-            return self.df['signalQ']
-
     class point_cloud(Feature):
 
-        def __init__(self, dim=2, step=1):
+        def __init__(self, dim=2, step=1, kind=None):
             self.dim = dim
             self.step = step
+            self.kind = kind
+
+        @staticmethod
+        def compute3D(df):
+
+            def standardize(x):
+                range0 = np.max(x[:, 0]) - np.min(x[:, 0])
+                range1 = np.max(x[:, 1]) - np.min(x[:, 1])
+                range2 = np.max(x[:, 2]) - np.min(x[:, 2])
+                x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
+                return x
+
+            df['point_cloud'] = df.point_cloud.apply(lambda x:
+                                                     np.column_stack([x, range(x.shape[0])]))
+            df['point_cloud'] = df.point_cloud.apply(standardize)
+
+            return df['point_cloud']
+
 
         def compute(self):
-            def __compute2D(samples):
-                samples.mr.add_point_cloud(window=1, step=self.step)
+            
+            df = self.df['point_cloud']
 
-                return samples['point_cloud']
+            if self.kind is None:
+                window = self.dim / 2
+            elif self.kind == 'abs':
+                def amplitude(point_cloud):
+                    return np.apply_along_axis(lambda x: np.linalg.norm(x), 1, point_cloud)
 
-            def __compute3D(samples):
+                df = df.apply(amplitude)
+                window = float(self.dim)
+            elif self.kind == 'phi':
+                def argument(point_cloud):
+                    return np.apply_along_axis(lambda x: phase(x[0] + x[1]*1j), 1, point_cloud)
 
-                def __standardize(x):
-                    range0 = np.max(x[:, 0]) - np.min(x[:, 0])
-                    range1 = np.max(x[:, 1]) - np.min(x[:, 1])
-                    range2 = np.max(x[:, 2]) - np.min(x[:, 2])
-                    x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
-                    return x
+                df = df.apply(argument)
+                window = float(self.dim)
 
-                samples.mr.add_point_cloud(window=1, point_cloud_col='cloud_3D', step=self.step)
-                samples['cloud_3D'] = \
-                    samples.cloud_3D.apply(lambda x:
-                                           np.column_stack([x, range(x.shape[0])]))
-                samples['cloud_3D'] = samples.cloud_3D.apply(__standardize)
-
-                return samples['cloud_3D']
-
-            def __compute4D(samples):
-                samples.mr.add_point_cloud(window=2, point_cloud_col='cloud_4D', step=self.step)
-                return samples['cloud_4D']
-
-
-            def __compute10D(samples):
-                samples.mr.add_point_cloud(window=5, point_cloud_col='cloud_4D', step=self.step)
-                return samples['cloud_4D']
-
-
-            def __compute20D(samples):
-                samples.mr.add_point_cloud(window=10, point_cloud_col='cloud_4D', step=self.step)
-                return samples['cloud_4D']
-
-
-            signalI = self.creator.create_feature('signalI')
-            signalQ = self.creator.create_feature('signalQ')
-            if isinstance(self.step, str):
-                step_col = self.creator.df[self.step]
             else:
-                step_col = None
+                raise NotImplemented('Point cloud type not implemented.')
 
-            samples = pd.concat([signalI.values(),
-                                 signalQ.values(),
-                                 step_col],
-                                axis=1)
+            if isinstance(self.step, str):
+                step_col = self.step
+                df = pd.concat([df, self.df[step_col]], axis=1)
+            elif isinstance(self.step, int):
+                step_col = 'step'
+                df = pd.DataFrame(df)
+                df[step_col] = self.step
+            else:
+                raise ValueError('Parameter step need to be str or int')
 
-            if self.dim == 2:
-                return __compute2D(samples)
-            elif self.dim == 3:
-                return __compute3D(samples)
-            elif self.dim == 4:
-                return __compute4D(samples)
-            elif self.dim == 10:
-                return __compute10D(samples)
-            elif self.dim == 20:
-                return __compute20D(samples)
+            if window == 1:
+                return df['point_cloud']
 
-            raise(NotImplemented('Dimension not implemented.'))
+            if window.is_integer():
+                return df.apply(lambda x: windowed_cloud(x['point_cloud'],
+                                          window=int(window),
+                                          step=x[step_col]), axis=1)
+            else:
+                if self.dim == 3:
+                    return self.compute3D(df)
+                else:
+                    raise NotImplemented('Dimension not implemented.')
+
 
     class diagram(Feature):
 
-        def __init__(self, dim=2, step=1, eps=0):
+        @staticmethod
+        def star_1D_diagram(point_cloud):
+
+            # Add edges between adjacent points in the time series, with the "distance"
+            # along the edge equal to the max value of the points it connects
+            N = point_cloud.shape[0]
+            I = np.arange(N-1)
+            J = np.arange(1, N)
+            V = np.maximum(point_cloud[0:-1], point_cloud[1::])
+
+            # Add vertex birth times along the diagonal of the distance matrix
+            I = np.concatenate((I, np.arange(N)))
+            J = np.concatenate((J, np.arange(N)))
+            V = np.concatenate((V, point_cloud))
+
+            #Create the sparse distance matrix
+            D = sparse.coo_matrix((V, (I, J)), shape=(N, N)).tocsr()
+            return ripser(D, maxdim=0, distance_matrix=True)['dgms']
+
+
+
+        def __init__(self, dim=2, step=1, eps=0, kind=None, fil=None):
             self.step = step
             self.dim = dim
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
 
         def compute(self):
+            if self.fil == 'star':
+                if self.kind not in {'abs', 'phi'}:
+                    raise NotImplemented('Options fil=star is implemented only with kind in (abs, phi)')
+
+                point_cloud = self.creator.create_feature('point_cloud', dim=1,
+                                                          step=self.step, kind=self.kind)
+
+                return point_cloud.values().map(self.star_1D_diagram)
+
+
+
             if self.eps == 0:
                 point_cloud = self.creator.create_feature('point_cloud', dim=self.dim,
-                                                          step=self.step)
+                                                          step=self.step, kind=self.kind)
                 return point_cloud.values().map(self.creator.rips.fit_transform)
             else:
                 full_diagram = self.creator.create_feature('diagram', dim=self.dim,
-                                                           step=self.step, eps=0)
+                                                           step=self.step, eps=0, kind=self.kind)
                 return full_diagram.values().map(lambda x:
                                                  trim_diagrams(x, self.eps))
 
     class H(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
 
         def compute(self):
             diagram = self.creator.create_feature('diagram', dim=self.dim, step=self.step,
-                                                  eps=self.eps)
+                                                  eps=self.eps, kind=self.kind, fil=self.fil)
 
             return pd.DataFrame(diagram.values().tolist(),
                                     index=self.df.index)[self.n]
 
     class life_time(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
 
         def compute(self):
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
                                                    step=self.step,
-                                                   eps=self.eps)
+                                                   eps=self.eps,
+                                                   kind=self.kind,
+                                                   fil=self.fil)
+
             return homology.values().np.diff(axis=1)
 
     class no(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
 
         def compute(self):
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
                                                    step=self.step,
-                                                   eps=self.eps)
+                                                   eps=self.eps,
+                                                   kind=self.kind,
+                                                   fil=self.fil)
 
             return homology.values().map(lambda x: x.shape[0])
 
     class mean(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
+
 
         def compute(self):
             life_time = self.creator.create_feature('life_time',
                                                     n=self.n,
                                                     dim=self.dim,
                                                     step=self.step,
-                                                    eps=self.eps)
+                                                    eps=self.eps,
+                                                    kind=self.kind,
+                                                    fil=self.fil)
             return life_time.values().np.mean()
 
     class var(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
+
 
         def compute(self):
             life_time = self.creator.create_feature('life_time',
                                                     n=self.n,
                                                     dim=self.dim,
                                                     step=self.step,
-                                                    eps=self.eps)
+                                                    eps=self.eps,
+                                                    kind=self.kind,
+                                                    fil=self.fil)
             return life_time.values().np.var()
 
     class kmp_features(Feature):
         """Features from Chatter Classification in Turning using
            Machine Learning and Topological Data Analysis"""
 
-        def __init__(self, k, n, dim=2, step=1, eps=0):
+        def __init__(self, k, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.k = k  # number of kmp-feature
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
+
 
         def compute(self):
 
@@ -303,40 +383,52 @@ class FeaturesFactory:
                                                    n=self.n,
                                                    dim=self.dim,
                                                    step=self.step,
-                                                   eps=self.eps)
+                                                   eps=self.eps,
+                                                   kind=self.kind,
+                                                   fil=self.fil)
 
             return homology.values().map(lambda x:
                                          __features(x)[self.k - 1])
 
     class wasser_ampl(Feature):
-        def __init__(self, p, n, dim=2, step=1, eps=0):
+        def __init__(self, p, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.p = p  # p-parameter of the Lp-norm
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
 
         def compute(self):
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
                                                    step=self.step,
-                                                   eps=self.eps)
+                                                   eps=self.eps,
+                                                   kind=self.kind,
+                                                   fil=self.fil)
 
             return homology.values().map(lambda x: wasserstein_amplitude(x, self.p))
 
     class entropy(Feature):
-        def __init__(self, n, dim=2, step=1, eps=0):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.step = step
             self.eps = eps
+            self.kind = kind
+            self.fil = fil
+
 
         def compute(self):
             homology = self.creator.create_feature('H',
                                                    n=self.n,
                                                    dim=self.dim,
                                                    step=self.step,
-                                                   eps=self.eps)
+                                                   eps=self.eps,
+                                                   kind=self.kind,
+                                                   fil=self.fil)
 
             return homology.values().map(persistent_entropy)
