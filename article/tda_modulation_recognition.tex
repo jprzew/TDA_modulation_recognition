@@ -349,9 +349,13 @@ Persistence diagrams are summaries which we rely on the most in this paper. Simi
 
 \subsubsection{Persistence landscapes}
 
-While offering an elegant representation of the lifetimes of features, both the space of barcodes and the space of persistence diagrams lack the structure of a Hilbert space. Persistence landscapes are an attempt to remedy that, transforming a diagram into a sequence of functions. From a practical point of view, a landscape is a 45$^\circ$ clockwise rotation of a persistence diagram. However, a rigorous mathematical definition requires certain care. For a birth-death ordered pair $(b,d)$ let $f_{(b,d)}\colon \mathbb{R}\to [0, \infty]$ be the following piecewise linear function:
-
-$$f_{(b,d)} = $$
+While offering an elegant representation of the lifetimes of features, both the space of barcodes and the space of persistence diagrams lack the structure of a Hilbert space. Persistence landscapes are an attempt to remedy that, transforming a diagram into a sequence of functions. From a practical point of view, a landscape is a 45$^\circ$ clockwise rotation of a persistence diagram. However, a rigorous mathematical definition requires certain care. Our definition follows \cite{BD}. For a birth-death ordered pair $(b,d)$ let $f_{(b,d)}\colon \mathbb{R}\to [0, \infty]$ be the following piecewise linear function:
+$$f_{(b,d)}(x) = \begin{cases}
+0 \:\: & \text{if } x \notin (b,d) \\
+x-b \:\: & \text{if } x\in (b, \frac{b+d}{2}] \\
+-x+d \:\: & \text{if } x\in (\frac{b+d}{2},d) .
+\end{cases}$$
+The persistence landscape is the sequence of functions $\lambda_k \colon \mathbb{R} \to [0,\infty], k\in\{1,2,3,\ldots\}$, such that $\lambda_k(x)$ is the $k$-th largest value of $\{ f_{(b_i,d_i)} (x)\}_{i=1}^n$. Additionally put $\lambda_k(x)=0$ if the $k$-th largest value does not exist.
 
 (...)
 
@@ -365,6 +369,9 @@ $$f_{(b,d)} = $$
 		
 		\bibitem{BZCAM}
 		R. Borkowski, D. Zibar, A. Caballero, V. Arlunno, I.T. Monroy \emph{Stokes Space-Based Optical Modulation Format Recognition for Digital Coherent Receivers}, IEEE Photonics Technology Letters {\bf 25} (2013), no. 21, 2129-2132.
+		
+		\bibitem{BD}
+		P. Bubenik, P. D³otko \emph{A persistence landscapes toolbox for topological statistics}, 	Journal of Symbolic Computation, {\bf 78} (2017), 91-114.
 		
 		\bibitem{ChM}
 		F. Chazal, B. Michel, \emph{An introduction to Topological Data Analysis: fundamental and practical aspects for data scientists}, Frontiers in Artificial Intelligence \textbf{4} (2021), 1-28.
