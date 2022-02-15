@@ -195,22 +195,22 @@ class FeaturesFactory:
     class diagram(Feature):
 
         @staticmethod
-        def star_1D_diagram(point_cloud):
+        def star_1D_diagram(time_series):
 
             # Add edges between adjacent points in the time series, with the "distance"
             # along the edge equal to the max value of the points it connects
-            N = point_cloud.shape[0]
+            N = time_series.shape[0]
             I = np.arange(N-1)
             J = np.arange(1, N)
-            V = np.maximum(point_cloud[0:-1], point_cloud[1::])
+            W = np.maximum(time_series[0:-1], time_series[1::])
 
             # Add vertex birth times along the diagonal of the distance matrix
             I = np.concatenate((I, np.arange(N)))
             J = np.concatenate((J, np.arange(N)))
-            V = np.concatenate((V, point_cloud))
+            W = np.concatenate((W, time_series))
 
             #Create the sparse distance matrix
-            D = sparse.coo_matrix((V, (I, J)), shape=(N, N)).tocsr()
+            D = sparse.coo_matrix((W, (I, J)), shape=(N, N)).tocsr()
             return ripser(D, maxdim=0, distance_matrix=True)['dgms']
 
 
