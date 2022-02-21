@@ -48,7 +48,8 @@ from sklearn.manifold import TSNE
 
 # %%
 # df = pd.read_pickle('../data/stats_train_plain.pkl')
-df = pd.read_pickle('../data/stats_large.pkl')
+# df = pd.read_pickle('../data/stats_large.pkl')
+df = pd.read_pickle('/media/sf_VM/stats_train_plain.pkl')
 
 # %% [markdown]
 # **Preparing the data**
@@ -64,8 +65,14 @@ mean_lifetimes = [df.ff.create_feature('mean', n=0, dim=2),
                   df.ff.create_feature('mean', n=1, dim=4),
                   df.ff.create_feature('mean', n=0, dim=10),
                   df.ff.create_feature('mean', n=1, dim=10),
-                  df.ff.create_feature('mean', n=0, dim=20),
-                  df.ff.create_feature('mean', n=1, dim=20)]
+                  df.ff.create_feature('mean', n=0, dim=2, kind='abs'),
+                  df.ff.create_feature('mean', n=1, dim=2, kind='abs'),
+                  df.ff.create_feature('mean', n=0, dim=10, kind='abs'),
+                  df.ff.create_feature('mean', n=1, dim=10, kind='abs'),
+                  df.ff.create_feature('mean', n=0, dim=2, kind='phi'),
+                  df.ff.create_feature('mean', n=1, dim=2, kind='phi'),
+                  df.ff.create_feature('mean', n=0, dim=10, kind='phi'),
+                  df.ff.create_feature('mean', n=1, dim=10, kind='phi')]
                   # df.ff.create_feature('mean', n=0, dim=4, step='symbol_rate'),
                   # df.ff.create_feature('mean', n=1, dim=4, step='symbol_rate')]
 
@@ -73,12 +80,10 @@ counting_features = [df.ff.create_feature('no', n=1, dim=2),
                      df.ff.create_feature('no', n=1, dim=3),
                      df.ff.create_feature('no', n=1, dim=4),
                      df.ff.create_feature('no', n=1, dim=10),
-                     df.ff.create_feature('no', n=1, dim=20),
                      df.ff.create_feature('no', n=0, dim=2, eps=epsilon),
                      df.ff.create_feature('no', n=0, dim=3, eps=epsilon),
                      df.ff.create_feature('no', n=0, dim=4, eps=epsilon),
-                     df.ff.create_feature('no', n=0, dim=10, eps=epsilon),
-                     df.ff.create_feature('no', n=0, dim=20, eps=epsilon)]
+                     df.ff.create_feature('no', n=0, dim=10, eps=epsilon)]
                      # df.ff.create_feature('no', n=0, dim=4, step='symbol_rate'),
                      # df.ff.create_feature('no', n=1, dim=4, step='symbol_rate')]
 
@@ -90,11 +95,17 @@ variance_features = [df.ff.create_feature('var', n=0, dim=2),
                      df.ff.create_feature('var', n=1, dim=4),
                      df.ff.create_feature('var', n=0, dim=10),
                      df.ff.create_feature('var', n=1, dim=10),
-                     df.ff.create_feature('var', n=0, dim=20),
-                     df.ff.create_feature('var', n=1, dim=20)]
-                     # df.ff.create_feature('var', n=0, dim=4, step='symbol_rate'),
+                     df.ff.create_feature('var', n=0, dim=2, kind='abs'),
+                     df.ff.create_feature('var', n=1, dim=2, kind='abs'),
+                     df.ff.create_feature('var', n=0, dim=10, kind='abs'),
+                     df.ff.create_feature('var', n=1, dim=10, kind='abs'),
+                     df.ff.create_feature('var', n=0, dim=2, kind='phi'),
+                     df.ff.create_feature('var', n=1, dim=2, kind='phi'),
+                     df.ff.create_feature('var', n=0, dim=10, kind='phi'),
+                     df.ff.create_feature('var', n=1, dim=10, kind='phi')]
+                         # df.ff.create_feature('var', n=0, dim=4, step='symbol_rate'),
                      # df.ff.create_feature('var', n=1, dim=4, step='symbol_rate')]
-
+        
 p = 2
 new_features = [df.ff.create_feature('entropy', n=0, dim=2),
                 df.ff.create_feature('entropy', n=1, dim=2),
@@ -104,8 +115,16 @@ new_features = [df.ff.create_feature('entropy', n=0, dim=2),
                 df.ff.create_feature('entropy', n=1, dim=4),
                 df.ff.create_feature('entropy', n=0, dim=10),
                 df.ff.create_feature('entropy', n=1, dim=10),
-                df.ff.create_feature('entropy', n=0, dim=20),
-                df.ff.create_feature('entropy', n=1, dim=20),
+                df.ff.create_feature('entropy', n=0, dim=2, kind='abs'),
+                df.ff.create_feature('entropy', n=1, dim=2, kind='abs'),
+                df.ff.create_feature('entropy', n=0, dim=10, kind='abs'),
+                df.ff.create_feature('entropy', n=1, dim=10, kind='abs'),
+                df.ff.create_feature('entropy', n=0, dim=2, kind='phi'),
+                df.ff.create_feature('entropy', n=1, dim=2, kind='phi'),
+                df.ff.create_feature('entropy', n=0, dim=10, kind='phi'),
+                df.ff.create_feature('entropy', n=1, dim=10, kind='phi'),
+                # df.ff.create_feature('entropy', n=0, dim=20),
+                # df.ff.create_feature('entropy', n=1, dim=20),
                 df.ff.create_feature('wasser_ampl', n=0, p=p, dim=2),
                 df.ff.create_feature('wasser_ampl', n=1, p=p, dim=2),
                 df.ff.create_feature('wasser_ampl', n=1, p=p, dim=3),
@@ -114,9 +133,16 @@ new_features = [df.ff.create_feature('entropy', n=0, dim=2),
                 df.ff.create_feature('wasser_ampl', n=1, p=p, dim=4),
                 df.ff.create_feature('wasser_ampl', n=0, p=p, dim=10),
                 df.ff.create_feature('wasser_ampl', n=1, p=p, dim=10),
-                df.ff.create_feature('wasser_ampl', n=0, p=p, dim=20),
-                df.ff.create_feature('wasser_ampl', n=1, p=p, dim=20)]
-        
+                df.ff.create_feature('wasser_ampl', n=0, dim=2, p=p, kind='abs'),
+                df.ff.create_feature('wasser_ampl', n=1, dim=2, p=p, kind='abs'),
+                df.ff.create_feature('wasser_ampl', n=0, dim=10, p=p, kind='abs'),
+                df.ff.create_feature('wasser_ampl', n=1, dim=10, p=p, kind='abs'),
+                df.ff.create_feature('wasser_ampl', n=0, dim=2, p=p, kind='phi'),
+                df.ff.create_feature('wasser_ampl', n=1, dim=2, p=p, kind='phi'),
+                df.ff.create_feature('wasser_ampl', n=0, dim=10, p=p, kind='phi'),
+                df.ff.create_feature('wasser_ampl', n=1, dim=10, p=p, kind='phi')]
+
+
 feat = mean_lifetimes + counting_features + variance_features + new_features
 
 # %%
@@ -157,9 +183,10 @@ fig.savefig('figure.png')
 
 
 # %%
-df.columns
+import plotly.express as px
+fig = px.scatter(final_df, x='y1', y='y2', color='modulation_type')
 
 # %%
-list(map(str, mean_lifetimes))
+fig
 
 # %%
