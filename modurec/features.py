@@ -48,11 +48,13 @@ def trim_diagrams(diagrams, eps):
 
     return trimmed_diagrams
 
+
 def wasserstein_amplitude(diagram, p):
     lifetimes = diagram[:, 1] - diagram[:, 0]
     lifetimes = lifetimes[lifetimes < float('inf')]
 
     return np.linalg.norm(lifetimes, p) / sqrt(2)
+
 
 def persistent_entropy(diagram):
     lifetimes = diagram[:, 1] - diagram[:, 0]
@@ -60,6 +62,25 @@ def persistent_entropy(diagram):
     L = sum(lifetimes)
 
     return sum((lifetimes / L) * np.log(lifetimes / L))
+
+
+def new_entropy(numbers):
+
+    numbers = numbers[abs(numbers) < float('inf')]
+
+    if len(numbers) <= 1:
+        return 0
+
+    numbers = np.sort(numbers)
+
+    differences = numbers[2:] - numbers[:-2]
+    differences = np.insert(differences, 0, numbers[1] - numbers[0])
+    differences = np.append(differences, numbers[-1] - numbers[-2])
+    differences = differences[differences > 0]
+
+    return (-1 / len(numbers)) * sum(np.log((2/len(numbers)) *
+                                            (1 / differences)))
+
 
 @pd.api.extensions.register_dataframe_accessor('ff')
 class FeaturesFactory:
@@ -80,7 +101,7 @@ class FeaturesFactory:
 
         column_name = str(instance)
         if column_name not in self.df.columns:
-            self.df[str(instance)] = instance.compute()
+            self.df[column_name] = instance.compute()
 
         return instance
 
@@ -213,8 +234,6 @@ class FeaturesFactory:
             D = sparse.coo_matrix((W, (I, J)), shape=(N, N)).tocsr()
             return ripser(D, maxdim=0, distance_matrix=True)['dgms']
 
-
-
         def __init__(self, dim=2, step=1, eps=0, kind=None, fil=None):
             self.step = step
             self.dim = dim
@@ -222,26 +241,33 @@ class FeaturesFactory:
             self.kind = kind
             self.fil = fil
 
-
         def compute(self):
             if self.fil == 'star':
+
                 if self.kind not in {'abs', 'phi'}:
-                    raise NotImplemented('Options fil=star is implemented only with kind in (abs, phi)')
+                    raise NotImplementedError('Options fil=star '
+                                              'is implemented only with '
+                                              'kind in (abs, phi)')
 
                 point_cloud = self.creator.create_feature('point_cloud', dim=1,
-                                                          step=self.step, kind=self.kind)
+                                                          step=self.step,
+                                                          kind=self.kind)
 
                 return point_cloud.values().map(self.star_1D_diagram)
 
-
-
             if self.eps == 0:
-                point_cloud = self.creator.create_feature('point_cloud', dim=self.dim,
-                                                          step=self.step, kind=self.kind)
+                point_cloud = self.creator.create_feature('point_cloud',
+                                                          dim=self.dim,
+                                                          step=self.step,
+                                                          kind=self.kind)
+
                 return point_cloud.values().map(self.creator.rips.fit_transform)
             else:
-                full_diagram = self.creator.create_feature('diagram', dim=self.dim,
-                                                           step=self.step, eps=0, kind=self.kind)
+                full_diagram = self.creator.create_feature('diagram',
+                                                           dim=self.dim,
+                                                           step=self.step,
+                                                           eps=0,
+                                                           kind=self.kind)
                 return full_diagram.values().map(lambda x:
                                                  trim_diagrams(x, self.eps))
 
@@ -413,13 +439,14 @@ class FeaturesFactory:
             return homology.values().map(lambda x: wasserstein_amplitude(x, self.p))
 
     class entropy(Feature):
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, input='lifetimes'):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.step = step
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.input = input
 
 
         def compute(self):
@@ -431,4 +458,11 @@ class FeaturesFactory:
                                                    kind=self.kind,
                                                    fil=self.fil)
 
-            return homology.values().map(persistent_entropy)
+            if self.input == 'lifetimes':
+                return homology.values().map(persistent_entropy)
+            elif self.input == 'births':
+                return homology.values().map(lambda x: new_entropy(x[:, 0]))
+            elif self.input == 'deaths':
+                return homology.values().map(lambda x: new_entropy(x[:, 1]))
+            else:
+                raise NotImplemented(f'Input of type {self.input} not implemented.')
