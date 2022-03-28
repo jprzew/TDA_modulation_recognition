@@ -269,7 +269,8 @@ class FeaturesFactory:
                 point_cloud = self.creator.create_feature('point_cloud',
                                                           dim=self.dim,
                                                           step=self.step,
-                                                          kind=self.kind)
+                                                          kind=self.kind,
+                                                          preproc=self.preproc)
 
                 return point_cloud.values().map(self.creator.rips.fit_transform)
             else:
@@ -277,37 +278,41 @@ class FeaturesFactory:
                                                            dim=self.dim,
                                                            step=self.step,
                                                            eps=0,
-                                                           kind=self.kind)
+                                                           kind=self.kind,
+                                                           preproc=self.preproc)
                 return full_diagram.values().map(lambda x:
                                                  trim_diagrams(x, self.eps))
 
     class H(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
 
         def compute(self):
             diagram = self.creator.create_feature('diagram', dim=self.dim, step=self.step,
-                                                  eps=self.eps, kind=self.kind, fil=self.fil)
+                                                  eps=self.eps, kind=self.kind, fil=self.fil,
+                                                  preproc=self.preproc)
 
             return pd.DataFrame(diagram.values().tolist(),
                                     index=self.df.index)[self.n]
 
     class life_time(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
 
         def compute(self):
@@ -317,19 +322,21 @@ class FeaturesFactory:
                                                    step=self.step,
                                                    eps=self.eps,
                                                    kind=self.kind,
-                                                   fil=self.fil)
+                                                   fil=self.fil,
+                                                   preproc=self.preproc)
 
             return homology.values().np.diff(axis=1)
 
     class no(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
 
         def compute(self):
@@ -339,19 +346,21 @@ class FeaturesFactory:
                                                    step=self.step,
                                                    eps=self.eps,
                                                    kind=self.kind,
-                                                   fil=self.fil)
+                                                   fil=self.fil,
+                                                   preproc=self.preproc)
 
             return homology.values().map(lambda x: x.shape[0])
 
     class mean(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
 
 
@@ -362,18 +371,20 @@ class FeaturesFactory:
                                                     step=self.step,
                                                     eps=self.eps,
                                                     kind=self.kind,
-                                                    fil=self.fil)
+                                                    fil=self.fil,
+                                                    preproc=self.preproc)
             return life_time.values().np.mean()
 
     class var(Feature):
 
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim
             self.n = n
             self.step = step
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
 
 
@@ -384,14 +395,15 @@ class FeaturesFactory:
                                                     step=self.step,
                                                     eps=self.eps,
                                                     kind=self.kind,
-                                                    fil=self.fil)
+                                                    fil=self.fil,
+                                                    preproc=self.preproc)
             return life_time.values().np.var()
 
     class kmp_features(Feature):
         """Features from Chatter Classification in Turning using
            Machine Learning and Topological Data Analysis"""
 
-        def __init__(self, k, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, k, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.k = k  # number of kmp-feature
@@ -399,6 +411,7 @@ class FeaturesFactory:
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
 
 
@@ -421,13 +434,14 @@ class FeaturesFactory:
                                                    step=self.step,
                                                    eps=self.eps,
                                                    kind=self.kind,
-                                                   fil=self.fil)
+                                                   fil=self.fil,
+                                                   preproc=self.preproc)
 
             return homology.values().map(lambda x:
                                          __features(x)[self.k - 1])
 
     class wasser_ampl(Feature):
-        def __init__(self, p, n, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, p, n, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.p = p  # p-parameter of the Lp-norm
@@ -435,7 +449,7 @@ class FeaturesFactory:
             self.eps = eps
             self.kind = kind
             self.fil = fil
-
+            self.preproc = preproc
 
         def compute(self):
             homology = self.creator.create_feature('H',
@@ -444,12 +458,14 @@ class FeaturesFactory:
                                                    step=self.step,
                                                    eps=self.eps,
                                                    kind=self.kind,
-                                                   fil=self.fil)
+                                                   fil=self.fil,
+                                                   preproc=self.preproc)
 
             return homology.values().map(lambda x: wasserstein_amplitude(x, self.p))
 
     class entropy(Feature):
-        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None, input='lifetimes'):
+        def __init__(self, n, dim=2, step=1, eps=0, kind=None, fil=None,
+                     input='lifetimes', preproc=None):
             self.dim = dim  # point cloud dimension
             self.n = n  # homology dimension
             self.step = step
@@ -457,6 +473,7 @@ class FeaturesFactory:
             self.kind = kind
             self.fil = fil
             self.input = input
+            self.preproc = preproc
 
 
         def compute(self):
@@ -466,7 +483,8 @@ class FeaturesFactory:
                                                    step=self.step,
                                                    eps=self.eps,
                                                    kind=self.kind,
-                                                   fil=self.fil)
+                                                   fil=self.fil,
+                                                   preproc=self.preproc)
 
             if self.input == 'lifetimes':
                 return homology.values().map(persistent_entropy)
