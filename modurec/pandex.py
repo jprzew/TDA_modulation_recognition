@@ -186,6 +186,7 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
                 axes[ind].plot(samples[subset])
                 axes[ind].set_title(row[title_col])
 
+
         def plot_persistence_diagrams(self,
                                       data_col='diagram',
                                       title_col='modulation_type',
@@ -236,7 +237,8 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
                         projection=None,
                         modulation_type=None,
                         max_rows=24,
-                        ncols=3):
+                        ncols=3,
+                        xylim=None):
 
             df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
             axes = self.__get_axes(size=df.shape[0], projection=projection,
@@ -250,4 +252,8 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
                                         row[data_col][:, 1],
                                         row[data_col][:, 2])
                 axes[ind].set_title(row[title_col])
-
+                if xylim is not None:
+                    xlim = xylim[0]
+                    ylim = xylim[1]
+                    axes[ind].set_xlim(left=xlim[0], right=xlim[1])
+                    axes[ind].set_ylim(bottom=ylim[0], top=ylim[1])
