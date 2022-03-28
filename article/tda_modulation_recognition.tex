@@ -253,7 +253,7 @@
 	
 	This paper addresses the problem of modulation classification. Since transmitters are capable of generating signal using arbitraty modulation, it is not certain that the receiver will know the modulation format by default. Additionally, the lack of knowledge of multiple data parameters, such as carrier frequency or phase offsets makes it even more difficult. Therefore modulation recognition is a valid problem and has been tackled by scientists from multiple fields for a number of decades. In this work we use tools from the so called topological data analysis (TDA), which is a novelty approach for this subject.
 	
-	(...)
+	The major method of our research is recognizing shapes of data depicted on a so called constellation diagram. A constellation diagram is a visual representation of signal modulation, i.e. a collection of points on the plane. TDA is effective at capturing whether the point collection resembles a cycle (i.e. a circle) as well as determining the number of clusters in which the points tend to group.
 	
 	The paper is organized as follows. In the next chapter we lay the history and give a more detailed description of the problem of modulation recognition. Since we work on real data rather than synthetic, we also give a summary of the dataset used in the research.
 	
@@ -265,7 +265,7 @@
 	
 	Our task is to distinguish between a variety of digital modulation formats where changing the phase or amplitude of a constant frequency signal (carrier wave) is executed.
 	
-	(TODO: IQ format)
+%	The signal itself is presented in the IQ format, where I stands for ``in-phase'' and Q stands for ``quadrature''.	
 	
 	Regardless of the digital modulation type, the process is usually depicted on a \textit{constellation diagram} which is a collection of points on the plane, where each point is related to a \textit{symbol}, i.e. a binary sequence that corresponds to the type of change that affects the wave. Below we shall briefly discuss some of the modulation types and how their respective constellation diagrams should differ.
 	
@@ -357,9 +357,19 @@ x-b \:\: & \text{if } x\in (b, \frac{b+d}{2}] \\
 \end{cases}$$
 The persistence landscape is the sequence of functions $\lambda_k \colon \mathbb{R} \to [0,\infty], k\in\{1,2,3,\ldots\}$, such that $\lambda_k(x)$ is the $k$-th largest value of $\{ f_{(b_i,d_i)} (x)\}_{i=1}^n$. Additionally put $\lambda_k(x)=0$ if the $k$-th largest value does not exist.
 
-(...)
+\subsubsection{Lower star filtration}
+
+An alternate approach to generating persistence diagrams (as well as the other previously described summaries) is the lower star filtration. This method is applied to real-valued functions rather than data clouds.
+
+Given a function $f\colon X \to \mathbb{R}$ define the sublevel set of $f$ as
+$$ A_\varepsilon(f) = \{ x \in X \colon f(x) \leqslant \varepsilon \}. $$
+It is essentially a preimage of the set $(-\infty, \varepsilon]$. Obviously, as $\varepsilon$ increases, so do the sublevel sets. Therefore it is a filtration in a similar sense as the Vietoris-Rips counterpart: if $\varepsilon_1 < \varepsilon_2$ then $A_{\varepsilon_1}(f)\subseteq A_{\varepsilon_2}(f)$.
+
+Intuitively, $\varepsilon$ can be seen as the \textit{sea level} and the filtration encodes what part of the domain of the function $f$ is below the sea level. Therefore the nature of the filtration depends on the domain of the function. If the domain is $\mathbb{R}$, then each $A_\varepsilon(f)$ is a subset of $\mathbb{R}$ and hence the only homology group possible to examine is $H_0$. If $f$ happens to be a multivariable function, then the filtration can encode cycles of a higher dimension.
 
 \section{Description of the applied methods}
+
+
 
 	\includegraphics[scale=0.6]{BPSK_diagram.png}	\includegraphics[scale=0.6]{QPSK_diagram.png}
 	
