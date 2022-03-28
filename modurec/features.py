@@ -145,10 +145,11 @@ class FeaturesFactory:
 
     class point_cloud(Feature):
 
-        def __init__(self, dim=2, step=1, kind=None):
+        def __init__(self, dim=2, step=1, kind=None, preproc=None):
             self.dim = dim
             self.step = step
             self.kind = kind
+            self.preproc = preproc
 
         @staticmethod
         def compute3D(df):
@@ -166,10 +167,18 @@ class FeaturesFactory:
 
             return df['point_cloud']
 
+        @staticmethod
+        def fft_cloud(point_cloud):
+            new_cloud = np.fft.fft(point_cloud[:,0] + 1j * point_cloud[:, 1])
+            return np.stack((np.real(new_cloud), np.imag(new_cloud)),
+                            axis=-1)
 
         def compute(self):
             
             df = self.df['point_cloud']
+
+            if self.preproc == 'fft':
+                df = df.apply(self.fft_cloud)
 
             if self.kind is None:
                 window = self.dim / 2
@@ -234,12 +243,13 @@ class FeaturesFactory:
             D = sparse.coo_matrix((W, (I, J)), shape=(N, N)).tocsr()
             return ripser(D, maxdim=0, distance_matrix=True)['dgms']
 
-        def __init__(self, dim=2, step=1, eps=0, kind=None, fil=None):
+        def __init__(self, dim=2, step=1, eps=0, kind=None, fil=None, preproc=None):
             self.step = step
             self.dim = dim
             self.eps = eps
             self.kind = kind
             self.fil = fil
+            self.preproc = preproc
 
         def compute(self):
             if self.fil == 'star':
