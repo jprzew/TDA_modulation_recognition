@@ -222,6 +222,9 @@
 \newcommand{\correction}[2]{#1}
 % \newcommand{\correction}[2]{#2}
 
+
+\DeclareMathOperator{\im}{im}
+
 \begin{document}
 	
 	\begin{center}{\bf \Large
@@ -322,6 +325,71 @@ Compare figures (...) of the constellation diagrams. With raw data, affected by 
 	\section{Persistent homology}
 	
 	\subsection{Basics of homology theory}
+	A mathematical foundation  of TDA is homology theory, one of branches of algebraic topology. We are going to focus on simplicial homology theory that has the clearest geometric motivation and it is sufficient for our consideration. We first introduce the notion of simplicial complexes, which are natural environment to work with homology theory. 
+	
+	\subsubsection{Simplicies and simplicial complexes} 
+	A simplex is a generalization of triangle, tetrahedron, etc. Examples of $k$-dimentional simplicies are shown in figure \ref{fig:simplices}. They have many adventages like illustrative geometric interpretation and also there is no problem to equip them with algebraic tools. The formal definition of simplex is as follows. 
+	
+	\begin{definition}
+	A $k$-simplex is a convex hull spanned by $ k+1 $ affinely independent points $v \in \mathbb{R}^m$ and is denoted as:
+	
+	$$ \sigma = [v_0, v_1, ..., v_k]. $$
+	\end{definition}
+	A simplicial complex  is obtained by connecting simplices.
+	
+	\begin{definition}
+	A simplicial complex $K$ is a collection of simplices satisfying two condition:
+	
+	\begin{enumerate}
+	\item if simplex $\sigma \in K$, then all faces of $\sigma$ are also in $K$;
+	\item the intersection of two simplices in $K$ is either empty or contained in $K$. 
+	\end{enumerate}
+	\end{definition}
+	
+	\subsubsection{Simplicial homology}
+	To construct a simplicial homology group we need to endow a simplex with orientation. The orientation of $k$-simplex is given by ordering of the vertices in the simplex $[v_1, v_2, ..., v_{k+1}]$. Two orderings can define the same orientation if and only if they differ by an even permutation, thus there are only two possible orientation of simplex. Each oriented simplex is equal to the negative of the simplex with opposite orientation, mathematically, it is stated as $[v_1, v_2, v_3] = - [v_2, v_1, v_3].$
+	
+	In simplicial homology we want to identify cycles and we want to know if given cycle is bounding a collection of higher dimentional simplices: if it does not, then the cycle is a hole. The concept of a simplicial $k$-chain is used in the identification of cycles in simplicial complex. It is defined as follows. 
+	
+	\begin{definition}
+	A $k$-chain is a finite weighted sum defined on all $k$-simplicies
+within a complex $K$:
+ $$\sum^N_{i=1} c_i \sigma_i, $$
+
+\noindent where $c_i \in \mathbb{Z}$ and $N$ is the number of $k$-dimentional simplices. Typically, the coefficients are given by $c_i \in \{-1, 0, 1\}$. The set of $k$-chains on K is written as $C_k(K)$. We use the short-hand notation $C_k(K) = C_k$ for given $K$.
+	\end{definition}
+	 
+	The boundary operator is a linear operator that maps the $k$-chains of a complex to its boundaries.
+	
+	\begin{definition}
+	For $C_k$ we define the boundary operator $\partial$ as the mapping:
+	$$\partial: C_k \rightarrow C_{k-1} $$
+	\end{definition}
+	
+	We use another short-hand notation $\partial(C_k) = \partial_k$ to represent a boundary operation. A set of $k$-chains contains many geometric informations about simplicial complex, however it is brimful of useless ones. We will reduce them by using two subgroups. First of all, we will only consider those chains which are mapped to the null space or kernel of the boundary operator (denote $\ker \partial$) and which is zero. 
+	
+	\begin{definition}
+	The k-dimensional cycles are given by:
+	$$Z_k = \ker \partial_k $$
+	\noindent where $\ker(\partial_k)$ is the kernel of the operator $\partial_k$.
+	\end{definition}
+	Second of all, we will identify two cycles if both are boundary of higher dimensional simplex.
+	
+	\begin{definition}
+	The boundaries are given by:
+	$$B_k = \im \partial_{k+1},$$
+	
+	\noindent where $\im \partial_{k+1} $ is the image of the operator $\partial_{k+1.}$
+	\end{definition}
+	
+	It is also important to note that $B_k$ is a subgroup of $Z_k$. Then we have a difinition of $k$-homology group as it follows. 
+	
+	\begin{definition}
+	The $k$-homology group $H_k$ is given by the quotient group:
+	$$H_k = Z_k / B_k. $$
+	\end{definition}
+	
+	\noindent In simple terms, the $H_k$ group contains the unique $k$-holes within a complex.
 	
 	\subsection{Topological summaries}
 	
