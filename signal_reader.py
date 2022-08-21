@@ -7,7 +7,7 @@ import h5py
 import pickle
 import random as rnd
 from modurec import features
-# import vaex
+from utils import get_repo_path
 
 # Class labelings 2018
 class_to_index = {'OOK': 0,
@@ -49,6 +49,9 @@ class_to_id_2016 = {'QPSK': 0,
                     'CPFSK': 9,
                     'BPSK': 10}
 
+
+repo_path = get_repo_path()
+
 # to_compute = [{'dim': 2, 'step': 1, 'eps': 0},
 #               {'dim': 3, 'step': 1, 'eps': 0},
 #               {'dim': 4, 'step': 1, 'eps': 0}]
@@ -74,12 +77,16 @@ modulations_id_file_name = 'modulations.csv'
 snrs_file_name = 'snrs.csv'
 
 
-def split_and_save_indices_rml18(proportion=0.3,
-                                 data_file=hdf5_file,
-                                 test_indices_file=test_indices_file,
-                                 train_indices_file=train_indices_file,
+def split_and_save_indices_rml18(data_file,
+                                 test_indices_file,
+                                 train_indices_file,
+                                 proportion=0.3,
                                  seed=42):
     """The function is needed in order to divide the datasets into the training and testing data."""
+
+    data_file = repo_path / data_file
+    test_indices_file = repo_path / test_indices_file
+    train_indices_file = repo_path / train_indices_file
 
     rnd.seed(seed)
     with h5py.File(data_file, 'r') as f:
