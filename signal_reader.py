@@ -322,11 +322,11 @@ def select_train_pkl(size,
         condition_snr: condition for SNR
         condition_mod_id: condition for modulation id
         hdf5_file: name of the hdf5-file
+        indices_file: file with indices of the training data
         seed: random seed
     """
 
-
-    df = create_index_df(hdf5_file=hdf5_file, indices_file=train_indices_file)
+    df = create_index_df(hdf5_file=hdf5_file, indices_file=indices_file)
     df = filter_df(df, condition_snr=condition_snr,
                    condition_mod_id=condition_mod_id)
     df = random_subsample(df, size=size, seed=seed)
