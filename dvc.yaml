@@ -8,3 +8,12 @@ stages:
     outs:
     - data/test_indices.csv
     - data/train_indices.csv
+  data_pickle:
+    cmd: python create_pickle.py
+    deps: 
+    - create_pickle.py
+    - config.py
+    - signal_reader.py
+    - data/train_indices.csv
+    outs:
+    - data/data.pkl
