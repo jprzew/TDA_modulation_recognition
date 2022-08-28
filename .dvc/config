@@ -1,0 +1,6 @@
+[core]
+    remote = ssh-storage
+['remote "ssh-storage"']
+    url = ssh://153.19.6.218/home/inf/jprzew/TDA/storage
+    user = jprzew
+    port = 22
