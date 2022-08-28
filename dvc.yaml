@@ -1,0 +1,10 @@
+stages:
+  train_test_indices:
+    cmd: python train_test_split.py
+    deps:
+    - train_test_split.py
+    - config.py
+    - signal_reader.py
+    outs:
+    - data/test_indices.csv
+    - data/train_indices.csv
