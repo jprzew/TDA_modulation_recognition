@@ -9,12 +9,8 @@ pycodestyle
 flake8
 pycodestyle_magic
 tqdm
-functools
-warnings
 ripser
 h5py
-mpl_toolkits.mplot3d
 plotnine
 joblib
 keras
-tensorflow
