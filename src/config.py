@@ -7,6 +7,6 @@ class TrainTestSplit:
     train_indices_file = 'data/train_indices.csv'
 
 
-class CreatePickle:
-    output = 'data/data.pkl'
+class SampledData:
+    sampled_data_file = 'data/data.pkl'
 
