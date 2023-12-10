@@ -7,5 +7,6 @@
 *aux
 *log
 __pycache__/
+venv/
 .ipynb_checkpoints
 .idea
