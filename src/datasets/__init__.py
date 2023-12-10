@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-
-
+from .radioml import RadoiMLDatasetFactory
 
 class DatasetFactory(ABC):
 
@@ -39,3 +38,6 @@ class DatasetSampler(ABC):
     @abstractmethod
     def save_to_file(self, output_file: Path) -> None:
         """Saves dataset sample to file"""
+
+
+radioml_dataset = RadoiMLDatasetFactory()
