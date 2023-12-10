@@ -3,6 +3,7 @@ class General:
 
 
 class TrainTestSplit:
+    test_proportion = 0.1
     test_indices_file = 'data/test_indices.csv'
     train_indices_file = 'data/train_indices.csv'
 
