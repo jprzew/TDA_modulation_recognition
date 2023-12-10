@@ -24,15 +24,9 @@
 # %autoreload 2
 
 # %%
-import path
-import modurec as mr
-from modurec import features
+from src.modurec import features
 import pandas as pd
-import numpy as np
-import modurec.test_models as tm
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn import model_selection
+import src.modurec.test_models as tm
 import matplotlib.pyplot as plt
 
 # %% [markdown]

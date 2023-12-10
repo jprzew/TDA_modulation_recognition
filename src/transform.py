@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import signal_reader
-from modurec import features
 from collections import namedtuple
 
 Feature = namedtuple('Feature', 'name params')

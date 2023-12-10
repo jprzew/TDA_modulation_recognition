@@ -1,5 +1,5 @@
-from signal_reader import split_and_save_indices_rml18
-from config import TrainTestSplit, General
+from venv.signal_reader import split_and_save_indices_rml18
+from src.config import TrainTestSplit, General
 
 split_and_save_indices_rml18(data_file=General.hdf_data_file,
                              test_indices_file=TrainTestSplit.test_indices_file,

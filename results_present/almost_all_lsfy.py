@@ -14,19 +14,10 @@
 # ---
 
 # %%
-import path
-import modurec as mr
-from modurec import signal_reader
+from src import modurec as mr
 
 import matplotlib.pyplot as plt
-import re
-from ripser import Rips
-import math
-import numpy as np
-import numpy.ma as ma
 import pandas as pd
-import importlib
-import pickle
 import graphviz
 import seaborn as sns
 from sklearn import preprocessing

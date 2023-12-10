@@ -24,17 +24,9 @@
 # %autoreload 2
 
 # %%
-import path
-import modurec
 import pandas as pd
-import numpy as np
-import modurec.test_models as tm
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn import model_selection
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # from bioinfokit.visuz import cluster

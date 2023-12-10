@@ -1,10 +1,9 @@
 import unittest
 import pandas as pd
-import pandas.testing as pd_testing
 import numpy as np
 from collections import namedtuple
 
-from transform import add_and_drop
+from src.transform import add_and_drop
 
 class TestDiagrams(unittest.TestCase):
     correct_file = 'data/stats_test_truth.pkl'

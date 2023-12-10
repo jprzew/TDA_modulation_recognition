@@ -15,8 +15,8 @@
 
 # %%
 import path
-import modurec as mr
-from modurec import signal_reader
+from src import modurec as mr
+from src.modurec import signal_reader
 
 import matplotlib.pyplot as plt
 import re

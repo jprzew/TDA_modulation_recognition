@@ -1,4 +1,4 @@
-from signal_reader import select_train_pkl
+from venv.signal_reader import select_train_pkl
 from params import CreatePickle
 import config as cfg
 

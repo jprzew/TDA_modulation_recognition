@@ -21,29 +21,16 @@
 # Import general utilities
 import numpy as np
 import pandas as pd
-import matplotlib
 import matplotlib.pyplot as plt
-from PIL import Image
-from matplotlib.pyplot import imshow
 
 # Import TDA utilities
 from ripser import Rips
-from tadasets import torus, sphere
-import persim
 import persim.landscapes
-from persim.landscapes import PersLandscapeExact, plot_landscape_simple
-import path
-import modurec as mr
 
 # Import ML tools
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import LabelBinarizer, LabelEncoder
-from sklearn import svm
-from sklearn import metrics
-from sklearn.model_selection import train_test_split
-import cv2
+from sklearn.preprocessing import LabelBinarizer
 import tensorflow as tf
-from tensorflow.keras import datasets, layers, models
+from tensorflow.keras import layers, models
 # -
 
 # %autoreload 2
