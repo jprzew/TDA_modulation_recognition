@@ -1,6 +1,9 @@
-from venv.signal_reader import split_and_save_indices_rml18
-from src.config import TrainTestSplit, General
+from datasets import radioml_dataset
+import config as cfg
 
-split_and_save_indices_rml18(data_file=General.hdf_data_file,
-                             test_indices_file=TrainTestSplit.test_indices_file,
-                             train_indices_file=TrainTestSplit.train_indices_file)
+print('Splitting dataset into train/test subsets...')
+splitter = radioml_dataset.get_splitter(input_file=cfg.General.hdf_data_file)
+splitter.split(test_proportion=cfg.TrainTestSplit.test_proportion)
+splitter.save_to_file(train_output_file=cfg.TrainTestSplit.train_indices_file,
+                      test_output_file=cfg.TrainTestSplit.test_indices_file)
+
