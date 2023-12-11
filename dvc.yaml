@@ -19,3 +19,12 @@ stages:
     - src/sample_data.py
     outs:
     - data/data.pkl
+  diagrams:
+    cmd: python src/diagrams.py
+    deps:
+    - data/data.pkl
+    - src/diagrams.py
+    - src/config.py
+    outs:
+    - data/diagrams.pkl
+
