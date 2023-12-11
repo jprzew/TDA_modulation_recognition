@@ -1,0 +1,60 @@
+schema: '2.0'
+stages:
+  train_test_split:
+    cmd: python src/train_test_split.py
+    deps:
+    - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
+      hash: md5
+      md5: 13c38751da99a2739fdc04029a86b8e9
+      size: 21449148312
+    - path: src/config.py
+      hash: md5
+      md5: ae2c3b8fb397b4dc358fd6e174c65ca4
+      size: 306
+    - path: src/datasets
+      hash: md5
+      md5: 2beab0f8265bd2a58b1c4064c801e160.dir
+      size: 13273
+      nfiles: 6
+    - path: src/train_test_split.py
+      hash: md5
+      md5: bbee0e758bc44a147b5bfe7eee821496
+      size: 415
+    outs:
+    - path: data/test_indices.csv
+      hash: md5
+      md5: f821f8aae57bb1bf6041dd434d4003fa
+      size: 1935515
+    - path: data/train_indices.csv
+      hash: md5
+      md5: 1712bb41ac1edb2d49e903bdce8612b7
+      size: 17400607
+  sample_data:
+    cmd: python src/sample_data.py
+    deps:
+    - path: data/GOLD_XYZ_OSC.0001_1024.hdf5
+      hash: md5
+      md5: 13c38751da99a2739fdc04029a86b8e9
+      size: 21449148312
+    - path: data/train_indices.csv
+      hash: md5
+      md5: 1712bb41ac1edb2d49e903bdce8612b7
+      size: 17400607
+    - path: src/config.py
+      hash: md5
+      md5: ae2c3b8fb397b4dc358fd6e174c65ca4
+      size: 306
+    - path: src/datasets
+      hash: md5
+      md5: 2beab0f8265bd2a58b1c4064c801e160.dir
+      size: 13273
+      nfiles: 6
+    - path: src/sample_data.py
+      hash: md5
+      md5: c7fa8713e9d798ad874dd4a78fd3053b
+      size: 416
+    outs:
+    - path: data/data.pkl
+      hash: md5
+      md5: 78a172f5631975fc8524da29cc37245d
+      size: 514809048
