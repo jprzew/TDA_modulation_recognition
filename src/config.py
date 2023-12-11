@@ -12,3 +12,15 @@ class SampledData:
     sampled_data_file = 'data/data.pkl'
     cases_per_class = 100
 
+
+class Diagrams:
+    pass
+
+
+class Features:
+    modulation_subset = ['BPSK', 'QPSK', '8PSK', '16PSK',
+                         '32PSK', '16QAM', '32QAM', '64QAM',
+                         'FM', 'GMSK', 'OQPSK']
+    features_file = 'data/features.pkl'
+
+
