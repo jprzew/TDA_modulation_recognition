@@ -10,4 +10,5 @@ class TrainTestSplit:
 
 class SampledData:
     sampled_data_file = 'data/data.pkl'
+    cases_per_class = 100
 

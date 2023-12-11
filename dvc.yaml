@@ -3,7 +3,7 @@ stages:
     cmd: python src/train_test_split.py
     deps:
     - data/GOLD_XYZ_OSC.0001_1024.hdf5
-    - datasets
+    - src/datasets
     - src/train_test_split.py
     - src/config.py
     outs:
@@ -12,9 +12,10 @@ stages:
   sample_data:
     cmd: python src/sample_data.py
     deps: 
-    - create_pickle.py
-    - config.py
-    - signal_reader.py
+    - data/GOLD_XYZ_OSC.0001_1024.hdf5
     - data/train_indices.csv
+    - src/datasets
+    - src/config.py
+    - src/sample_data.py
     outs:
     - data/data.pkl
