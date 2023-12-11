@@ -1,4 +1,4 @@
-from . import DatasetFactory, DatasetSplitter, DatasetSampler
+from .factories import DatasetFactory, DatasetSplitter, DatasetSampler
 from pathlib import Path
 import h5py
 import numpy as np
