@@ -1,0 +1,2 @@
+print('Calculating diagrams...')
+

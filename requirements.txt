@@ -15,3 +15,4 @@ plotnine
 joblib
 keras
 dvc
+camel_converter
