@@ -35,3 +35,29 @@ class Feature(ABC):
     @abstractmethod
     def compute(self):
         pass
+
+
+class Computer(ABC):
+
+    def __init__(self, previous=None):
+        self.previous = previous
+
+    def handle(self, **kwargs):
+
+        if self.previous is None or (result := self.previous.handle(**kwargs)) is None:
+            return self.compute(**kwargs) if self.can_compute(**kwargs) else None
+        else:
+            return result
+        #
+        # if (result := self.previous.handle(**kwargs)) is not None:
+        #     return result
+        # else:
+        #     return self.compute(**kwargs) if self.can_compute else None
+
+    @abstractmethod
+    def compute(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def can_compute(self, **kwargs):
+        pass

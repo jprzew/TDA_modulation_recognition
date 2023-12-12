@@ -1,8 +1,6 @@
-from abc import ABC, abstractmethod
 import pandas as pd
-from inspect import signature
-from camel_converter import to_snake
 from .point_cloud import PointCloud
+from .feature import Feature
 
 registered_features = {'point_cloud': PointCloud}
 
