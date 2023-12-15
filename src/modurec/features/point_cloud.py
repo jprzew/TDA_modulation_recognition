@@ -2,9 +2,10 @@ from .feature import Feature, Computer
 import numpy as np
 import pandas as pd
 from cmath import phase
+from typing import Union
 
 
-def windowed_cloud(point_cloud, window, step):
+def windowed_cloud(point_cloud: np.ndarray, window: int, step: int):
 
     samples = point_cloud.shape[0]
     try:
@@ -20,7 +21,7 @@ def windowed_cloud(point_cloud, window, step):
     stride = indices.strides[0]
 
     # the first dimension describes different windows
-    # the second dimension descibes points in windows
+    # the second dimension describes points in windows
     indices = np.lib.stride_tricks.as_strided(indices,
                                               shape=(no_windows, window),
                                               strides=(stride, step * stride))
@@ -43,14 +44,14 @@ class PointCloud(Feature):
     preproc : str - preprocessing of point cloud ('fft' - computes fft of cloud)
     """
 
-    def __init__(self, dim=2, step=1, kind=None, preproc=None):
+    def __init__(self, dim: int, step: Union[int, str], kind: str = None, preproc: str = None):
         self.dim = dim
         self.step = step
         self.kind = kind
         self.preproc = preproc
 
     @staticmethod
-    def fft_cloud(point_cloud):
+    def _fft_cloud(point_cloud: np.ndarray):
         """Treats cloud as a complex signal and computes its fft, thus producing new cloud"""
         new_cloud = np.fft.fft(point_cloud[:, 0] + 1j * point_cloud[:, 1])
         return np.stack((np.real(new_cloud), np.imag(new_cloud)),
@@ -61,7 +62,7 @@ class PointCloud(Feature):
 
         # Compute fft-clouds if necessary
         if self.preproc == 'fft':
-            clouds = df['point_cloud'].apply(self.fft_cloud)
+            clouds = df['point_cloud'].apply(self._fft_cloud)
         else:
             clouds = df['point_cloud']
 
@@ -109,7 +110,7 @@ class StandardCloudComputer(Computer):
             return self._compute_3d(clouds)
 
     @staticmethod
-    def _compute_3d(clouds):
+    def _compute_3d(clouds: pd.Series):
 
         def standardize(x):
             range0 = np.max(x[:, 0]) - np.min(x[:, 0])
