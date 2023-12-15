@@ -75,12 +75,28 @@ class PointCloud(Feature):
     def compute(self):
         df = self.creator.df.copy()  # TODO: This is risky memorywise; may require refactoring
 
+        # Compute fft-clouds if necessary
         if self.preproc == 'fft':
             df['point_cloud'] = df['point_cloud'].apply(self.fft_cloud)
 
+        # Add column with values of step
+        if isinstance(self.step, str):  # user gave column name
+            if self.step not in df.columns:
+                raise ValueError(f'Column {self.step} does not exist')
+
+            step_col = self.step
+        elif isinstance(self.step, int):  # user gave step value
+            step_col = 'step'
+            df[step_col] = self.step
+        else:
+            raise ValueError('Parameter step need to be str or int')
+
+        # Create computer-responsibility chain
         computer = StandardCloudComputer()
         computer = ReducedCloudComputer(previous=computer)
         return computer.handle(df=df, dim=self.dim, step=self.step, kind=self.kind)
+
+        return computer.handle(df=df, dim=self.dim, step=step_col, kind=self.kind)
 
     #
     # def compute(self):
@@ -136,10 +152,9 @@ class StandardCloudComputer(Computer):
     """Computes standard type of point cloud (kind = None)"""
 
     def can_compute(self, **kwargs):
-        # This case is computable if kind is None & step is int or str
+        # This case is computable if kind is None & step is int or str (this is checked in PointCloud class)
         # dim must be even or 3 (but then step must be 1)
         conditions = [kwargs['kind'] is None,
-                      isinstance(kwargs['step'], (int, str)),
                       kwargs['dim'] % 2 == 0 or (kwargs['dim'] == 3 and kwargs['step'] == 1)]
 
         return np.array(conditions).all()
@@ -150,24 +165,12 @@ class StandardCloudComputer(Computer):
         step = kwargs['step']
         window = dim / 2
 
-        # Add column with values of step
-        if isinstance(step, str):  # user gave column name
-            if step not in df.columns:
-                raise ValueError(f'Column {step} does not exist')
-
-            step_col = step
-        elif isinstance(step, int):  # user gave step value
-            step_col = 'step'
-            df[step_col] = step
-        else:
-            raise ValueError('Parameter step need to be str or int')
-
         if window == 1:
             return df['point_cloud']
         elif window.is_integer():
             return df.apply(lambda x: windowed_cloud(x['point_cloud'],
                                                      window=int(window),  # window needs to be int
-                                                     step=x[step_col]), axis=1)
+                                                     step=x[step]), axis=1)
         elif dim == 3:
             return self._compute_3d(df)
 
@@ -190,10 +193,9 @@ class ReducedCloudComputer(Computer):
     """Reduced cloud is derived from one-dimensional signal of amplitudes or phases"""
 
     def can_compute(self, **kwargs):
-        # This case is computable if kind is 'abs' or 'phi' & step is int or str
+        # This case is computable if kind is 'abs' or 'phi' & step is int or str (this is checked in PointCloud class)
         # dim must be an integer
         conditions = [kwargs['kind'] in {'abs', 'phi'},
-                      isinstance(kwargs['step'], (int, str)),
                       isinstance(kwargs['dim'], int)]
 
         return np.array(conditions).all()
@@ -215,26 +217,13 @@ class ReducedCloudComputer(Computer):
 
             df['point_cloud'] = df.point_cloud.apply(argument)
 
-        # Add column with values of step
-        # TODO: This part of code may be worth moving to PointCloud class
-        if isinstance(step, str):  # user gave column name
-            if step not in df.columns:
-                raise ValueError(f'Column {step} does not exist')
-
-            step_col = step
-        elif isinstance(step, int):  # user gave step value
-            step_col = 'step'
-            df[step_col] = step
-        else:
-            raise ValueError('Parameter step need to be str or int')
-
         window = dim
         if window == 1:
             return df['point_cloud']
         else:
             return df.apply(lambda x: windowed_cloud(x['point_cloud'],
                                                      window=int(window),
-                                                     step=x[step_col]), axis=1)
+                                                     step=x[step]), axis=1)
 
 
 
