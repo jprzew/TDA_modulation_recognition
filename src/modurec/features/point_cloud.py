@@ -73,30 +73,30 @@ class PointCloud(Feature):
                         axis=-1)
 
     def compute(self):
-        df = self.creator.df.copy()  # TODO: This is risky memorywise; may require refactoring
+        df = self.creator.df
 
         # Compute fft-clouds if necessary
         if self.preproc == 'fft':
-            df['point_cloud'] = df['point_cloud'].apply(self.fft_cloud)
+            clouds = df['point_cloud'].apply(self.fft_cloud)
+        else:
+            clouds = df['point_cloud']
 
         # Add column with values of step
         if isinstance(self.step, str):  # user gave column name
             if self.step not in df.columns:
                 raise ValueError(f'Column {self.step} does not exist')
 
-            step_col = self.step
+            steps = df[self.step]
         elif isinstance(self.step, int):  # user gave step value
-            step_col = 'step'
-            df[step_col] = self.step
+            steps = pd.Series(self.step, index=df.index)
         else:
             raise ValueError('Parameter step need to be str or int')
 
         # Create computer-responsibility chain
         computer = StandardCloudComputer()
         computer = ReducedCloudComputer(previous=computer)
-        return computer.handle(df=df, dim=self.dim, step=self.step, kind=self.kind)
 
-        return computer.handle(df=df, dim=self.dim, step=step_col, kind=self.kind)
+        return computer.handle(clouds=clouds, dim=self.dim, steps=steps, kind=self.kind)
 
     #
     # def compute(self):
@@ -152,30 +152,29 @@ class StandardCloudComputer(Computer):
     """Computes standard type of point cloud (kind = None)"""
 
     def can_compute(self, **kwargs):
-        # This case is computable if kind is None & step is int or str (this is checked in PointCloud class)
-        # dim must be even or 3 (but then step must be 1)
+        # This case is computable if kind is None and dim is even or 3 (but then step be constant and equal to 1)
         conditions = [kwargs['kind'] is None,
-                      kwargs['dim'] % 2 == 0 or (kwargs['dim'] == 3 and kwargs['step'] == 1)]
+                      kwargs['dim'] % 2 == 0 or (kwargs['dim'] == 3 and (kwargs['step'] == 1).all())]
 
         return np.array(conditions).all()
 
     def compute(self, **kwargs):
-        df = kwargs['df']
+        clouds = kwargs['clouds']
         dim = kwargs['dim']
-        step = kwargs['step']
+        steps = kwargs['steps']
         window = dim / 2
 
         if window == 1:
-            return df['point_cloud']
+            return clouds
         elif window.is_integer():
-            return df.apply(lambda x: windowed_cloud(x['point_cloud'],
-                                                     window=int(window),  # window needs to be int
-                                                     step=x[step]), axis=1)
+            return (pd.concat([clouds, steps], axis=1)
+                    .apply(lambda x: windowed_cloud(x.iloc[0], window=int(window), step=x.iloc[1]), axis=1))
+
         elif dim == 3:
-            return self._compute_3d(df)
+            return self._compute_3d(clouds)
 
     @staticmethod
-    def _compute_3d(df):
+    def _compute_3d(clouds):
 
         def standardize(x):
             range0 = np.max(x[:, 0]) - np.min(x[:, 0])
@@ -185,7 +184,7 @@ class StandardCloudComputer(Computer):
             return x
 
         # Third dimension of a point is set to be the index of that point
-        result = df.point_cloud.apply(lambda x: np.column_stack([x, range(x.shape[0])]))
+        result = clouds.apply(lambda x: np.column_stack([x, range(x.shape[0])]))
         return result.apply(standardize)
 
 
@@ -193,7 +192,7 @@ class ReducedCloudComputer(Computer):
     """Reduced cloud is derived from one-dimensional signal of amplitudes or phases"""
 
     def can_compute(self, **kwargs):
-        # This case is computable if kind is 'abs' or 'phi' & step is int or str (this is checked in PointCloud class)
+        # This case is computable if kind is 'abs' or 'phi'
         # dim must be an integer
         conditions = [kwargs['kind'] in {'abs', 'phi'},
                       isinstance(kwargs['dim'], int)]
@@ -201,29 +200,28 @@ class ReducedCloudComputer(Computer):
         return np.array(conditions).all()
 
     def compute(self, **kwargs):
-        df = kwargs['df']
+        clouds = kwargs['clouds']
         dim = kwargs['dim']
-        step = kwargs['step']
+        steps = kwargs['steps']
         kind = kwargs['kind']
 
         if kind == 'abs':
             def amplitude(point_cloud):
                 return np.apply_along_axis(lambda x: np.linalg.norm(x), 1, point_cloud)
 
-            df['point_cloud'] = df.point_cloud.apply(amplitude)
+            clouds = clouds.apply(amplitude)
         elif kind == 'phi':
             def argument(point_cloud):
                 return np.apply_along_axis(lambda x: phase(x[0] + x[1] * 1j), 1, point_cloud)
 
-            df['point_cloud'] = df.point_cloud.apply(argument)
+            clouds = clouds.apply(argument)
 
         window = dim
         if window == 1:
-            return df['point_cloud']
+            return clouds
         else:
-            return df.apply(lambda x: windowed_cloud(x['point_cloud'],
-                                                     window=int(window),
-                                                     step=x[step]), axis=1)
+            return (pd.concat([clouds, steps], axis=1)
+                    .apply(lambda x: windowed_cloud(x.iloc[0], window=int(window), step=x.iloc[1]), axis=1))
 
 
 
