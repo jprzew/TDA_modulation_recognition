@@ -1,8 +1,10 @@
 import pandas as pd
 from .point_cloud import PointCloud
+from .diagram import Diagram
 from .feature import Feature
 
-registered_features = {'point_cloud': PointCloud}
+registered_features = {'point_cloud': PointCloud,
+                       'diagram': Diagram}
 
 
 @pd.api.extensions.register_dataframe_accessor('ff')
