@@ -236,6 +236,28 @@ class ReducedCloudComputer(Computer):
                                                      window=int(window),
                                                      step=x[step_col]), axis=1)
 
+
+
+######## Old point cloud to be tested against
+
+class PointCloud2(Feature):
+
+    def __init__(self, dim=2, step=1, kind=None, preproc=None):
+        self.dim = dim
+        self.step = step
+        self.kind = kind
+        self.preproc = preproc
+
+    @staticmethod
+    def compute_3d(df):
+
+        def standardize(x):
+            range0 = np.max(x[:, 0]) - np.min(x[:, 0])
+            range1 = np.max(x[:, 1]) - np.min(x[:, 1])
+            range2 = np.max(x[:, 2]) - np.min(x[:, 2])
+            x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
+            return x
+
         df['point_cloud'] = df.point_cloud.apply(lambda x:
                                                  np.column_stack([x, range(x.shape[0])]))
         df['point_cloud'] = df.point_cloud.apply(standardize)

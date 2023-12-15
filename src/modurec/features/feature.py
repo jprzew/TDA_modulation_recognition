@@ -4,7 +4,7 @@ from camel_converter import to_snake
 
 
 class Feature(ABC):
-    """Abstract class for features"""
+    """Abstract base class for features"""
 
     creator = None
 
@@ -38,21 +38,18 @@ class Feature(ABC):
 
 
 class Computer(ABC):
+    """Abstract base class for feature computers"""
 
     def __init__(self, previous=None):
         self.previous = previous
 
     def handle(self, **kwargs):
+        """Computes the feature if possible, otherwise returns None"""
 
         if self.previous is None or (result := self.previous.handle(**kwargs)) is None:
             return self.compute(**kwargs) if self.can_compute(**kwargs) else None
         else:
             return result
-        #
-        # if (result := self.previous.handle(**kwargs)) is not None:
-        #     return result
-        # else:
-        #     return self.compute(**kwargs) if self.can_compute else None
 
     @abstractmethod
     def compute(self, **kwargs):
