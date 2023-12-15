@@ -6,6 +6,14 @@ from typing import Union
 
 
 def windowed_cloud(point_cloud: np.ndarray, window: int, step: int):
+    """Creates a windowed point cloud from a given point cloud
+
+    Attributes
+    ----------
+    point_cloud : np.ndarray - point cloud to be windowed
+    window : int - number of points in a window
+    step : int - step used go compose windows: one window contains points that are step apart
+    """
 
     samples = point_cloud.shape[0]
     try:
