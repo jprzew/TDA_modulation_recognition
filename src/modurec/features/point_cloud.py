@@ -50,22 +50,6 @@ class PointCloud(Feature):
         self.preproc = preproc
 
     @staticmethod
-    def compute_3d(df):
-
-        def standardize(x):
-            range0 = np.max(x[:, 0]) - np.min(x[:, 0])
-            range1 = np.max(x[:, 1]) - np.min(x[:, 1])
-            range2 = np.max(x[:, 2]) - np.min(x[:, 2])
-            x[:, 2] = x[:, 2] * 0.5 * (range0 + range1) / range2
-            return x
-
-        df['point_cloud'] = df.point_cloud.apply(lambda x:
-                                                 np.column_stack([x, range(x.shape[0])]))
-        df['point_cloud'] = df.point_cloud.apply(standardize)
-
-        return df['point_cloud']
-
-    @staticmethod
     def fft_cloud(point_cloud):
         """Treats cloud as a complex signal and computes its fft, thus producing new cloud"""
         new_cloud = np.fft.fft(point_cloud[:, 0] + 1j * point_cloud[:, 1])
