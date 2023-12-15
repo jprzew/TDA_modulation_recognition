@@ -26,6 +26,7 @@ def windowed_cloud(point_cloud, window, step):
                                               strides=(stride, step * stride))
     indices = indices.flatten()
 
+    stride = min(point_cloud.strides)
     return np.lib.stride_tricks.as_strided(point_cloud[indices, ...],
                                            shape=(no_windows, dim * window),
                                            strides=(stride * dim * window, stride))
