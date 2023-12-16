@@ -30,7 +30,7 @@ class Feature(ABC):
         return string
 
     def values(self):
-        return self.df[str(self)]
+        return self.creator.df[str(self)]
 
     @abstractmethod
     def compute(self):
