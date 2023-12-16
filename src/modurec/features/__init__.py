@@ -4,11 +4,18 @@ from .diagram import Diagram
 from .feature import Feature
 from .lifetime import Lifetime
 from .homology import Homology
+from .statistics import No, Mean, Var, KmpFeatures, WasserAmpl, Entropy
 
 registered_features = {'point_cloud': PointCloud,
                        'diagram': Diagram,
                        'homology': Homology,
-                       'lifetime': Lifetime}
+                       'lifetime': Lifetime,
+                       'no': No,
+                       'mean': Mean,
+                       'var': Var,
+                       'kmp_features': KmpFeatures,
+                       'wasser_ampl': WasserAmpl,
+                       'entropy': Entropy}
 
 
 @pd.api.extensions.register_dataframe_accessor('ff')
