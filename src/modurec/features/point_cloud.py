@@ -52,7 +52,7 @@ class PointCloud(Feature):
     preproc : str - preprocessing of point cloud ('fft' - computes fft of cloud)
     """
 
-    def __init__(self, dim: int, step: Union[int, str], kind: str = None, preproc: str = None):
+    def __init__(self, dim: int, step: Union[int, str] = 1, kind: str = None, preproc: str = None):
         self.dim = dim
         self.step = step
         self.kind = kind
@@ -98,7 +98,7 @@ class StandardCloudComputer(Computer):
     def can_compute(self, **kwargs):
         # This case is computable if kind is None and dim is even or 3 (but then step be constant and equal to 1)
         conditions = [kwargs['kind'] is None,
-                      kwargs['dim'] % 2 == 0 or (kwargs['dim'] == 3 and (kwargs['step'] == 1).all())]
+                      kwargs['dim'] % 2 == 0 or (kwargs['dim'] == 3 and (kwargs['steps'] == 1).all())]
 
         return np.array(conditions).all()
 
