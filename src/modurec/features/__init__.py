@@ -2,11 +2,13 @@ import pandas as pd
 from .point_cloud import PointCloud
 from .diagram import Diagram
 from .feature import Feature
-from .homology import H
+from .lifetime import Lifetime
+from .homology import Homology
 
 registered_features = {'point_cloud': PointCloud,
                        'diagram': Diagram,
-                       'homology': H}
+                       'homology': Homology,
+                       'lifetime': Lifetime}
 
 
 @pd.api.extensions.register_dataframe_accessor('ff')

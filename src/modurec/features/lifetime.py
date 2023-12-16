@@ -1,10 +1,9 @@
 from .feature import Feature
-import pandas as pd
 from typing import Union
 
 
-class Homology(Feature):
-    """Persistent homology of a point cloud.
+class Lifetime(Feature):
+    """Lifetime of a homology cycles.
 
     Attributes
     ----------
@@ -14,7 +13,7 @@ class Homology(Feature):
     eps : float - Epsilon to control short-living cycles
     kind : str - Kind of the filtration.
     fil : str - Type of the filtration.
-    preproc : str - Preprocessing method.
+    preproc : str - Preprocessing method (None, 'fft').
     """
 
     def __init__(self,
@@ -34,9 +33,13 @@ class Homology(Feature):
         self.preproc = preproc
 
     def compute(self):
-        diagram = self.creator.create_feature('diagram', dim=self.dim, step=self.step,
-                                              eps=self.eps, kind=self.kind, fil=self.fil,
-                                              preproc=self.preproc)
+        homology = self.creator.create_feature('homology',
+                                               n=self.n,
+                                               dim=self.dim,
+                                               step=self.step,
+                                               eps=self.eps,
+                                               kind=self.kind,
+                                               fil=self.fil,
+                                               preproc=self.preproc)
 
-        return pd.DataFrame(diagram.values().tolist(),
-                            index=self.creator.df.index)[self.n]
+        return homology.values().np.diff(axis=1)

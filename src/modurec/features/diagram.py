@@ -25,7 +25,7 @@ class Diagram(Feature):
     eps : float - Epsilon to control short-living cycles
     kind : str - Kind of the filtration.
     fil : str - Type of the filtration.
-    preproc : str - Preprocessing method.
+    preproc : str - Preprocessing method (None, 'fft').
     """
 
     def __init__(self, dim: int = 2,
