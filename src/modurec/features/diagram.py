@@ -3,6 +3,7 @@ from ripser import Rips, ripser
 import numpy as np
 from scipy import sparse
 from typing import List, Union
+from tqdm import tqdm
 
 
 def trim_diagrams(diagrams: List[np.array], eps: float) -> List[np.array]:
@@ -83,7 +84,8 @@ class Diagram(Feature):
                                                       kind=self.kind,
                                                       preproc=self.preproc)
             rips = Rips()
-            return point_cloud.values().map(rips.fit_transform)
+            tqdm.pandas()
+            return point_cloud.values().progress_apply(rips.fit_transform)
         else:
             full_diagram = self.creator.create_feature('diagram',
                                                        dim=self.dim,
