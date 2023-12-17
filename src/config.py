@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from modurec.features.feature import FeatureData
 from typing import Optional
 
 
@@ -15,12 +15,6 @@ class TrainTestSplit:
 class SampledData:
     sampled_data_file = 'data/data.pkl'
     cases_per_class = 100
-
-
-@dataclass
-class FeatureData:
-    name: str
-    params: dict
 
 
 class Diagrams:

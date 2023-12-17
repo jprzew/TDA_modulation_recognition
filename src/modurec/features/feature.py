@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from inspect import signature
 from camel_converter import to_snake
+from dataclasses import dataclass
 
 
 class Feature(ABC):
@@ -35,6 +36,20 @@ class Feature(ABC):
     @abstractmethod
     def compute(self):
         pass
+
+
+@dataclass
+class FeatureData:
+    """Dataclass for storing feature data"""
+    name: str
+    params: dict
+
+
+def calculate_feature(df, feature_data):
+    feature = df.ff.create_feature(feature_data.name, **feature_data.params)
+    result = feature.values()
+    result.name = str(feature)
+    return result
 
 
 class Computer(ABC):
