@@ -158,13 +158,19 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
 
         def __get_view_for_plots(self, modulation_type, max_rows=24):
             df = self.df
-            if modulation_type is not None:
+
+            if modulation_type == 'random_sample':
+                df.index.name = ['modulation_type', 'index']
+                df = df.groupby('modulation_type').sample(n=max_rows)
+                df = df.reset_index().set_index('index')
+
+            elif modulation_type is not None:
                 df = df.loc[df.modulation_type == modulation_type]
-            # df = df.reset_index()
-            if df.shape[0] > max_rows:
+                df = df.sample(n=max_rows)
+            elif df.shape[0] > max_rows:
                 # printWARNING:
                 df = df.head(max_rows)
-            return df  # .reset_index()
+            return df
 
         def plot_samples(self,
                          data_col='signal_sample',
@@ -231,6 +237,7 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
                 axes[ind].scatter(row[data_I], row[data_Q])
                 axes[ind].set_title(row[title_col])
 
+        # TODO: This function requires refactoring; together with __get_view_for_plots
         def plot_clouds(self,
                         data_col='point_cloud',
                         title_col='modulation_type',
@@ -244,14 +251,14 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
             axes = self.__get_axes(size=df.shape[0], projection=projection,
                                    ncols=ncols)
 
-            for ind, (_, row) in enumerate(df.iterrows()):
+            for ind, (original_index, row) in enumerate(df.iterrows()):
                 if projection is None:
                     axes[ind].scatter(row[data_col][:, 0], row[data_col][:, 1])
                 else:
                     axes[ind].scatter3D(row[data_col][:, 0],
                                         row[data_col][:, 1],
                                         row[data_col][:, 2])
-                axes[ind].set_title(row[title_col])
+                axes[ind].set_title(f'Modulation: {row[title_col]}. Index: {original_index}')
                 if xylim is not None:
                     xlim = xylim[0]
                     ylim = xylim[1]

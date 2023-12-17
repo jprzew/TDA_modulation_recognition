@@ -20,13 +20,17 @@ import warnings
 from numpy import mean
 from numpy import std
 from matplotlib import pyplot
-# import numpy as np
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import config as cfg
+from datasets.radioml import class_to_index
+from utils import get_repo_path
 
 from sklearn import model_selection
 from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, plot_confusion_matrix
+# TODO: from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, plot_confusion_matrix
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import RidgeClassifier
@@ -239,6 +243,15 @@ def summarize_results(results, maximize=True, top_n=10):
 
 # load the dataset, returns X and y elements
 def load_dataset():
+
+    df = pd.read_pickle(get_repo_path() / cfg.Spotcheck.input_file)
+
+    y = df.index.get_level_values('modulation_type').map(class_to_index)
+    X = np.array(df)
+
+    return X, y
+
+
     return make_classification(n_samples=1000, n_classes=2, random_state=1)
 
 
