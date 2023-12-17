@@ -38,7 +38,7 @@ class Feature(ABC):
         pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class FeatureData:
     """Dataclass for storing feature data"""
     name: str

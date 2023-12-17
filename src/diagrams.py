@@ -29,7 +29,7 @@ if cfg.Diagrams.sample_size is not None:
 print('Calculating diagrams...')
 results = []
 for case, feature_data in enumerate(cfg.Diagrams.to_calculate):
-    print(f'Calculating {case+1}/{len(cfg.Diagrams.to_calculate)}')
+    print(f'Calculating {case+1}/{len(cfg.Diagrams.to_calculate)}. Feature data: {feature_data}')
     print('------------------------')
     results.append(calculate_feature_cached(feature_data=feature_data))
 
