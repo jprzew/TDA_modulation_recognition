@@ -25,6 +25,7 @@ stages:
     - data/data.pkl
     - src/diagrams.py
     - src/config.py
+    - src/modurec/features
     outs:
     - data/diagrams.pkl
 
