@@ -30,4 +30,16 @@ stages:
     - src/modurec/features
     outs:
     - data/diagrams.pkl
+  featurize:
+    cmd: python src/featurize.py
+    deps:
+    - data/data.pkl
+    - data/diagrams.pkl
+    - src/featurize.py
+    - src/config.py
+    - src/modurec/features
+    - src/feature_list.py
+    outs:
+    - data/features.pkl
+
 

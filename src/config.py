@@ -42,7 +42,7 @@ class Diagrams:
     diagrams_file = 'data/diagrams.pkl'
 
 
-class Features:
+class Featurize:
     modulation_subset = ['BPSK', 'QPSK', '8PSK', '16PSK',
                          '32PSK', '16QAM', '32QAM', '64QAM',
                          'FM', 'GMSK', 'OQPSK']
