@@ -3,6 +3,12 @@ import pandas as pd
 from utils import get_repo_path
 from modurec.features.feature import calculate_feature
 from joblib import Memory
+from dvc.api import params_show
+import numpy as np
+
+# Setting random seed
+params = params_show()['diagrams']
+np.random.seed(params['random_seed'])
 
 # Prepare caching
 CACHEDIR = get_repo_path() / '.cache'
@@ -17,7 +23,7 @@ def calculate_feature_cached(feature_data):
 
 
 # Read data
-df = pd.read_pickle(get_repo_path() / cfg.SampledData.sampled_data_file)
+df = pd.read_pickle(get_repo_path() / cfg.SampleData.sampled_data_file)
 
 # Subsample modulations and cases
 df = df[df.modulation_type.isin(cfg.Diagrams.modulation_subset)]

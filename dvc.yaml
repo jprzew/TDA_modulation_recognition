@@ -21,6 +21,8 @@ stages:
     - data/data.pkl
   diagrams:
     cmd: python src/diagrams.py
+    params:
+    - diagrams
     deps:
     - data/data.pkl
     - src/diagrams.py

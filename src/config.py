@@ -10,11 +10,13 @@ class TrainTestSplit:
     test_proportion = 0.1
     test_indices_file = 'data/test_indices.csv'
     train_indices_file = 'data/train_indices.csv'
+    random_seed = 42
 
 
-class SampledData:
+class SampleData:
     sampled_data_file = 'data/data.pkl'
     cases_per_class = 100
+    random_seed = 42
 
 
 class Diagrams:
