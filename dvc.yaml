@@ -28,6 +28,7 @@ stages:
     - src/diagrams.py
     - src/config.py
     - src/modurec/features
+    - src/utils.py
     outs:
     - data/diagrams.pkl
   featurize:
@@ -39,6 +40,7 @@ stages:
     - src/config.py
     - src/modurec/features
     - src/feature_list.py
+    - src/utils.py
     outs:
     - data/features.pkl
 
