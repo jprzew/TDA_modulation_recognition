@@ -245,14 +245,13 @@ def summarize_results(results, maximize=True, top_n=10):
 def load_dataset():
 
     df = pd.read_pickle(get_repo_path() / cfg.Spotcheck.input_file)
+    data = pd.read_pickle(get_repo_path() / cfg.SampleData.sampled_data_file)
+    df = df.join(data['modulation_type'])
 
-    y = df.index.get_level_values('modulation_type').map(class_to_index)
-    X = np.array(df)
+    y = np.array(df['modulation_type'].map(class_to_index))
+    X = np.array(df.drop(columns=['modulation_type']))
 
     return X, y
-
-
-    return make_classification(n_samples=1000, n_classes=2, random_state=1)
 
 
 def main():
