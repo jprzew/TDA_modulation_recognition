@@ -38,6 +38,7 @@ class Diagrams:
                     FeatureData(name='diagram', params={'dim': 4, 'step': 30})]
 
     sample_size: Optional[int] = 2  # sample size per modulation
+    snr_threshold: Optional[int] = 10
 
     diagrams_file = 'data/diagrams.pkl'
 
@@ -47,5 +48,10 @@ class Featurize:
                          '32PSK', '16QAM', '32QAM', '64QAM',
                          'FM', 'GMSK', 'OQPSK']
     features_file = 'data/features.pkl'
+
+
+class Spotcheck:
+    input_file = 'data/features.pkl'
+
 
 
