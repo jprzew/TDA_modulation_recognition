@@ -1,6 +1,7 @@
 import warnings
 import re
 import math
+from typing import Optional, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -149,7 +150,7 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
             fig, axes = plt.subplots(ncols=ncols,
                                      nrows=nrows,
                                      figsize=figsize,
-                                     subplot_kw={'projection': projection})
+                                     subplot_kw={'projection': None if not projection else ''})  # TODO: refactor projection
             fig.subplots_adjust(hspace=hspace, wspace=wspace)
             axes = axes.flatten()
             for i in range(size, ncols * nrows):
@@ -159,106 +160,79 @@ with warnings.catch_warnings():   # catch_warnings is useful when autoreload is 
         def __get_view_for_plots(self, modulation_type, max_rows=24):
             df = self.df
 
-            if modulation_type == 'random_sample':
-                df.index.name = ['modulation_type', 'index']
-                df = df.groupby('modulation_type').sample(n=max_rows)
-                df = df.reset_index().set_index('index')
-
+            if modulation_type == 'all':
+                df = df.groupby('modulation_type', as_index=False).sample(n=max_rows)
             elif modulation_type is not None:
                 df = df.loc[df.modulation_type == modulation_type]
                 df = df.sample(n=max_rows)
             elif df.shape[0] > max_rows:
-                # printWARNING:
                 df = df.head(max_rows)
             return df
 
-        def plot_samples(self,
-                         data_col='signal_sample',
-                         title_col='modulation_type',
-                         modulation_type=None,
-                         max_rows=24,
-                         min_sample=float('-inf'),
-                         max_sample=float('inf')):
+        def plot_diagrams(self,
+                          data_col='diagram',
+                          modulation_type: Optional[str] = 'all',
+                          max_rows=24):
+            """Plot persistence diagrams.
 
-            df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
-            size = df.shape[0]
-            axes = self.__get_axes(size=size, ncols=2, figsize=(20, size))
-
-            for ind, (_, row) in enumerate(df.iterrows()):
-                samples = row[data_col]
-                subset = np.arange(start=0, stop=samples.shape[0])
-                subset = subset[(subset > min_sample) & (subset < max_sample)]
-
-                axes[ind].plot(samples[subset])
-                axes[ind].set_title(row[title_col])
-
-
-        def plot_persistence_diagrams(self,
-                                      data_col='diagram',
-                                      title_col='modulation_type',
-                                      modulation_type=None,
-                                      max_rows=24):
+            Arguments:
+            ----------
+            data_col : str
+                Name of the column with persistence diagrams.
+            modulation_type : str or None (default: 'all')
+                Indicates which modulations to plot.
+                If None, then the first max_rows rows are plotted.
+            max_rows : int (default: 24) indicates how many rows to plot.
+                if modulation_type is 'all', then max_rows rows are sampled from each modulation.
+            """
 
             rips = Rips()
             df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
             axes = self.__get_axes(size=df.shape[0])
 
-            for ind, (_, row) in enumerate(df.iterrows()):
+            for ind, (original_index, row) in enumerate(df.iterrows()):
                 plt.sca(axes[ind])
                 rips.plot(row[data_col], show=False)
-                axes[ind].set_title(row[title_col])
-
-        def plot_histograms(self,
-                            data_col='signal_sample',
-                            title_col='modulation_type',
-                            modulation_id=None,
-                            max_rows=24,
-                            bins=15):
-
-            df = self.__get_view_for_plots(modulation_id, max_rows=max_rows)
-            axes = self.__get_axes(size=df.shape[0])
-
-            for ind, (_, row) in enumerate(df.iterrows()):
-                axes[ind].hist(row[data_col], bins=bins)
-                axes[ind].set_title(row[title_col])
-
-        def plot_IQ(self,
-                    data_I='signal_sampleI',
-                    data_Q='signalQ',
-                    title_col='modulation_type',
-                    max_rows=24,
-                    modulation_id=None):
-
-            df = self.__get_view_for_plots(modulation_id, max_rows=max_rows)
-            size = df.shape[0]
-            axes = self.__get_axes(size=size, ncols=2)
-
-            for ind, (_, row) in enumerate(df.iterrows()):
-                axes[ind].scatter(row[data_I], row[data_Q])
-                axes[ind].set_title(row[title_col])
+                axes[ind].set_title(f'Modulation: {row["modulation_type"]}. Index: {original_index}. SNR={row["SNR"]}')
 
         # TODO: This function requires refactoring; together with __get_view_for_plots
         def plot_clouds(self,
                         data_col='point_cloud',
-                        title_col='modulation_type',
-                        projection=None,
-                        modulation_type=None,
+                        three_dimensional: bool = False,
+                        modulation_type: Optional[str] = 'all',
                         max_rows=24,
                         ncols=3,
-                        xylim=None):
+                        xylim: Tuple[Tuple, Tuple] = None):
+            """Plot point-clouds.
+
+            Arguments:
+            ----------
+            data_col : str
+                Name of the column with point-clouds.
+            three_dimensional : bool (default: False) indicates whether to plot in 3D or 2D.
+            modulation_type : str or None (default: 'all')
+                Indicates which modulations to plot.
+                If None, then the first max_rows rows are plotted.
+            max_rows : int (default: 24) indicates how many rows to plot.
+                if modulation_type is 'all', then max_rows rows are sampled from each modulation.
+            ncols : int (default: 3) number of columns with plots.
+            xylim : Tuple[Tuple, Tuple] or None (default: None) indicates the limits of the plot.
+                If None, then the limits are calculated automatically.
+                First tuple is for x-axis, second for y-axis.
+            """
 
             df = self.__get_view_for_plots(modulation_type, max_rows=max_rows)
-            axes = self.__get_axes(size=df.shape[0], projection=projection,
+            axes = self.__get_axes(size=df.shape[0], projection=three_dimensional,
                                    ncols=ncols)
 
             for ind, (original_index, row) in enumerate(df.iterrows()):
-                if projection is None:
+                if not three_dimensional:
                     axes[ind].scatter(row[data_col][:, 0], row[data_col][:, 1])
                 else:
                     axes[ind].scatter3D(row[data_col][:, 0],
                                         row[data_col][:, 1],
                                         row[data_col][:, 2])
-                axes[ind].set_title(f'Modulation: {row[title_col]}. Index: {original_index}')
+                axes[ind].set_title(f'Modulation: {row["modulation_type"]}. Index: {original_index}. SNR={row["SNR"]}')
                 if xylim is not None:
                     xlim = xylim[0]
                     ylim = xylim[1]
