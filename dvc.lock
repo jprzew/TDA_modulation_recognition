@@ -9,8 +9,8 @@ stages:
       size: 21449148312
     - path: src/config.py
       hash: md5
-      md5: ae2c3b8fb397b4dc358fd6e174c65ca4
-      size: 306
+      md5: a5c12424818ba5cab0914d75e0d2169e
+      size: 2022
     - path: src/datasets
       hash: md5
       md5: 2beab0f8265bd2a58b1c4064c801e160.dir
@@ -18,17 +18,17 @@ stages:
       nfiles: 6
     - path: src/train_test_split.py
       hash: md5
-      md5: bbee0e758bc44a147b5bfe7eee821496
-      size: 415
+      md5: 64131cb924e1d77bf01c9599030ee612
+      size: 504
     outs:
     - path: data/test_indices.csv
       hash: md5
-      md5: f821f8aae57bb1bf6041dd434d4003fa
-      size: 1935515
+      md5: f9418fde3b28a3a0b55894d8096137fb
+      size: 1935500
     - path: data/train_indices.csv
       hash: md5
-      md5: 1712bb41ac1edb2d49e903bdce8612b7
-      size: 17400607
+      md5: d4d5cb469315e590b06a4886003c5da4
+      size: 17400622
   sample_data:
     cmd: python src/sample_data.py
     deps:
@@ -38,12 +38,12 @@ stages:
       size: 21449148312
     - path: data/train_indices.csv
       hash: md5
-      md5: 1712bb41ac1edb2d49e903bdce8612b7
-      size: 17400607
+      md5: d4d5cb469315e590b06a4886003c5da4
+      size: 17400622
     - path: src/config.py
       hash: md5
-      md5: ae2c3b8fb397b4dc358fd6e174c65ca4
-      size: 306
+      md5: a5c12424818ba5cab0914d75e0d2169e
+      size: 2022
     - path: src/datasets
       hash: md5
       md5: 2beab0f8265bd2a58b1c4064c801e160.dir
@@ -51,10 +51,99 @@ stages:
       nfiles: 6
     - path: src/sample_data.py
       hash: md5
-      md5: c7fa8713e9d798ad874dd4a78fd3053b
-      size: 416
+      md5: 4487176142bfa41fe8b3f484e75ed51a
+      size: 499
     outs:
     - path: data/data.pkl
       hash: md5
-      md5: 78a172f5631975fc8524da29cc37245d
+      md5: 0d086428b14c3e433c2b9c980ed896c3
       size: 514809048
+  diagrams:
+    cmd: python src/diagrams.py
+    deps:
+    - path: data/data.pkl
+      hash: md5
+      md5: 0d086428b14c3e433c2b9c980ed896c3
+      size: 514809048
+    - path: src/config.py
+      hash: md5
+      md5: a5c12424818ba5cab0914d75e0d2169e
+      size: 2022
+    - path: src/diagrams.py
+      hash: md5
+      md5: 404f095b28beb84c71f1c9839ba73257
+      size: 1556
+    - path: src/modurec/features
+      hash: md5
+      md5: dafed6667bf45c5e1a29f76a80fec504.dir
+      size: 56337
+      nfiles: 14
+    - path: src/utils.py
+      hash: md5
+      md5: edfad73ea80be556c2ee1224f70e6397
+      size: 199
+    params:
+      params.yaml:
+        diagrams:
+          random_seed: 42
+    outs:
+    - path: data/diagrams.pkl
+      hash: md5
+      md5: 19f0e863386572d3fe761c4e1883c1e6
+      size: 53670270
+  featurize:
+    cmd: python src/featurize.py
+    deps:
+    - path: data/data.pkl
+      hash: md5
+      md5: 0d086428b14c3e433c2b9c980ed896c3
+      size: 514809048
+    - path: data/diagrams.pkl
+      hash: md5
+      md5: 19f0e863386572d3fe761c4e1883c1e6
+      size: 53670270
+    - path: src/config.py
+      hash: md5
+      md5: a5c12424818ba5cab0914d75e0d2169e
+      size: 2022
+    - path: src/feature_list.py
+      hash: md5
+      md5: 5f59a2137152959e5d80acb6f835c8ee
+      size: 8885
+    - path: src/featurize.py
+      hash: md5
+      md5: 2a47cbb98c4622166f18174d6ca3079d
+      size: 1001
+    - path: src/modurec/features
+      hash: md5
+      md5: dafed6667bf45c5e1a29f76a80fec504.dir
+      size: 56337
+      nfiles: 14
+    - path: src/utils.py
+      hash: md5
+      md5: edfad73ea80be556c2ee1224f70e6397
+      size: 199
+    outs:
+    - path: data/features.pkl
+      hash: md5
+      md5: caba2cb400d97e0b814157f432cfe78a
+      size: 227426
+  spotcheck:
+    cmd: python src/spocheck.py
+    deps:
+    - path: data/features.pkl
+      hash: md5
+      md5: caba2cb400d97e0b814157f432cfe78a
+      size: 227426
+    - path: src/config.py
+      hash: md5
+      md5: a5c12424818ba5cab0914d75e0d2169e
+      size: 2022
+    - path: src/spocheck.py
+      hash: md5
+      md5: 1bda30da188c0b80fa77ae5b30dbeafc
+      size: 9381
+    - path: src/utils.py
+      hash: md5
+      md5: edfad73ea80be556c2ee1224f70e6397
+      size: 199

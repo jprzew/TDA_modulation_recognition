@@ -43,5 +43,13 @@ stages:
     - src/utils.py
     outs:
     - data/features.pkl
+  spotcheck:
+    cmd: python src/spocheck.py
+    deps:
+    - data/features.pkl
+    - src/spocheck.py
+    - src/config.py
+    - src/utils.py
+
 
 
