@@ -28,8 +28,15 @@ df = pd.read_pickle(get_repo_path() / cfg.SampleData.sampled_data_file)
 # Subsample modulations and cases
 df = df[df.modulation_type.isin(cfg.Diagrams.modulation_subset)]
 
+# Filter by SNR
+if cfg.Diagrams.snr_threshold is not None:
+    df = df[df.SNR >= cfg.Diagrams.snr_threshold]
+
+# Sample cases
 if cfg.Diagrams.sample_size is not None:
-    df = df.groupby('modulation_type').apply(lambda x: x.sample(n=cfg.Diagrams.sample_size))
+    df = (df.groupby(['modulation_type', 'SNR'], as_index=False)
+            .apply(lambda x: x.sample(n=cfg.Diagrams.sample_size))
+            .droplevel(0))
 
 # Calculate diagrams
 print('Calculating diagrams...')
