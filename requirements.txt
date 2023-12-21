@@ -14,5 +14,5 @@ h5py
 plotnine
 joblib
 keras
-dvc
+dvc==2.45.1
 camel_converter
