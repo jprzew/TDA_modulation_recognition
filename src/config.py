@@ -37,7 +37,7 @@ class Diagrams:
                     FeatureData(name='diagram', params={'dim': 2, 'step': 30}),
                     FeatureData(name='diagram', params={'dim': 4, 'step': 30})]
 
-    sample_size: Optional[int] = 2  # sample size per modulation
+    sample_size: Optional[int] = 50  # sample size per modulation
     snr_threshold: Optional[int] = 10
 
     diagrams_file = 'data/diagrams.pkl'
