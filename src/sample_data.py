@@ -1,3 +1,5 @@
+"""Samples data from the 'train' subset"""
+
 from datasets import radioml_dataset
 import config as cfg
 import numpy as np

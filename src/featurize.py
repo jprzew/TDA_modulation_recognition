@@ -1,3 +1,5 @@
+"""Calculates features out of persistence diagrams"""
+
 import pandas as pd
 import warnings
 from utils import get_repo_path

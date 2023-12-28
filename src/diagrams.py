@@ -1,3 +1,5 @@
+"""Calculates persistence diagrams"""
+
 import config as cfg
 import pandas as pd
 from utils import get_repo_path

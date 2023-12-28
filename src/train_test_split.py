@@ -1,3 +1,5 @@
+"""Splits the main dataset into test/train subsets"""
+
 from datasets import radioml_dataset
 import config as cfg
 import numpy as np
