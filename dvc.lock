@@ -83,8 +83,8 @@ stages:
       md5: 5c403db865608fb0e4698d5df3a0cf91
       size: 1342785592
     - path: src/config.py
-      md5: 099710201a8ddc232d4ac62b2eb3d336
-      size: 2116
+      md5: 7882d6e2ac507cbe39ced21046fd9e62
+      size: 2023
     - path: src/feature_list.py
       md5: 5f59a2137152959e5d80acb6f835c8ee
       size: 8885
@@ -117,3 +117,28 @@ stages:
     - path: src/utils.py
       md5: edfad73ea80be556c2ee1224f70e6397
       size: 199
+  test_model:
+    cmd: python src/test_model.py
+    deps:
+    - path: data/features.pkl
+      md5: 4e9dd6d37656c702a80120b498a99233
+      size: 5570798
+    - path: src/config.py
+      md5: 7882d6e2ac507cbe39ced21046fd9e62
+      size: 2023
+    - path: src/spocheck.py
+      md5: 1bda30da188c0b80fa77ae5b30dbeafc
+      size: 9381
+    - path: src/test_model.py
+      md5: 5f366e97049096461a537123598fea71
+      size: 1533
+    - path: src/utils.py
+      md5: edfad73ea80be556c2ee1224f70e6397
+      size: 199
+    outs:
+    - path: metrics/accuracy.json
+      md5: 8585b46d5109fd38bd3f353e8e006b90
+      size: 32
+    - path: metrics/results.csv
+      md5: 8ea65ccebb6cf21149d5de83e1a1c0a7
+      size: 13076

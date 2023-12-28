@@ -1,2 +1,6 @@
 diagrams:
   random_seed: 42
+test_model:
+  model: svmp
+  random_seed: 42
+  test_size: 0.2
