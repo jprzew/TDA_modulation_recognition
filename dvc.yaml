@@ -9,9 +9,10 @@ stages:
     outs:
     - data/test_indices.csv
     - data/train_indices.csv
+    frozen: true
   sample_data:
     cmd: python src/sample_data.py
-    deps: 
+    deps:
     - data/GOLD_XYZ_OSC.0001_1024.hdf5
     - data/train_indices.csv
     - src/datasets
@@ -19,6 +20,7 @@ stages:
     - src/sample_data.py
     outs:
     - data/data.pkl
+    frozen: true
   diagrams:
     cmd: python src/diagrams.py
     params:
@@ -31,6 +33,7 @@ stages:
     - src/utils.py
     outs:
     - data/diagrams.pkl
+    frozen: true
   featurize:
     cmd: python src/featurize.py
     deps:
