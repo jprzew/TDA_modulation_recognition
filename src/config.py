@@ -54,4 +54,9 @@ class Spotcheck:
     input_file = 'data/features.pkl'
 
 
+class TestModel:
+    accuracy_file = 'metrics/accuracy.json'
+    results_file = 'metrics/results.csv'
+
+
 

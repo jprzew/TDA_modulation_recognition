@@ -6,6 +6,7 @@ import pandas as pd
 import json
 from datasets.radioml import index_to_class
 from utils import get_repo_path
+import config as cfg
 
 
 def save_results(y_hat, y_test, path):
@@ -20,9 +21,9 @@ def save_results(y_hat, y_test, path):
     results.to_csv(path, index=False)
 
 
-def save_metrics(accuracy):
+def save_metrics(accuracy, path):
     """Saves evaluation metrics to file"""
-    with open(get_repo_path() / 'metrics/accuracy.json', 'w') as f:
+    with open(path, 'w') as f:
         json.dump({'accuracy': accuracy}, f)
 
 
@@ -51,8 +52,8 @@ def main():
     accuracy = accuracy_score(y_test, y_hat)
 
     # Save results
-    save_metrics(accuracy)
-    save_results(y_hat, y_test, get_repo_path() / 'metrics/results.csv')
+    save_metrics(accuracy, get_repo_path() / cfg.TestModel.accuracy_file)
+    save_results(y_hat, y_test, get_repo_path() / cfg.TestModel.results_file)
 
 
 if __name__ == '__main__':
