@@ -12,3 +12,4 @@ venv/
 .idea
 *.hdf5
 .cache/
+dvc_plots/
