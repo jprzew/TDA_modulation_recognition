@@ -13,6 +13,8 @@ Signals with various modulation types were generated using the following schema
 
 <img src="signal_generation.jpg" alt="Signal generation schema" title="Signal generation schema">
 
+![Signal generation pipeline](signal_generation.jpg)
+
 | Modulation types      |
 |-----------|
 | OOK       |
