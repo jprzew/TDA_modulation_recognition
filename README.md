@@ -5,10 +5,11 @@ with application to modulation classification problem.
 
 ## About the dataset
 
-The dataset consists of synthetic and over-the-air radio signals with different modulations. It was generated as a basis of the paper [[1]](#1). Signals with various modulation types were generated using the following schema
+The dataset consists of synthetic and over-the-air radio signals with different modulations. 
+It was generated as a basis of the paper [[1]](#1). 
+Signals with various modulation types were generated using the following schema
 
-HERE PUT PICTURE
-
+![Signal generation schema](https://github.com/jprzew/TDA_modulation_recognition/blob/new_structure/signal_generation.jpg?raw=true)
 
 | Modulation types      |
 |-----------|
@@ -48,7 +49,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-This project uses DVC (Data Version Control) to run data processing pipelines. To download datasets set-up password to remote SSH storage, and pull the data:
+This project uses DVC (Data Version Control) to run data processing pipelines. 
+To download datasets set-up password to remote SSH storage, and pull the data:
 ```
 dvc remote modify --local ssh-storage password [put_password_here]
 dvc pull
