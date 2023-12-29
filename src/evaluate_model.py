@@ -30,7 +30,7 @@ def save_metrics(accuracy, path):
 def main():
 
     # Read parameters
-    params = params_show()['test_model']
+    params = params_show()['evaluate_model']
     model_name = params['model']
     seed = params['random_seed']
     test_size = params['test_size']
