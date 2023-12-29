@@ -53,12 +53,12 @@ stages:
     - src/spocheck.py
     - src/config.py
     - src/utils.py
-  test_model:
-    cmd: python src/test_model.py
+  evaluate_model:
+    cmd: python src/evaluate_model.py
     deps:
     - data/features.pkl
     - src/spocheck.py
-    - src/test_model.py
+    - src/evaluate_model.py
     - src/config.py
     - src/utils.py
     outs:
