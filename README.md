@@ -9,11 +9,8 @@ The dataset consists of synthetic and over-the-air radio signals with different 
 It was generated as a basis of the paper [[1]](#1). 
 Signals with various modulation types were generated using the following schema
 
-![Signal generation schema](https://github.com/jprzew/TDA_modulation_recognition/blob/new_structure/signal_generation.png?raw=true)
-
 <img src="signal_generation.png" alt="Signal generation schema" title="Signal generation schema">
 
-![Signal generation pipeline](signal_generation.png)
 
 | Modulation types      |
 |-----------|
