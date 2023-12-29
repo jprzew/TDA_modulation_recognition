@@ -11,6 +11,8 @@ Signals with various modulation types were generated using the following schema
 
 ![Signal generation schema](https://github.com/jprzew/TDA_modulation_recognition/blob/new_structure/signal_generation.jpg?raw=true)
 
+<img src="signal_generation.jpg" alt="Signal generation schema" title="Signal generation schema">
+
 | Modulation types      |
 |-----------|
 | OOK       |
