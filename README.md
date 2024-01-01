@@ -86,6 +86,7 @@ precomputed peristence diagrams. To do so, run the following commands:
 mkdir data
 cd data
 wget data.tar.gz https://mat.ug.edu.pl/~jprzew/TDA/diagrams.pkl
+wget data.tar.gz https://mat.ug.edu.pl/~jprzew/TDA/data.pkl
 ```
 
 Now you can reproduce spotcheck and evaluate_model stages as described above. Remember that stages: train_test_split,
