@@ -1,4 +1,3 @@
-from .factories import DatasetFactory, DatasetSplitter, DatasetSampler
 from pathlib import Path
 import h5py
 import numpy as np
@@ -32,31 +31,21 @@ class_to_index = {'OOK': 0,
 index_to_class = {v: k for k, v in class_to_index.items()}
 
 
-class RadioMLDataset(DatasetFactory):
-    """Factory to split and sample RadioML dataset"""
+def get_modulation_df(input_file: Path):
+    """Reads from input_file and returns a dataframe with modulation_id and snr columns"""
+    with h5py.File(input_file, 'r') as hdf_file:
+        modulation_one_hot = hdf_file['Y'][:]
+        snr_values = hdf_file['Z'][:].flatten()
 
-    def get_splitter(self, input_file: Path):
-        return RadioMLSplitter(input_file=input_file)
+        # Changing one-hot encoding to class indices
+        modulation_id = np.apply_along_axis(lambda x: np.argmax(x), 1, modulation_one_hot)
 
-    def get_sampler(self, input_file: Path, sampled_indices_file: Path):
-        return RadioMLSampler(input_file=input_file, sampled_indices_file=sampled_indices_file)
-
-    @staticmethod
-    def get_modulation_df(input_file: Path):
-        """Reads from input_file and returns a dataframe with modulation_id and snr columns"""
-        with h5py.File(input_file, 'r') as hdf_file:
-            modulation_one_hot = hdf_file['Y'][:]
-            snr_values = hdf_file['Z'][:].flatten()
-
-            # Changing one-hot encoding to class indices
-            modulation_id = np.apply_along_axis(lambda x: np.argmax(x), 1, modulation_one_hot)
-
-            # Combine snr_values and modulation_id into a dataframe
-            modulation_df = pd.DataFrame({'modulation_id': modulation_id, 'snr': snr_values})
-            return modulation_df
+        # Combine snr_values and modulation_id into a dataframe
+        modulation_df = pd.DataFrame({'modulation_id': modulation_id, 'snr': snr_values})
+        return modulation_df
 
 
-class RadioMLSplitter(DatasetSplitter):
+class Splitter:
     """Splits RadioML dataset into train/test subsets and saves their indices to files"""
 
     def __init__(self, input_file: Path):
@@ -65,7 +54,7 @@ class RadioMLSplitter(DatasetSplitter):
         self.train_indices = None
 
     def split(self, test_proportion: float):
-        modulation_df = RadioMLDataset.get_modulation_df(self.input_file)
+        modulation_df = get_modulation_df(self.input_file)
 
         # Split dataframe into train and test dataframes
         test_df = modulation_df.groupby(['modulation_id', 'snr']).sample(frac=test_proportion)
@@ -79,7 +68,7 @@ class RadioMLSplitter(DatasetSplitter):
         self.test_indices.to_csv(test_output_file, index=False, header=False)
 
 
-class RadioMLSampler(DatasetSampler):
+class Sampler:
     """Samples RadioML dataset, formats it and saves to file
 
     Attributes:
@@ -93,7 +82,7 @@ class RadioMLSampler(DatasetSampler):
         self.df = None
 
     def sample(self, cases_per_class: int):
-        modulation_df = RadioMLDataset.get_modulation_df(self.input_file)
+        modulation_df = get_modulation_df(self.input_file)
         df = modulation_df.groupby(['modulation_id', 'snr']).sample(n=cases_per_class)
         self.sampled_indices = pd.Series(df.index).sort_values()
 

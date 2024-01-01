@@ -1,6 +1,6 @@
 """Samples data from the 'train' subset"""
 
-from datasets import radioml_dataset
+from datasets import radioml
 import config as cfg
 import numpy as np
 
@@ -11,8 +11,8 @@ np.random.seed(cfg.SampleData.random_seed)
 def main():
 
     print('Sampling dataset...')
-    sampler = radioml_dataset.get_sampler(input_file=cfg.General.hdf_data_file,
-                                          sampled_indices_file=cfg.TrainTestSplit.train_indices_file)
+    sampler = radioml.Sampler(input_file=cfg.General.hdf_data_file,
+                              sampled_indices_file=cfg.TrainTestSplit.train_indices_file)
     sampler.sample(cases_per_class=cfg.SampleData.cases_per_class)
     sampler.format_data()
     sampler.save_to_file(output_file=cfg.SampleData.sampled_data_file)
