@@ -89,8 +89,11 @@ wget data.tar.gz https://mat.ug.edu.pl/~jprzew/TDA/diagrams.pkl
 wget data.tar.gz https://mat.ug.edu.pl/~jprzew/TDA/data.pkl
 ```
 
-Now you can reproduce spotcheck and evaluate_model stages as described above. Remember that stages: train_test_split,
-sample_data and diagrams are frozen and will not be reproduced.
+Stages: train_test_split, sample_data and diagrams are frozen and will not be reproduced, 
+but DVC can still complain about missing files. Therefore, reproduce experiments by running:
+```
+dvc repro featurize --downstream
+```
 
 ### Running the project with the original dataset
 
