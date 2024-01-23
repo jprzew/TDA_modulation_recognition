@@ -85,8 +85,8 @@ precomputed peristence diagrams. To do so, run the following commands:
 ```
 mkdir data
 cd data
-wget data.tar.gz https://mat.ug.edu.pl/~jprzew/TDA/diagrams.pkl
-wget data.tar.gz https://mat.ug.edu.pl/~jprzew/TDA/data.pkl
+wget https://mat.ug.edu.pl/~jprzew/TDA/diagrams.pkl
+wget https://mat.ug.edu.pl/~jprzew/TDA/data.pkl
 ```
 
 Stages: train_test_split, sample_data and diagrams are frozen and will not be reproduced, 
